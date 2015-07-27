@@ -4,6 +4,7 @@
 	width: 100%;
 	top: 0;
 	left: 0;
+	z-index: 1;
 	.purple-bg;
 
 	.container{
@@ -390,6 +391,62 @@
 				border-top: solid 12px @brand-accent;
 				border-left: solid 72px transparent;
 				border-right: solid 72px transparent;
+			}
+		}
+	}
+}
+
+#animation-invisible {
+	font-size: 24px;
+	.purple-bg;
+
+	.container{
+		min-height: 400px;
+		width:100%;
+		@media (min-width: @screen-xs-min){
+			display: table;
+			table-layout: fixed;
+		}
+
+		#animated-drone-invisible-copy {
+			vertical-align: middle;
+			text-align: right;
+
+			@media (min-width: @screen-xs-min){
+				display: table-cell;
+				width: 50%;
+			}
+
+			#copy{
+				text-align: left;
+				display: inline-block;
+				padding-top: 40px;
+
+				@media (min-width: @screen-sm-min){
+					max-width: 400px;
+					padding-right: 40px;
+					padding-top: 40px;
+				}
+			}
+		}
+
+		#animated-drone-invisible {
+			vertical-align: middle;
+			text-align: center;
+
+			@media (min-width: @screen-xs-min){
+				display: table-cell;
+				width: 50%;
+			}
+
+			#animated-drone {
+				width:100%;
+				display: inline-block;
+
+				@media (min-width: @screen-sm-min){
+					padding-right:40px;
+					max-width:400px;
+				}
 			}
 		}
 	}

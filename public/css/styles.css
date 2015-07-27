@@ -3609,6 +3609,7 @@ body {
   width: 100%;
   top: 0;
   left: 0;
+  z-index: 1;
   background-color: #2d3a4a;
   color: #ffffff;
 }
@@ -3946,6 +3947,66 @@ body {
   border-top: solid 12px #eac670;
   border-left: solid 72px transparent;
   border-right: solid 72px transparent;
+}
+#animation-invisible {
+  font-size: 24px;
+  background-color: #2d3a4a;
+  color: #ffffff;
+}
+#animation-invisible a {
+  color: #ffffff;
+}
+#animation-invisible .container {
+  min-height: 400px;
+  width: 100%;
+}
+@media (min-width: 480px) {
+  #animation-invisible .container {
+    display: table;
+    table-layout: fixed;
+  }
+}
+#animation-invisible .container #animated-drone-invisible-copy {
+  vertical-align: middle;
+  text-align: right;
+}
+@media (min-width: 480px) {
+  #animation-invisible .container #animated-drone-invisible-copy {
+    display: table-cell;
+    width: 50%;
+  }
+}
+#animation-invisible .container #animated-drone-invisible-copy #copy {
+  text-align: left;
+  display: inline-block;
+  padding-top: 40px;
+}
+@media (min-width: 768px) {
+  #animation-invisible .container #animated-drone-invisible-copy #copy {
+    max-width: 400px;
+    padding-right: 40px;
+    padding-top: 40px;
+  }
+}
+#animation-invisible .container #animated-drone-invisible {
+  vertical-align: middle;
+  text-align: center;
+}
+@media (min-width: 480px) {
+  #animation-invisible .container #animated-drone-invisible {
+    display: table-cell;
+    width: 50%;
+  }
+}
+#animation-invisible .container #animated-drone-invisible #animated-drone {
+  width: 100%;
+  display: inline-block;
+}
+@media (min-width: 768px) {
+  #animation-invisible .container #animated-drone-invisible #animated-drone {
+    padding-right: 40px;
+    max-width: 400px;
+  }
 }
 .primary {
   color: #2d3a4a;
