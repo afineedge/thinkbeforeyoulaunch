@@ -3612,6 +3612,7 @@ body {
   z-index: 1;
   background-color: #2d3a4a;
   color: #ffffff;
+  box-shadow: 0 0 8px 0 #000000;
 }
 #header a {
   color: #ffffff;
@@ -4228,6 +4229,12 @@ body {
   width: 100%;
   table-layout: fixed;
   margin: 10px 0;
+  transition: .3s;
+  -webkit-transition: .3s;
+}
+#check-yourself .container #check-yourself-copy .copy .check-item:hover {
+  transform: translatex(4px);
+  -webkit-transform: translatex(4px);
 }
 #check-yourself .container #check-yourself-copy .copy .check-item .check-mark {
   display: table-cell;
@@ -4291,7 +4298,7 @@ body {
   }
 }
 #prepared {
-  padding: 40px 0;
+  padding: 60px 0;
   background-color: #d0d8db;
   color: #2d3a4a;
 }
@@ -4309,7 +4316,7 @@ body {
   margin: 18px auto 0px;
 }
 #share {
-  padding: 40px 0;
+  padding: 60px 0;
   background-color: #2d3a4a;
   color: #ffffff;
 }
@@ -4344,7 +4351,7 @@ body {
   fill: #fff;
 }
 #organizations {
-  padding: 40px 0;
+  padding: 60px 0;
 }
 #organizations #organizations-headline {
   text-align: center;
@@ -4366,6 +4373,12 @@ body {
   display: inline-block;
   max-width: 230px;
   width: 40%;
+  transition: .3s;
+  -webkit-transition: .3s;
+}
+#organizations #organizations-items .organizations-item:hover {
+  transform: scale(1.06) translateY(-2px);
+  -webkit-transform: scale(1.06) translateY(-2px);
 }
 #organizations #organizations-items .organizations-item img {
   width: 100%;
@@ -4385,6 +4398,30 @@ body {
   #organizations .primary-button {
     margin: 20px auto;
   }
+}
+#contact {
+  padding: 60px 0;
+  background-color: #2d3a4a;
+  color: #ffffff;
+}
+#contact a {
+  color: #ffffff;
+}
+#contact h3 {
+  color: #eac670;
+}
+#contact a {
+  color: #eac670;
+}
+#contact form {
+  margin-top: 20px;
+}
+#contact form textarea {
+  height: 160px;
+}
+#footer .container {
+  padding: 10px;
+  font-size: 10px;
 }
 .primary {
   color: #2d3a4a;
