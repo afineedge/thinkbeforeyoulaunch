@@ -3609,7 +3609,7 @@ body {
   width: 100%;
   top: 0;
   left: 0;
-  z-index: 1;
+  z-index: 2;
   background-color: #2d3a4a;
   color: #ffffff;
   box-shadow: 0 0 8px 0 #000000;
@@ -4143,6 +4143,7 @@ body {
   margin-bottom: 8px;
 }
 #damage .container #damage-copy .copy .more-info {
+  max-width: 260px;
   margin-bottom: 20px;
 }
 #damage .container #damage-image {
@@ -4473,7 +4474,6 @@ body {
   color: #2d3a4a;
 }
 .more-info {
-  max-width: 300px;
   display: inline-block;
   margin-top: 40px;
   font-size: 12px;
@@ -4482,7 +4482,60 @@ body {
   padding: 10px;
   background-color: #eac670;
   color: #2d3a4a;
+  vertical-align: middle;
+  text-align: left;
 }
 .more-info a {
+  color: #2d3a4a;
+}
+.more-info .more-info-left {
+  display: table-cell;
+  vertical-align: middle;
+  padding-right: 12px;
+}
+.more-info .more-info-right {
+  width: 30px;
+  display: table-cell;
+  vertical-align: middle;
+}
+.more-info .more-info-right svg {
+  width: 30px;
+}
+.arrow-section {
+  background-color: #eac670;
+  color: #2d3a4a;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 700;
+  padding: 10px;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+}
+.arrow-section a {
+  color: #2d3a4a;
+}
+.arrow-section h3 {
+  position: relative;
+  margin: 0px 0px 4px;
+  z-index: 2;
+}
+.arrow-section .arrow-copy {
+  position: relative;
+  z-index: 2;
+  line-height: 16px;
+}
+.arrow-section:before {
+  position: absolute;
+  content: '';
+  background-color: #eac670;
+  color: #2d3a4a;
+  top: 0;
+  bottom: 0;
+  right: 50px;
+  left: -1000px;
+  z-index: 1;
+}
+.arrow-section:before a {
   color: #2d3a4a;
 }

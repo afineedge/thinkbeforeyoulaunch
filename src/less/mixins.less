@@ -37,7 +37,6 @@
 	font-weight: 700;
 }
 .more-info {
-	max-width: 300px;
 	display:inline-block;
 	margin-top: 40px;
 	font-size: 12px;
@@ -45,4 +44,55 @@
 	line-height: 16px;
 	padding: 10px;
 	.accent-bg;
+	vertical-align: middle;
+	text-align: left;
+
+	.more-info-left {
+		display: table-cell;
+		vertical-align: middle;
+		padding-right: 12px;
+	}
+
+	.more-info-right {
+		width: 30px;
+		display: table-cell;
+		vertical-align: middle;
+
+		svg {
+			width: 30px;
+		}
+	}
+}
+.arrow-section {
+	.accent-bg;
+	font-size: 12px;
+	line-height: 16px;
+	font-weight: 700;
+	padding: 10px;
+	margin-bottom: 20px;
+	position: relative;
+	z-index: 1;
+
+	h3 {
+		position: relative;
+		margin: 0px 0px 4px;
+		z-index: 2;
+	}
+
+	.arrow-copy {
+		position: relative;
+		z-index: 2;
+		line-height: 16px;
+	}
+
+	&:before {
+		position: absolute;
+		content: '';
+		.accent-bg;
+		top:0;
+		bottom: 0;
+		right: 50px;
+		left: -1000px;
+		z-index: 1;
+	}
 }
