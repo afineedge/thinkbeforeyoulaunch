@@ -25,6 +25,11 @@ body {
 			left: 15px;
 			top: 0;
 			.purple-bg;
+
+			svg {
+				height: 100%;
+				padding: 8px 0;
+			}
 		}
 
 		#navigation-wrapper {
@@ -36,7 +41,15 @@ body {
 				position: fixed;
 				right: 2px;
 				top: 2px;
-				background-color: rgba(255,255,255,.2);
+				padding: 10px 6px 9px;
+
+				&:hover {
+					background-color: rgba(255,255,255,.1);
+				}
+
+				svg {
+					width: 100%;
+				}
 			}
 
 			#follow {
@@ -48,7 +61,7 @@ body {
 				padding: 4px 10px;
 				float: right;
 				display: none;
-				font-weight: 700;
+				font-weight: 600;
 				.accent-bg;
 
 				.no-mobile {
@@ -96,7 +109,7 @@ body {
 							text-decoration: none;
 							text-transform: uppercase;
 							border-radius: 8px 8px 0 0;
-							font-weight: 700;
+							font-weight: 600;
 							padding: 10px;
 
 							&:hover {
@@ -107,7 +120,7 @@ body {
 							}
 
 							&#download-btn{
-								font-weight: 700;
+								font-weight: 600;
 								text-transform: uppercase;
 								padding-right: 0px;
 								display: none;
@@ -197,7 +210,7 @@ body {
 
 			#main-headline {
 				margin: 0 auto;
-				font-weight: 700;
+				font-weight: 800;
 				font-size: 38px;
 				text-transform: uppercase;
 				line-height: 36px;
@@ -224,7 +237,7 @@ body {
 				}
 
 				em {
-					font-weight: 700;
+					font-weight: 600;
 				}
 			}
 		}
@@ -245,7 +258,7 @@ body {
 
 		h3 {
 			margin: 0px 0px 8px;
-			font-weight: 700;
+			font-weight: 600;
 		}
 	}
 
@@ -272,7 +285,7 @@ body {
 
 	h3 {
 		margin:0 0 8px;
-		font-weight: 700;
+		font-weight: 600;
 	}
 
 	.container {
@@ -291,7 +304,7 @@ body {
 					margin: 16px;
 
 					.headline {
-						font-weight: 700;
+						font-weight: 600;
 						font-size:14px;
 						line-height: 16px;
 					}
@@ -367,7 +380,7 @@ body {
 			text-align: center;
 			margin: 0 auto 32px;
 			padding: 4px 0 0;
-			font-weight:700;
+			font-weight:600;
 			.accent-bg;
 	   		cursor: pointer;
 
@@ -484,7 +497,7 @@ body {
 
 	h3{
 		margin: 32px 0;
-		font-weight: 700;
+		font-weight: 600;
 	}
 }
 #airspace {
@@ -498,9 +511,11 @@ body {
 			background-color: #eeeeee;
 			text-align: center;
 			padding: 0 24px;
-			font-weight: 700;
+			font-weight: 600;
+			/*
 			transition: 2s;
 			-webkit-transition: 2s;
+			*/
 			overflow:hidden;
 			position: relative;
 
@@ -692,7 +707,7 @@ body {
 						vertical-align: middle;
 						font-size: 14px;
 						line-height: 18px;
-						font-weight: 700;
+						font-weight: 600;
 					}
 				}
 			}
@@ -738,7 +753,7 @@ body {
 
 		h3{
 			margin: 0px 0 18px;
-			font-weight: 700;
+			font-weight: 600;
 		}
 	}
 
@@ -756,7 +771,7 @@ body {
 
 		h3{
 			margin: 0px 0 8px;
-			font-weight: 700;
+			font-weight: 600;
 		}
 	}
 
@@ -795,7 +810,7 @@ body {
 
 		h3{
 			margin: 0px 0 8px;
-			font-weight: 700;
+			font-weight: 600;
 		}
 
 		h4{
@@ -804,7 +819,7 @@ body {
 		}
 	}
 
-	#organizations-items {
+	#organizations-list {
 		text-align: center;
 
 		.organizations-item {
@@ -846,6 +861,7 @@ body {
 	.purple-bg;
 
 	h3 {
+		margin: 0px 0px 4px;
 		.accent;
 	}
 
@@ -917,7 +933,7 @@ body {
 		
 		.panel-headline {
 			font-size: 32px;
-			font-weight: 700;
+			font-weight: 600;
 			border-bottom: 2px solid #ccc;
 			padding-bottom: 10px;
 			margin-bottom: 10px;
@@ -1047,7 +1063,7 @@ body {
 	line-height: 22px;
 
 	@media (min-width: @screen-sm-min){
-		padding:40px;
+		padding:40px 40px 10px;
 	}
 
 	.container {
@@ -1056,6 +1072,80 @@ body {
 		max-width: 570px;
 		padding-bottom: 20px;
 		border-bottom: 2px solid #ccc;
+	}
+}
+
+#news-comments {
+	padding:0px 15px 10px;
+
+	@media (min-width: @screen-sm-min){
+		padding:0 40px 40px;
+	}
+
+	.container {
+		padding-left: 0px;
+		padding-right: 0px;
+		max-width: 570px;
+		padding-bottom: 20px;
+	}
+}
+
+#organizations-header {
+	.inverted-bg;
+	margin: 0 auto;
+	padding-top: 44px;
+	width: 100%;
+
+	@media (min-width: @screen-sm-min){
+		padding-top: 88px;
+	}
+
+	.container{
+		padding: 60px 30px;
+		display: table;
+		table-layout: fixed;
+
+		@media (min-width: @screen-sm-min){
+			padding: 100px 30px;
+		}
+
+		#organizations-header-copy {
+			font-size: 14px;
+			display: table-cell;
+			vertical-align: middle;
+			width: 100%;
+
+			h3 {
+				margin: 0px 0px 4px;
+			}
+		}
+	}
+}
+
+#organizations-items {
+	padding: 60px;	
+	.intermediate-bg;
+
+	.container {
+		text-align: center;
+
+		[class*="col-"] {
+		    float: none;
+		    display: inline-block;
+		    margin-left: -4px;
+		}
+	
+		.organizations-item {
+			padding: 10px;
+
+			img {
+				max-width:100%;
+			}
+		}
+	}
+
+	.accent-button {
+		margin: 30px 30px 0;
 	}
 }
 
