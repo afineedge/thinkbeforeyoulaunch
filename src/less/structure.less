@@ -16,7 +16,7 @@ body {
 	width: 100%;
 	top: 0;
 	left: 0;
-	z-index: 2;
+	z-index: 4;
 	.purple-bg;
 	box-shadow: 0 0 8px 0 rgba(0,0,0,1);
 
@@ -193,59 +193,163 @@ body {
 	.inverted-bg;
 	margin: 0 auto;
 	padding-top: 44px;
+	background: url('../img/hero.jpg');
+	background-size: cover;
+	background-position: bottom;
 
-	@media (min-width: @screen-md-min){
+	&:before { 
+		display: block; 
+		content: " "; 
+		margin-top: -44px; 
+		height: 44px; 
+		visibility: hidden; 
+
+		@media (min-width: @screen-sm-min){
+			margin-top: -88px; 
+			height: 88px;
+		}
+	}
+
+	@media (min-width: @screen-sm-min){
 		padding-top: 88px;
 	}
 
 	.container{
 		position: relative;
-		display: table;
-		height: 300px;
+		padding: 0;
+		width: 100%;
+		background: url('../img/hero-bg.png');
+		background-repeat: repeat;
 
-		@media (min-width: @screen-sm-min){
-			height: 400px;
-		}
+		#hero-drone {
+			margin: 40px auto 20px;
+			width: 50%;
+			max-width: 200px;
+			/*
+			-webkit-animation: drone-hover 5s ease-in-out;
+		    -webkit-animation-iteration-count: infinite;
+			animation: drone-hover 5s ease-in-out;
+		    animation-iteration-count: infinite;
+		    */
 
-		@media (min-width: @screen-md-min){
-			height: 400px;
+			@media (min-width: @screen-sm-min){
+				margin: 60px auto 0;
+			}
+
+			img {
+				width: 100%;
+			}
 		}
 
 		#main-text{
-			display: table-cell;
-			vertical-align:middle;
-			margin: 0 auto;
+			margin: 20px auto 40px;
 			text-align:center;
+
+			@media (min-width: @screen-sm-min){
+				margin: 40px auto 80px;
+			}
 
 			#main-headline {
 				margin: 0 auto;
 				font-weight: 800;
-				font-size: 38px;
+				font-size: 36px;
 				text-transform: uppercase;
 				line-height: 36px;
-				margin-bottom: 20px;
+				margin-bottom: 10px;
+				text-shadow: 2px 2px 3px rgba(0,0,0,.4);
 			}
 
 			#main-subhead {
 				margin: 0 auto;
 				position: relative;
-				font-size:12px;
+				font-size:11px;
 				text-transform: lowercase;
 				height: 48px;
 				line-height: 48px;
-				.purple-bg;
-				max-width: 540px;
+				display: table;
+				padding: 0 8px;
+
+				@media (min-width: 360px){
+					font-size:12px;
+				}
+
+				@media (min-width: 400px){
+					font-size:14px;
+				}
 
 				@media (min-width: @screen-xs-min){
-					font-size:20px;
+					font-size:18px;
 				}
 
 				@media (min-width: @screen-sm-min){
-					font-size:24px;
+					font-size:20px;
 				}
 
 				em {
 					font-weight: 600;
+				}
+
+				svg {
+					width: 14px;
+					height: 24px;
+					display: block;
+					fill: @brand-primary;
+				}
+
+				#main-subhead-left {
+					width: 14px;
+					height: 48px;
+					display: table-cell;
+					vertical-align: middle;
+				}
+				#main-subhead-center {
+					height: 48px;
+					display: table-cell;
+					vertical-align: middle;
+					.purple-bg;
+					padding: 0 8px;
+				}
+				#main-subhead-right {
+					width: 14px;
+					height: 48px;
+					display: table-cell;
+					vertical-align: middle;
+				}
+			}
+		}
+
+		#main-scroll-indicator {
+			margin: 10px auto 20px;
+			font-size: 12px;
+			color: #fff;
+			text-transform: uppercase;
+			text-align: center;
+			font-weight: 800;
+			text-shadow: 2px 2px 3px rgba(0,0,0,.6);
+			width: 88px;
+
+			a {
+				color: #fff;
+				text-decoration: none !important;
+			}
+
+			svg {
+				display: block;
+				margin: 0px auto;
+				width: 20px;
+				height: 20px;
+			}
+
+			&:hover {
+				a {
+					color: #fff;
+				}
+
+				svg {
+					-webkit-animation:	bounce 2s ease-in-out;
+				    -webkit-animation-iteration-count: infinite;
+					animation:	bounce 2s ease-in-out;
+				    animation-iteration-count: infinite;
 				}
 			}
 		}
@@ -257,12 +361,62 @@ body {
 	font-size: 12px;
 	line-height: 20px;
 	.purple-bg;
+	position: relative;
+	overflow:hidden;
+
+	&:before { 
+		display: block; 
+		content: " "; 
+		margin-top: -44px; 
+		height: 44px; 
+		visibility: hidden; 
+
+		@media (min-width: @screen-sm-min){
+			margin-top: -88px; 
+			height: 88px;
+		}
+	}
+
+	&:after {
+	    width: 600px;
+	    height: 600px;
+		/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#505b69+0,2d3a4b+58 */
+		background: #505b69; /* Old browsers */
+		background: -moz-radial-gradient(center, ellipse cover,  #505b69 0%, #2d3a4b 58%); /* FF3.6+ */
+		background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,#505b69), color-stop(58%,#2d3a4b)); /* Chrome,Safari4+ */
+		background: -webkit-radial-gradient(center, ellipse cover,  #505b69 0%,#2d3a4b 58%); /* Chrome10+,Safari5.1+ */
+		background: -o-radial-gradient(center, ellipse cover,  #505b69 0%,#2d3a4b 58%); /* Opera 12+ */
+		background: -ms-radial-gradient(center, ellipse cover,  #505b69 0%,#2d3a4b 58%); /* IE10+ */
+		background: radial-gradient(ellipse at center,  #505b69 0%,#2d3a4b 58%); /* W3C */
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#505b69', endColorstr='#2d3a4b',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+	    position: absolute;
+	    z-index: 1;
+	    content: '';
+	    left: 50%;
+	    top: 50%;
+	    margin-left: -300px;
+	    margin-top: -300px;
+	    opacity: .6;
+
+	    @media (min-width: @screen-sm-min){
+	    	opacity: 1;
+	    }
+
+	    @media (min-width: @screen-lg-min){
+		    width: 1200px;
+		    height: 1200px;
+		    margin-left: -600px;
+		    margin-top: -600px;
+	    }
+	}
 
 	.container {
 		max-width: 600px;
 		padding-top: 20px;
 		padding-bottom: 20px;
 		margin: 0 auto;
+		z-index: 2;
+		position: relative;
 
 		h3 {
 			margin: 0px 0px 8px;
@@ -286,6 +440,19 @@ body {
 	font-size: 14px;
 	line-height: 20px;
 	.inverted-bg;
+
+	&:before { 
+		display: block; 
+		content: " "; 
+		margin-top: -44px; 
+		height: 44px; 
+		visibility: hidden; 
+
+		@media (min-width: @screen-sm-min){
+			margin-top: -88px; 
+			height: 88px;
+		}
+	}
 
 	@media (min-width: @screen-sm-min){
 		padding: 60px 0;
@@ -414,10 +581,48 @@ body {
 #animation-invisible {
 	font-size: 24px;
 	.purple-bg;
+	position: relative;
+	overflow:hidden;
+
+	&:after {
+	    width: 600px;
+	    height: 600px;
+		/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#505b69+0,2d3a4b+58 */
+		background: #505b69; /* Old browsers */
+		background: -moz-radial-gradient(center, ellipse cover,  #505b69 0%, #2d3a4b 58%); /* FF3.6+ */
+		background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,#505b69), color-stop(58%,#2d3a4b)); /* Chrome,Safari4+ */
+		background: -webkit-radial-gradient(center, ellipse cover,  #505b69 0%,#2d3a4b 58%); /* Chrome10+,Safari5.1+ */
+		background: -o-radial-gradient(center, ellipse cover,  #505b69 0%,#2d3a4b 58%); /* Opera 12+ */
+		background: -ms-radial-gradient(center, ellipse cover,  #505b69 0%,#2d3a4b 58%); /* IE10+ */
+		background: radial-gradient(ellipse at center,  #505b69 0%,#2d3a4b 58%); /* W3C */
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#505b69', endColorstr='#2d3a4b',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+	    position: absolute;
+	    z-index: 1;
+	    content: '';
+	    left: 50%;
+	    top: 50%;
+	    margin-left: -300px;
+	    margin-top: -300px;
+	    opacity: .6;
+
+	    @media (min-width: @screen-sm-min){
+	    	opacity: 1;
+	    }
+
+	    @media (min-width: @screen-lg-min){
+		    width: 1200px;
+		    height: 1200px;
+		    margin-left: -600px;
+		    margin-top: -600px;
+	    }
+	}
 
 	.container{
 		min-height: 400px;
 		width:100%;
+		position: relative;
+		z-index: 2;
+
 		@media (min-width: @screen-xs-min){
 			display: table;
 			table-layout: fixed;
@@ -448,10 +653,10 @@ body {
 					text-align: left;
 				}
 
-				img {
-					max-width: 80px;
-					max-height: 80px;
-					margin-bottom: 8px;
+				svg {
+					width: 80px;
+					height: 80px;
+					display: inline-block;
 				}
 			}
 		}
@@ -474,9 +679,9 @@ body {
 				width:100%;
 				display: inline-block;
 				max-width: 200px;
-				-webkit-animation: drone-hover 5s ease-in-out;
+				-webkit-animation: invisible-drone-hover 5s ease-in-out;
 			    -webkit-animation-iteration-count: infinite;
-				animation: drone-hover 5s ease-in-out;
+				animation: invisible-drone-hover 5s ease-in-out;
 			    animation-iteration-count: infinite;
 			    opacity: .5;
 
@@ -485,17 +690,6 @@ body {
 				}
 			}
 
-			@-webkit-keyframes drone-hover {
-			    0% {-webkit-transform: translateY(5%); opacity: 0.5;}
-			    50% {-webkit-transform: translateY(-5%); opacity: 0.01;}
-			    100% {-webkit-transform: translateY(5%); opacity: 0.5;}
-			}
-
-			@keyframes drone-hover {
-			    0% {transform: translateY(5%); opacity: 0.5;}
-			    50% {transform: translateY(-5%); opacity: 0.01;}
-			    100% {transform: translateY(5%); opacity: 0.5;}
-			}
 		}
 	}
 }
@@ -505,7 +699,7 @@ body {
 
 	h3{
 		margin: 40px 0;
-		font-size: 32px;
+		font-size: 28px;
 		font-weight: 800;
 		text-transform: uppercase;
 	}
@@ -514,10 +708,14 @@ body {
 	margin: 0 auto;
 	
 	#airspace-items {
+		background-image: url('../img/airspace.jpg');
+	    background-image: url('../img/airspace.jpg');
+	    background-size: cover;
+	    background-attachment: fixed;
+	    background-position: center;
 
 		.airspace-item {
 			border: 1px solid #fff;
-			background-color: #eeeeee;
 			text-align: center;
 			padding: 0 24px;
 			font-weight: 600;
@@ -553,14 +751,26 @@ body {
 			 		display:table-cell;
 					vertical-align: middle;
 					font-size:12px;
-					transition: .3s ease-out;
-					-webkit-transition: .3s ease-out;
+					font-weight: 800;
+					text-shadow: 1px 1px 3px rgba(0,0,0,.4);
+
+					svg {
+						width: 60px;
+						height: 60px;
+						display: block;
+						margin: 0 auto 4px;
+						transition: .2s ease-out;
+						-webkit-transition: .2s ease-out;
+						-webkit-backface-appearance: none;
+					}
 			 		
 			 	}
 
 			 	&:hover .airspace-item-content {
-			 		transform: scale(1.06) translateY(-8px);
-			 		-webkit-transform: scale(1.06) translateY(-8px);
+			 		svg {
+				 		transform: translateY(-4px);
+				 		-webkit-transform: translateY(-4px);
+			 		}
 			 	}
 			 }
 		}
@@ -570,13 +780,61 @@ body {
 #damage {
 	font-size: 24px;
 	.purple-bg;
+	position: relative;
+	overflow:hidden;
+
+	&:after {
+	    width: 600px;
+	    height: 600px;
+		/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#505b69+0,2d3a4b+58 */
+		background: #505b69; /* Old browsers */
+		background: -moz-radial-gradient(center, ellipse cover,  #505b69 0%, #2d3a4b 58%); /* FF3.6+ */
+		background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,#505b69), color-stop(58%,#2d3a4b)); /* Chrome,Safari4+ */
+		background: -webkit-radial-gradient(center, ellipse cover,  #505b69 0%,#2d3a4b 58%); /* Chrome10+,Safari5.1+ */
+		background: -o-radial-gradient(center, ellipse cover,  #505b69 0%,#2d3a4b 58%); /* Opera 12+ */
+		background: -ms-radial-gradient(center, ellipse cover,  #505b69 0%,#2d3a4b 58%); /* IE10+ */
+		background: radial-gradient(ellipse at center,  #505b69 0%,#2d3a4b 58%); /* W3C */
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#505b69', endColorstr='#2d3a4b',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+	    position: absolute;
+	    z-index: 1;
+	    content: '';
+	    left: 50%;
+	    top: 50%;
+	    margin-left: -300px;
+	    margin-top: -300px;
+	    opacity: .6;
+
+	    @media (min-width: @screen-sm-min){
+	    	opacity: 1;
+	    }
+
+	    @media (min-width: @screen-lg-min){
+		    width: 1200px;
+		    height: 1200px;
+		    margin-left: -600px;
+		    margin-top: -600px;
+	    }
+	}
 
 	.container-fluid{
 		min-height: 400px;
+		position: relative;
+		z-index: 2;
 		width:100%;
 		@media (min-width: @screen-xs-min){
 			display: table;
 			table-layout: fixed;
+		}
+
+		#damage-drone {
+			transform: rotateX(70deg) scale(.4);
+			-webkit-transform: rotateX(70deg) scale(.4);
+		}
+
+		&:hover #damage-drone {
+		    transition: 1s ease-in;
+		    transform: translateX(-40%) translateY(210%) rotateX(-20deg) scale(1);
+		    -webkit-transform: translateX(-40%) translateY(210%) rotateX(-20deg) scale(1);
 		}
 
 		#damage-copy {
@@ -604,15 +862,21 @@ body {
 					text-align: right;
 				}
 
-				img {
-					max-width: 80px;
-					max-height: 80px;
-					margin-bottom: 8px;
+				svg {
+					width: 60px;
+					height: 60px;
+					display: inline-block;
 				}
 
 				.more-info {
 					max-width: 280px;
 					margin-bottom: 20px;
+
+					svg {
+						width: 30px;
+						height: 30px;
+						display: inline-block;
+					}
 				}
 			}
 		}
@@ -636,18 +900,9 @@ body {
 				max-width: 200px;
 				vertical-align: bottom;
 
-				/* -webkit-animation: drone-hover 3s ease-in-out;
-			    -webkit-animation-iteration-count: infinite; */
-
 				@media (min-width: @screen-xs-min){
 					max-width:400px;
 				}
-			}
-
-			@-webkit-keyframes drone-hover {
-			    0% {-webkit-transform: translateY(5%); opacity: 1;}
-			    50% {-webkit-transform: translateY(-5%); opacity: .3;}
-			    100% {-webkit-transform: translateY(5%); opacity: 1;}
 			}
 		}
 	}
@@ -755,20 +1010,30 @@ body {
 }
 
 #prepared {
-	padding: 60px 0;
-	.intermediate-bg;
+	background-image: url(../img/infographic.jpg);
+	background-size:cover;
+	background-position: auto 80%;
 
-	#prepared-headline {
-		text-align: center;
+	.container {
+		padding: 60px 0;
+		width: 100%;
+		background: url('../img/hero-bg.png');
 
-		h3{
-			margin: 0px 0 18px;
-			font-weight: 600;
+		#prepared-headline {
+			text-align: center;
+
+			h3{
+				margin: 0px 0 18px;
+				font-weight: 800;
+				text-transform: uppercase;
+				text-shadow: 2px 2px 3px rgba(0,0,0,.4);
+			}
 		}
-	}
 
-	.accent-button {
-		margin: 18px auto 0px;
+		.accent-button {
+			margin: 18px auto 0px;
+			font-weight: 800;
+		}
 	}
 }
 
@@ -780,6 +1045,7 @@ body {
 		text-align: center;
 
 		h3{
+			text-transform: uppercase;
 			margin: 0px 0 8px;
 			font-weight: 600;
 		}
@@ -812,6 +1078,19 @@ body {
 
 #organizations {
 	padding: 60px 0;
+
+	&:before { 
+		display: block; 
+		content: " "; 
+		margin-top: -44px; 
+		height: 44px; 
+		visibility: hidden; 
+
+		@media (min-width: @screen-sm-min){
+			margin-top: -88px; 
+			height: 88px;
+		}
+	}
 
 	#organizations-headline {
 		text-align: center;
@@ -870,6 +1149,19 @@ body {
 	padding: 60px 0;
 	.purple-bg;
 
+	&:before { 
+		display: block; 
+		content: " "; 
+		margin-top: -44px; 
+		height: 44px; 
+		visibility: hidden; 
+
+		@media (min-width: @screen-sm-min){
+			margin-top: -88px; 
+			height: 88px;
+		}
+	}
+
 	h3 {
 		margin: 0px 0px 4px;
 		.accent;
@@ -915,7 +1207,6 @@ body {
 	.close-btn {
 	    width: 60px;
 	    height: 60px;
-	    background-color: #fff;
 	    position: absolute;
 	    top: 0px;
 	    right: 20px;
@@ -930,6 +1221,7 @@ body {
 		    top: 20px;
 		    left: -60px;
 		    right: auto;
+	   		background-color: #fff;
 		}
 
 	}
@@ -942,12 +1234,16 @@ body {
 	    max-width: 500px;
 		
 		.panel-headline {
-			font-size: 32px;
+			font-size: 24px;
 			font-weight: 600;
 			border-bottom: 2px solid #ccc;
 			padding-bottom: 10px;
 			margin-bottom: 10px;
 	    	text-transform: uppercase;
+
+			@media (min-width: @screen-xs-min){
+				font-size: 32px;
+			}
 		}
 
 		.form-group {
