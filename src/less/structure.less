@@ -697,10 +697,8 @@ body {
 }
 #airspace {
 	margin: 0 auto;
-	max-width: 1170px;
 	
 	#airspace-items {
-		background-image: url('../img/airspace.jpg');
 	    background-image: url('../img/airspace.jpg');
 	    background-size: cover;
 	    background-attachment: fixed;
@@ -746,22 +744,24 @@ body {
 					font-weight: 800;
 					text-shadow: 1px 1px 3px rgba(0,0,0,.4);
 
-					svg {
+					svg,
+					img {
 						width: 60px;
 						height: 60px;
 						display: block;
 						margin: 0 auto 4px;
 						transition: .2s ease-out;
 						-webkit-transition: .2s ease-out;
-						-webkit-backface-appearance: none;
+						-webkit-backface-visibility: hidden;
 					}
 			 		
 			 	}
 
 			 	&:hover .airspace-item-content {
-			 		svg {
-				 		transform: translateY(-4px);
-				 		-webkit-transform: translateY(-4px);
+			 		svg,
+			 		img {
+				 		transform: translateY(-6px) translateZ(1px) scale(1.1);
+				 		-webkit-transform: translateY(-6px) translateZ(1px) scale(1.1);
 			 		}
 			 	}
 			 }
