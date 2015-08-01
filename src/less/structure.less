@@ -740,9 +740,9 @@ body {
 			 	.airspace-item-content {
 			 		display:table-cell;
 					vertical-align: middle;
-					font-size:12px;
+					font-size:13px;
 					font-weight: 800;
-					text-shadow: 1px 1px 3px rgba(0,0,0,.4);
+					text-shadow: 1px 1px 3px rgba(0,0,0,.2);
 
 					svg,
 					img {
@@ -940,6 +940,8 @@ body {
 					margin: 10px 0;
 					transition: .3s;
 					-webkit-transition: .3s;
+					backface-visibility: hidden;
+					-webkit-backface-visibility: hidden;
 
 					&:hover {
 						transform: translatex(4px);
@@ -1054,15 +1056,25 @@ body {
 			display: table-cell;
 			transition: .3s;
 			-webkit-transition: .3s;
-
-			&:hover {
-				transform:scale(1.06) translateY(-2px);
-				-webkit-transform:scale(1.06) translateY(-2px);
-			}
+			backface-visibility: hidden;
+			-webkit-backface-visibility: hidden;
 
 			svg {
+				backface-visibility: hidden;
+				-webkit-backface-visibility: hidden;
 				width: 40px;
 				fill:#fff;
+				border-radius: 50%;
+			}
+
+			&:hover {
+
+				svg {
+					transition: .1s;
+					-webkit-transition: .1s;
+					border: 2px solid @brand-accent;
+					box-shadow: 0 0 3px 0 @brand-accent inset;
+				}
 			}
 		}
 	}
