@@ -1,14 +1,69 @@
+<?php include "includes/cms.php";
+
+  // load record from 'homepage_content'
+  list($homepage_contentRecords, $homepage_contentMetaData) = getRecords(array(
+    'tableName'   => 'homepage_content',
+    'where'       => '', // load first record
+    'loadUploads' => true,
+    'allowSearch' => false,
+    'limit'       => '1',
+  ));
+  $homepage_contentRecord = @$homepage_contentRecords[0]; // get first record
+  if (!$homepage_contentRecord) { dieWith404("Record not found!"); } // show error message if no record found
+
+  // load records from 'news_categories'
+  list($news_categoriesRecords, $news_categoriesMetaData) = getRecords(array(
+    'tableName'   => 'news_categories',
+    'loadUploads' => true,
+    'allowSearch' => false,
+  ));
+
+  // load records from 'articles'
+  list($articlesRecords, $articlesMetaData) = getRecords(array(
+    'tableName'   => 'articles',
+    'loadUploads' => true,
+    'allowSearch' => false,
+  ));
+
+  // load records from 'photo_and_video_links'
+  list($photo_and_video_linksRecords, $photo_and_video_linksMetaData) = getRecords(array(
+    'tableName'   => 'photo_and_video_links',
+    'loadUploads' => true,
+    'allowSearch' => false,
+  ));
+
+  foreach ($homepage_contentRecord['open_graph_image'] as $index => $upload){
+  	$open_graph_image = htmlencode($upload['urlPath']);
+  }
+
+?>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="initial-scale=1, maximum-scale=1, minimal-ui">
 
-<title></title>
+<meta property="og:title" content="<?php echo htmlencode($homepage_contentRecord['title_tag']) ?>" />
+<meta property="og:site_name" content="<?php echo htmlencode($homepage_contentRecord['title_tag']) ?>" />
+<meta property="og:image" content="<?php echo $open_graph_image; ?>" />
+<meta property="og:description" content="<?php echo htmlencode($homepage_contentRecord['description_tag']) ?>" />
+<meta property="og:url" content="http://www.thinkbeforeyoulaunch.com/" />
+
+<!-- Update your html tag to include the itemscope and itemtype attributes. -->
+<html itemscope itemtype="http://schema.org/Organization">
+
+<!-- Add the following three tags inside head. -->
+<meta itemprop="name" content="<?php echo htmlencode($homepage_contentRecord['title_tag']) ?>">
+<meta itemprop="description" content="<?php echo htmlencode($homepage_contentRecord['description_tag']) ?>">
+<meta itemprop="image" content="<?php echo $open_graph_image; ?>">
+
+<title><?php echo htmlencode($homepage_contentRecord['title_tag']) ?></title>
 <!-- jQuery -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <!-- Greensock -->
 <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.16.1/TweenMax.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.17.0/utils/Draggable.min.js"></script>
+<script src="js/ThrowPropsPlugin.min.js"></script>
 <!-- Google Web Fonts -->
 <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,800,600' rel='stylesheet' type='text/css'>
 <!-- Styles -->
@@ -99,7 +154,6 @@
 			</div>
 			<div id="navigation-wrapper" class="clearfix">
 				<div id="navigation-button">
-					<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
 					<svg version="1.1"
 						 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
 						 x="0px" y="0px" viewBox="0 0 123 90" xml:space="preserve">
@@ -111,7 +165,7 @@
 					</svg>
 				</div>
 				<div id="follow">
-						<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
+					<a href="#">
 						<svg version="1.1"
 							 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
 							 x="0px" y="0px" viewBox="0 0 39.7 39.7" xml:space="preserve">
@@ -122,15 +176,16 @@
 								h-3.2v11.5h-4.8V20.6h-2.3v-4.1h2.3v-2.6c0-1.9,0.9-4.8,4.8-4.8l3.5,0v4h-2.6c-0.4,0-1,0.2-1,1.1v2.4h3.6L24.8,20.6z M24.8,20.6"/>
 						</g>
 						</svg>
-					Connect With Us <span class="no-mobile">on Facebook</span>
+						Connect With Us <span class="no-mobile">on Facebook</span>
+					</a>
 				</div>
 				<div id="navigation">
 					<ul>
-						<li><a href="#">Home</a></li>
-						<li><a href="#">News &amp; Media</a></li>
-						<li><a href="#">Organizations</a></li>
-						<li><a href="#">About Us</a></li>
-						<li><a href="#">Contact Us</a></li>
+						<li><a href="#main-image">Home</a></li>
+						<li><a href="#news-and-multimedia">News &amp; Media</a></li>
+						<li><a href="#organizations">Organizations</a></li>
+						<li><a href="#about-blurb">About Us</a></li>
+						<li><a href="#contact">Contact Us</a></li>
 						<li>
 							<a href="#" id="download-btn">
 								<div class="accent-bg">Download Infographic</div>
@@ -143,52 +198,133 @@
 	</div>
 	<div id="main-image">
 		<div class="container">
+			<div id="hero-drone">
+				<?php
+					foreach ($homepage_contentRecord['drone_image'] as $index => $upload){
+						$drone_image = htmlencode($upload['urlPath']);
+					}
+				?>
+				<br />
+				<img src="<?php echo $drone_image ?>" />
+			</div>
 			<div id="main-text" class="clearfix">
-				<div id="main-headline">Think <span class="accent">Before&nbsp;You</span> Launch</div>
-				<div id="main-subhead">A little information could prevent a <em>big</em> accident.</div>
+				<div id="main-headline"><?php echo $homepage_contentRecord['headline'] ?></div>
+				<div id="main-subhead">
+					<div id="main-subhead-left">
+						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0" y="0" viewBox="0 0 14 24" xml:space="preserve"><polygon points="14,24 14,0 0,0 "/></svg>
+						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0" y="0" viewBox="0 0 14 24" xml:space="preserve"><polygon points="14,0 14,24 0,24 "/></svg>
+					</div>
+					<div id="main-subhead-center">
+						<?php echo strip_tags($homepage_contentRecord['subhead'], '<em><em/><strong><strong/>'); ?>
+					</div>
+					<div id="main-subhead-right">
+						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0" y="0" viewBox="0 0 14 24" xml:space="preserve"><polygon points="0,24 0,0 14,0 "/></svg>
+						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0" y="0" viewBox="0 0 14 24" xml:space="preserve"><polygon points="0,0 0,24 14,24 "/></svg>
+					</div>
+				</div>
+			</div>
+			<div id="main-scroll-indicator">
+				<a href="#about-blurb">
+					<?php echo htmlencode($homepage_contentRecord['scroll_indicator']) ?>
+					<svg version="1.1"
+						 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/" x="0px" y="0px" viewBox="0 0 177 105.3" xml:space="preserve">
+					<defs>
+					<filter id="drop-shadow">
+						<feGaussianBlur in="SourceAlpha" stdDeviation="4"/>
+						<feOffset dx="14" dy="14" result="offsetblur"/>
+						<feFlood flood-color="rgba(0,0,0,0.4)"/>
+						<feComposite in2="offsetblur" operator="in"/>
+						<feMerge>
+							<feMergeNode/>
+							<feMergeNode in="SourceGraphic"/>
+						</feMerge>
+					</filter>
+					</defs>
+					<polygon fill="#FFFFFF" points="88.5,66.7 0,0 0,38.7 88.5,105.3 177,38.7 177,0 " filter="url(#drop-shadow)"/>
+					</svg>
+				</a>
 			</div>
 		</div>
 	</div>
 	<div id="about-blurb">
 		<div class="container">
-			<h3>Our Mission</h3>
-			Across the United States, small commercial and recreational unmanned aerial systems (UAS) have already begun to join manned aircraft in the low altitude airspace (0 to 400 ft above ground level). The TBYL campaign is a cooperative, educational effort, created jointly by aviation and UAS stakeholders, to raise awareness; limit liability; and prevent accidents between these UAS operators and low altitude manned flight operations by providing detailed safety information to all potential users and operators in this low altitude environment.
+			<h3><?php echo htmlencode($homepage_contentRecord['mission_headline']) ?></h3>
+			<?php echo $homepage_contentRecord['mission_content']; ?>
 		</div>
 	</div>
 	<div id="news-and-multimedia">
 		<div class="container">
 			<div class="row">
 				<div class="col-md-12 col-sm-12">
-					<h3>News</h3>
+					<h3><?php echo htmlencode($homepage_contentRecord['news_headline']) ?></h3>
 					<div class="news">
 						<div class="page clearfix">
-							<a href="news.html" class="entry clearfix">
-								<img src="http://placehold.it/200x200?text=Image" />
-								<div class="headline">FAA Looking into Lake Fire Drones</div>
-								<div class="subhead">July 11, 2015</div>
-							</a>
-							<a href="news.html" class="entry clearfix">
-								<img src="http://placehold.it/200x200?text=Image" />
-								<div class="headline">FAA Looking into Lake Fire Drones</div>
-								<div class="subhead">July 11, 2015</div>
-							</a>
-							<a href="news.html" class="entry clearfix">
-								<img src="http://placehold.it/200x200?text=Image" />
-								<div class="headline">FAA Looking into Lake Fire Drones</div>
-								<div class="subhead">July 11, 2015</div>
-							</a>
+							<?php $newsCounter = 0; ?>
+							<?php foreach ($articlesRecords as $record): ?>
+								<?php if ($newsCounter > 2){
+									continue;
+								} else {
+									$newsCounter++;
+									if (@$record['link_to_article']){
+										$newsLink = $record['article_url'] . '" target="_blank';
+									} else {
+										$newsLink = 'news/?num=' . htmlencode($record['num']);
+									}
+								} ?>
+								<a href="<?php echo $newsLink ?>" class="entry clearfix">
+									<?php if (@$record['thumbnail']): ?>
+										<?php foreach ($record['thumbnail'] as $index => $upload): ?>
+											<img src="<?php echo htmlencode($upload['urlPath']) ?>" />
+										<?php endforeach; ?>
+									<?php endif; ?>
+									<div class="headline"><?php echo htmlencode($record['title']) ?></div>
+									<div class="subhead"><?php echo date("F jS, Y", strtotime($record['date'])) ?></div>
+								</a>
+							<?php endforeach; ?>
 						</div>
 					</div>
 					<div class="view-more" id="news-view-more">More News</div>
 				</div>
 				<div class="col-md-12 col-sm-12">
-					<h3>Photos &amp; Videos</h3>
+					<h3><?php echo htmlencode($homepage_contentRecord['photos_headline']) ?></h3>
 					<div class="media">
 						<div class="page clearfix">
-							<a href="#" class="entry"><img src="http://placehold.it/300x200?text=Image" /></a>
-							<a href="#" class="entry"><img src="http://placehold.it/300x200?text=Image" /></a>
-							<a href="#" class="entry"><img src="http://placehold.it/300x200?text=Image" /></a>
-							<a href="#" class="entry"><img src="http://placehold.it/300x200?text=Image" /></a>
+							<?php foreach ($photo_and_video_linksRecords as $record): ?>
+								<?php
+									if (@$record['photo_upload']){
+										foreach ($record['photo_upload'] as $index => $upload):
+											$imgLocation = $upload['urlPath'];
+										endforeach;
+									} else if (@$record['photo_url']){
+										$imgLocation = $record['photo_url'];
+									} else if (@$record['youtube_video_id']){
+										$imgLocation = 'http://img.youtube.com/vi/' . $record['youtube_video_id'] . '/mqdefault.jpg';
+									} else if (@$record['vimeo_video_id']){
+
+										function getVimeoInfo($id, $info = 'thumbnail_medium') {
+											if (!function_exists('curl_init')) die('CURL is not installed!');
+											$ch = curl_init();
+											curl_setopt($ch, CURLOPT_URL, "http://vimeo.com/api/v2/video/$id.php");
+											curl_setopt($ch, CURLOPT_HEADER, 0);
+											curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+											curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+											$output = unserialize(curl_exec($ch));
+											$output = $output[0][$info];
+											curl_close($ch);
+											return $output;
+										}
+
+										$imgLocation = getVimeoInfo($record['vimeo_video_id']);
+
+									} else {
+										continue;
+									}
+								?>
+								<div class="media-item">
+									<a href="#" class="entry" style="background-image:url('<?php echo $imgLocation; ?>');">
+									</a>
+								</div>
+							<?php endforeach; ?>
 						</div>
 					</div>
 					<div class="view-more" id="media-view-more">More Media</div>
@@ -200,8 +336,14 @@
 		<div class="container">
 			<div id="animated-drone-invisible-copy">
 				<div class="copy">
-					<img src="http://placehold.it/160x160?text=Icon" /><br />
-					Small unmanned aircraft are essentially <em>invisible</em> to manned aircraft operating in the same&nbsp;airspace.
+					<?php
+						foreach ($homepage_contentRecord['invisible_drone_icon'] as $index => $upload){
+							$invisible_drone_icon = htmlencode($upload['urlPath']);
+						}
+					?>
+					<br />
+					<img src="<?php echo $invisible_drone_icon ?>" />
+					<?php echo $homepage_contentRecord['invisible_drone_copy']; ?>
 				</div>
 			</div>
 			<div id="animated-drone-invisible">
@@ -261,7 +403,7 @@
 	</div>
 	<div class="container">
 		<div id="airspace-headline">
-			<h3>Who is flying in the airspace between 0-400 feet?</h3>
+			<h3><?php echo htmlencode($homepage_contentRecord['airspace_headline']) ?></h3>
 		</div>
 	</div>
 	<div id="airspace">
@@ -269,7 +411,14 @@
 			<div class="airspace-item col-xs-12 col-sm-8 col-md-4">
 				<div class="airspace-item-wrapper">
 					<div class="airspace-item-content">
-						<img src="http://placehold.it/100x100/" /><br/>
+						<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
+						<svg version="1.1"
+							 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+							 x="0px" y="0px" viewBox="0 0 59 59" xml:space="preserve">
+						<defs>
+						</defs>
+						<polygon fill="#2C3A49" points="21,0 21,21 0,21 0,38 21,38 21,59 38,59 38,38 59,38 59,21 38,21 38,0 "/>
+						</svg>
 						Police and First Responder Aircraft
 					</div>
 				</div>
@@ -277,7 +426,19 @@
 			<div class="airspace-item col-xs-12 col-sm-8 col-md-4">
 				<div class="airspace-item-wrapper">
 					<div class="airspace-item-content">
-						<img src="http://placehold.it/100x100/" /><br/>
+						<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
+						<svg version="1.1"
+							 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+							 x="0px" y="0px" viewBox="0 0 89.5 68.9" xml:space="preserve">
+						<defs>
+						</defs>
+						<path fill="#2C3A49" d="M0,41h19.6c0,0,3.7,0.2,4.2,6.9c1.4,18.5,7.2,20.9,7.2,20.9s-0.8-26.5,7.3-27.3c4.6-0.4,13.3-0.4,13.3-0.4
+							L45,37.3V36h-7.6c0,0,4-6.5,0.8-16.7C36.2,12.4,43,7.1,41.3,0c-2.8,5.4-13.7,9.3-13.8,20.7c0,10.5-4.5,16.2-10.5,16.2
+							c-9.5,0-10.4-2.6-13.2-1.4C1.1,36.6,0,41,0,41"/>
+						<path fill="#2C3A49" d="M78.1,49c0.5-8.5-1.2-13.6-5.3-19.7c10.7-3.2,16.7-9.5,16.7-9.5s-2.5,0-13.7,0c-8.3,0-10.3,1.6-13.2,3.6
+							c-2.2,1.5-5.3,2.7-9,2.7c-3.7,0-6.1-1.5-8.1-0.8c-2,0.7-2.8,3.5-2.8,3.5H55c0,0,3.6-0.6,4.5,3.5c0,0,3.5,10.1,9.4,13.4
+							c0.9-1.8,1.3-3.9,1.3-3.9S75.3,47.5,78.1,49"/>
+						</svg>
 						Birds
 					</div>
 				</div>
@@ -285,7 +446,16 @@
 			<div class="airspace-item col-xs-12 col-sm-8 col-md-4">
 				<div class="airspace-item-wrapper">
 					<div class="airspace-item-content">
-						<img src="http://placehold.it/100x100/" /><br/>
+						<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
+						<svg version="1.1"
+							 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+							 x="0px" y="0px"viewBox="0 0 54 63.5" xml:space="preserve">
+						<defs>
+						</defs>
+						<path fill="#2C3A49" d="M16.8,63.5c0,0-30.6-4.2-9.2-42.6c2.6,3.7,3.3,7.8,3.3,7.8S22.5,20.9,21.4,0c9.5,3,17.9,14.4,18.1,22.3
+							c0,0,2.7-5.1,2.5-8.5c6.7,4.7,15.7,17.9,10.3,35.4c-6.2,14.4-15.7,14.3-15.7,14.3s12.9-15.2-9-30.6c0,0,3.5,11.3-4.1,16.3
+							c-3.7-3.7-3.7-8-3.7-8S8.3,51,16.8,63.5"/>
+						</svg>
 						Aerial Firefighters
 					</div>
 				</div>
@@ -293,7 +463,22 @@
 			<div class="airspace-item col-xs-12 col-sm-8 col-md-4">
 				<div class="airspace-item-wrapper">
 					<div class="airspace-item-content">
-						<img src="http://placehold.it/100x100/" /><br/>
+						<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
+						<svg version="1.1"
+							 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+							 x="0px" y="0px" viewBox="0 0 35.7 64.1" xml:space="preserve">
+						<defs>
+						</defs>
+						<path fill="#2C3A49" d="M22.2,12.6c0,3.8-2.4,6.8-5.4,6.8c-3,0-5.4-3-5.4-6.8C11.3,6.2,16.7,0,16.7,0S22.2,5.1,22.2,12.6"/>
+						<path fill="#2C3A49" d="M28.8,44.2C25,47,20,46.4,18,43.3c-2-3.1-0.7-8.3,3.6-10.2c6.9-3.1,14-4.3,14-4.3S35.7,39.1,28.8,44.2"/>
+						<path fill="#2C3A49" d="M28.5,61.5c-3.6,3.4-8.9,3.4-11.4,0.5c-2.5-2.9-1.8-8.5,2.4-11.1c6.7-4.1,14-6.3,14-6.3S35,55.2,28.5,61.5"
+							/>
+						<path fill="#2C3A49" d="M5.2,58.5c3.6,3.4,8.9,3.4,11.4,0.5c2.5-2.9,1.8-8.5-2.4-11.1c-6.7-4.1-14-6.3-14-6.3S-1.3,52.3,5.2,58.5"/>
+						<path fill="#2C3A49" d="M27.4,29.1c-3.3,2.5-7.8,2-9.5-0.7c-1.8-2.7-0.7-7.3,3.1-9c6-2.8,12.3-3.9,12.3-3.9S33.4,24.5,27.4,29.1"/>
+						<path fill="#2C3A49" d="M4.8,41.7c3.1,3,7.8,3,9.9,0.4c2.2-2.5,1.6-7.4-2.1-9.7c-5.9-3.6-12.2-5.5-12.2-5.5S-0.8,36.2,4.8,41.7"/>
+						<path fill="#2C3A49" d="M6.4,28c2.7,2.6,6.8,2.6,8.7,0.4c1.9-2.2,1.4-6.5-1.9-8.5C8.1,16.8,2.6,15,2.6,15S1.4,23.2,6.4,28"/>
+						</svg>
+
 						Aerial Applicators / Crop Sprayers
 					</div>
 				</div>
@@ -301,15 +486,44 @@
 			<div class="airspace-item col-xs-12 col-sm-8 col-md-4">
 				<div class="airspace-item-wrapper">
 					<div class="airspace-item-content">
-						<img src="http://placehold.it/100x100/" /><br/>
-						Towers
+						<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
+						<svg version="1.1"
+							 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+							 x="0px" y="0px" viewBox="0 0 25.8 17.9" xml:space="preserve">
+						<defs>
+						</defs>
+						<g>
+							<path d="M8.5,13.6c0.7,1.5,1.8,2.9,3.2,4.3c-2.8-0.4-5.1-2-6.4-4.3L8.5,13.6z M11.6,0.1c-2.6,0.4-4.9,2-6.3,4.2l3.2,0
+								C9.2,2.8,10.2,1.4,11.6,0.1L11.6,0.1z M12.6,4.3l0-4.3h0C11.2,1.3,10,2.8,9.2,4.3L12.6,4.3z M5.3,5.7l-0.6,0L4,5.7L4,10.2L1.5,5.6
+								l-0.7,0l-0.7,0L0,12l0.6,0l0.6,0l0.1-4.6l2.6,4.6l0.7,0l0.7,0L5.3,5.7z M11.3,6.9l0-0.6l0-0.6l-4.7,0l-0.1,6.4l4.9,0.1l0-0.6l0-0.6
+								l-3.5,0l0-1.7l3.1,0l0-0.6l0-0.6l-3.1,0l0-1.4L11.3,6.9z M17.7,10.4l-0.9-4.7l-0.7,0l-0.7,0l-1,4.7l-1-4.7l-1.4,0l1.7,6.4l0.6,0
+								l0.6,0l1.1-5l1,5l0.6,0l0.6,0l1.8-6.4l-1.4,0L17.7,10.4z M13.4,0L13.4,0l-0.1,4.3l3.4,0C16,2.8,14.9,1.4,13.4,0L13.4,0z M20.7,4.4
+								c-1.3-2.2-3.6-3.8-6.2-4.3c1.3,1.3,2.3,2.8,3,4.3L20.7,4.4z M14,17.9c2.8-0.3,5.1-1.9,6.5-4.2l-3.3,0C16.5,15.2,15.5,16.6,14,17.9
+								L14,17.9z M16.5,13.7l-3.3,0l0,4.1C14.6,16.5,15.8,15.1,16.5,13.7L16.5,13.7z M25.4,9.2c-0.3-0.3-0.9-0.5-1.9-0.7
+								c-0.6-0.2-1.1-0.3-1.3-0.4C22,8,21.9,7.8,21.9,7.6c0-0.3,0.1-0.5,0.3-0.6c0.2-0.1,0.5-0.2,0.8-0.2c0.4,0,0.7,0.1,1,0.3
+								c0.2,0.2,0.4,0.4,0.4,0.7l1.3,0c0-0.6-0.3-1.2-0.7-1.5c-0.4-0.4-1-0.6-1.7-0.6c-0.8,0-1.4,0.2-1.8,0.5c-0.5,0.4-0.7,0.9-0.7,1.5
+								c0,0.6,0.2,1,0.5,1.2c0.3,0.3,1,0.5,2,0.8c0.6,0.1,0.9,0.3,1.1,0.4c0.2,0.1,0.3,0.3,0.2,0.5c0,0.2-0.1,0.4-0.4,0.6
+								c-0.2,0.1-0.6,0.2-1,0.2c-0.4,0-0.7-0.1-1-0.3c-0.2-0.2-0.4-0.4-0.4-0.8l-1.3,0c0,0.7,0.3,1.2,0.7,1.6c0.5,0.4,1.1,0.6,1.9,0.6
+								c0.8,0,1.4-0.2,1.9-0.5c0.5-0.3,0.7-0.8,0.7-1.4C25.8,9.9,25.7,9.5,25.4,9.2L25.4,9.2z M12.5,17.8l0-4.1l-3.3,0
+								C10,15.1,11.1,16.5,12.5,17.8L12.5,17.8z M12.5,17.8"/>
+						</g>
+						</svg>
+						News Helicopters
 					</div>
 				</div>
 			</div>
 			<div class="airspace-item col-xs-12 col-sm-8 col-md-4">
 				<div class="airspace-item-wrapper">
 					<div class="airspace-item-content">
-						<img src="http://placehold.it/100x100/" /><br/>
+						<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
+						<svg version="1.1"
+							 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+							 x="0px" y="0px" viewBox="0 0 61 55.8" xml:space="preserve">
+						<defs>
+						</defs>
+						<path fill="#2C3A49" d="M61,42.7v-7.9L34,19.3V4.1C34,1.9,31.4,0,29.5,0S25,1.9,25,4.1v16.3L0,34.8v7.9l25-9v11.7L19,51v4.8
+							l10.8-3.6L40,55.8V51l-6-5V33L61,42.7z"/>
+						</svg>
 						General Aviation Aircraft
 					</div>
 				</div>
@@ -323,93 +537,362 @@
 				<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
 				<svg version="1.1"
 					 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-					 x="0px" y="0px"viewBox="0 0 848.3 843.9"
-					 xml:space="preserve">
+					 x="0px" y="0px" viewBox="0 0 451 446" enable-background="new 0 0 451 446" xml:space="preserve">
 				<defs>
 				</defs>
 				<g>
-					<polygon fill="#FFFFFF" points="97.6,448.5 97.6,442.8 109,443.5 109,437.8 97.6,437.2 97.6,431.6 109,432.2 109,426.5 97.6,425.9 
-						97.6,422.1 109,422.8 109,415.3 97.6,414.6 97.6,409 91.9,408.7 91.9,414.3 80.6,413.7 80.6,421.2 91.9,421.8 91.9,425.6 80.6,425 
-						80.6,430.6 91.9,431.2 91.9,436.9 80.6,436.3 80.6,441.9 91.9,442.5 91.9,448.2 	"/>
-					<polygon fill="#FFFFFF" points="366.8,264.1 359.2,263.6 359.2,271.2 347.9,270.5 347.9,276.2 359.2,276.8 359.2,282.5 
-						347.9,281.8 347.9,287.5 359.2,288.1 359.2,293.7 347.9,293.1 347.9,296.9 359.2,297.5 359.2,303.1 366.8,303.6 366.8,297.9 
-						376.3,298.4 376.3,294.7 366.8,294.2 366.8,288.5 376.3,289 376.3,283.4 366.8,282.9 366.8,277.2 376.3,277.8 376.3,272.1 
-						366.8,271.6 	"/>
-					<path fill="#FFFFFF" d="M718.5,443.5v-48c17.4-2.1,33.8-6.6,49.3-13.3l-0.8-1.7c-15.7,6.9-32,11.1-48.6,13.1v-16.1l31.1-31.9
-						l18.1,1v5.6l-7.6-0.4v3.8l7.6,0.4v3.8l-7.6-0.4v3.8l7.6,0.4v1.9l-7.6-0.4v5.6l7.6,0.4v1.9l5.7,0.3v-1.9l7.6,0.4v-5.6l-7.6-0.4v-1.9
-						l7.6,0.4v-3.8l-7.6-0.4v-3.8l7.6,0.4v-3.8l-7.6-0.4v-5.6l19.9,1.1v-15l-74.9-4.2v-45.1l-15.2-0.8v45.1l-74.9-4.2v15l24.6,1.4v5.6
-						l-7.6-0.4v3.8l7.6,0.4v3.8l-7.6-0.4v3.8l7.6,0.4v1.9l-7.6-0.4v5.6l7.6,0.4v1.9l3.8,0.2v-1.9l7.6,0.4v-5.6l-7.6-0.4v-1.9l7.6,0.4
-						V354l-7.6-0.4v-3.8l7.6,0.4v-3.8l-7.6-0.4v-5.6l17.1,1l29.3,33.2v20.2c-25.1,1.1-50.8-2.6-76.3-9.5c8.8-1.7,17.4-3.9,25.9-6.4
-						l-0.5-1.8c-9.8,2.9-19.7,5.3-29.6,7.1c-62.3-17.8-123.4-54.8-172.5-91c-19.5-14.4-38-29.2-55.1-43.8v-6.3l-7.8-0.4
-						c-62.1-53.8-104-101.6-104.5-102.2l-1.4,1.2c0.5,0.6,41.7,47.6,102.9,100.8l-165-9.2c-4.3-3.6-8.6-7.1-12.7-10.6v-85.9l45.5-46.5
-						l26.6,1.5v9.4l-11.4-0.6v5.6l11.4,0.6v3.8l-11.4-0.6v7.5l11.4,0.6v1.9l-11.4-0.6v9.4l11.4,0.6v1.9l7.6,0.4v-1.9l11.4,0.6V121
-						l-11.4-0.6v-1.9l11.4,0.6v-7.5l-11.4-0.6v-3.8l11.4,0.6v-5.6l-11.4-0.6v-9.4l29.4,1.6V73.2l-109-6.1V1.3L183.9,0v65.8l-109-6.1
-						v20.7l34.1,1.9v9.4l-11.4-0.6v5.6l11.4,0.6v3.8l-11.4-0.6v7.5l11.4,0.6v1.9l-11.4-0.6v9.4L109,120v1.9l5.7,0.3v-1.9l11.4,0.6v-9.4
-						l-11.4-0.6V109l11.4,0.6v-7.5l-11.4-0.6v-3.8l11.4,0.6v-5.6l-11.4-0.6v-9.4l25.6,1.4l43.6,49.5V203c-45-40.1-72.4-71.1-72.9-71.6
-						l-1.4,1.2c0.4,0.5,28.5,32.1,74.3,72.8v25.9L0,221.1v22.6l24.6,1.4v7.5l-9.5-0.5v5.6l9.5,0.5v5.6l-9.5-0.5v5.6l9.5,0.5v5.6
-						l-9.5-0.5v3.8l9.5,0.5v5.6l9.5,0.5v-5.6l11.4,0.6v-3.8l-11.4-0.6V270l11.4,0.6V265l-11.4-0.6v-5.6l11.4,0.6v-5.6l-11.4-0.6v-7.5
-						l107,6l42.8,48.5v91.2l-0.9-0.1c-89.9-48.4-152.3-96.4-153-97l-1.2,1.5c0.7,0.5,61.6,47.4,149.7,95.2L55,384v22.6l86.7,4.9
-						l42.2,47.9v52.8c-52.5-29.2-85.8-53.1-86.3-53.4l-1.1,1.5c0.5,0.4,34.3,24.6,87.4,54.1v328.3l22.7,1.3V526.6
-						c22,11.5,46.5,23.4,72.7,34.7c61.8,26.5,121.1,44.4,176.3,53.2c26.4,4.2,51.9,6.3,76.4,6.3c27.3,0,53.3-2.6,77.9-7.8
-						c3,0.6,5.9,1.2,8.9,1.7c26,4.8,51,7.2,74.9,7.2c3.2,0,6.3-0.1,9.5-0.1v216l15.2,0.8V620.9c22.9-1.7,44.7-5.7,65.2-12l-0.6-1.8
-						c-21.1,6.6-42.8,10.3-64.7,11.9V601l31-31.7l31.6,1.8v3.7l-7.6-0.4v5.6l7.6,0.4v1.9l-7.6-0.4v3.8l7.6,0.4v3.8l-7.6-0.4v3.8l7.6,0.4
-						v5.6l5.7,0.3V594l6.6,0.4v-3.8l-6.6-0.4v-3.8l6.6,0.4v-3.8l-6.6-0.4v-1.9l6.6,0.4v-5.6l-6.6-0.4v-3.8l23.7,1.3v-15l-91.9-5.1v-42.8
-						c12.4,1.7,24.5,2.5,36.2,2.5c25.6,0,49.4-3.9,71.4-11.8l-0.6-1.8c-34,12.2-70.4,14-107,9v-16.1l30.7-31.5l99.1,5.5v-15L718.5,443.5
-						z M736.1,344.8l-17.6,18v-19L736.1,344.8z M687.6,342.1l15.7,0.9v17L687.6,342.1z M232.3,89.2l-25.7,26.3V87.8L232.3,89.2z
-						 M160,85.2l23.9,1.3v25.8L160,85.2z M694,396.9c3.1,0,6.2-0.1,9.3-0.2v45.9l-126.1-7v15l17.1,0.9v5.6l-7.6-0.4v3.8l7.6,0.4v3.8
-						l-7.6-0.4v0.9c-22.1-10.7-43-22.3-62-33.9c-39.1-23.8-73.9-49.4-100.8-70.8c11.8,4.6,23.5,8.7,35,12.3
-						c38.4,11.9,75.5,17.8,110.9,17.8c17.9,0,35.4-1.5,52.4-4.6C647.4,393.3,671.4,396.9,694,396.9z M703.3,474.3L688,456.9l15.3,0.9
-						V474.3z M594.3,468.6v0.3c-0.2-0.1-0.5-0.2-0.7-0.3L594.3,468.6z M449.2,294.6c56,41.3,109.1,70.5,157.7,86.8
-						c3.7,1.3,7.4,2.4,11.1,3.5c-68.2,11.2-137.2-3.5-199.8-28.9c-31.3-25.2-50.5-43.4-50.8-43.8l-1.3,1.4c0.3,0.3,17.5,16.7,46,39.9
-						c-47.1-19.8-90.3-45.4-126.7-70.4c-12-8.2-23.5-16.6-34.6-25l0.4-0.5l144,8v-13.8C412.1,266.1,430.2,280.6,449.2,294.6z
-						 M216.2,233.1l-9.6-0.5v-7.4C209.8,227.8,212.9,230.5,216.2,233.1z M231.5,256.6L206.6,282v-26.8L231.5,256.6z M160.8,252.6l23,1.3
-						v24.9L160.8,252.6z M297.6,433.3v3.8l-11.4-0.6v3.8c-14-5.7-27.6-11.7-40.5-17.6l5-5.1l46.9,2.6v5.6l-11.4-0.6v7.5L297.6,433.3z
-						 M297.6,442.7v2.1c-2.1-0.8-4.1-1.6-6.2-2.5L297.6,442.7z M230.1,417.3l-23.4,24v-26.2l21.3,1.2
-						C228.6,416.6,229.3,416.9,230.1,417.3z M161.4,412.5l22.5,1.3V438L161.4,412.5z M703.3,583.6l-15.6-17.6l15.6,0.9V583.6z
-						 M735.9,568.6l-17.4,17.8v-18.8L735.9,568.6z M703.3,551.8l-88.1-4.9v15l24.6,1.4v3.7l-7.6-0.4v5.6l7.6,0.4v1.9l-7.6-0.4v3.8
-						l7.6,0.4v3.8l-7.6-0.4v3.8l7.6,0.4v5.6l5.7,0.3v-5.6l7.6,0.4v-3.8l-7.6-0.4v-3.8l7.6,0.4v-3.8l-7.6-0.4V573l7.6,0.4v-5.6l-7.6-0.4
-						v-3.7l28.7,1.6l29.1,33v21.5c-29.6,0.7-59.3-2.3-88.3-7.9c9.3-2.1,18.3-4.6,27.2-7.4l-0.6-1.8c-10.3,3.3-20.7,6.1-31.2,8.3
-						c-53.8-10.9-104.6-30.3-146.2-49.5c-92.5-42.9-160.1-94.5-160.8-95l-1.1,1.5c0.7,0.5,68.4,52.2,161.1,95.2
-						c49.5,22.9,97.1,39.3,141.9,48.9c-114,22.4-237.8-14.8-325.2-52.4c-26.6-11.4-51.3-23.4-73.5-35.1v-61.9l37.7-38.6
-						c18,8.3,35.8,16,53.3,22.9v1.4l-11.4-0.6v5.6l11.4,0.6v5.6l6.6,0.4v-5.7l11.4,0.6v-1.2c30.2,11.2,59.6,20.1,87.9,26.8
-						c41.4,9.8,80.6,14.6,117.3,14.6c27.3,0,53.2-2.7,77.6-8.1l-0.4-1.8c-92.6,20.5-194.8-1.3-282.5-33.7v-2.3l-7.3-0.4
-						c-1.4-0.5-2.7-1-4.1-1.6V443l11.4,0.6V438l-11.4-0.6v-3.8l11.4,0.6v-7.5l-11.4-0.6v-5.6l-1.9-0.1l38,2.1v-22.6l-133.6-7.4v-89.2
-						l42.9-43.8c11.1,8.4,22.8,16.9,34.8,25.2c45.5,31.3,90.3,56,133.6,73.6c27.5,22.1,64.2,49.4,105.8,74.8
-						c21.5,13.1,42.5,24.6,63,34.5v0.7l1.7,0.1c2,0.9,3.9,1.9,5.9,2.8v1.3l-7.6-0.4v1.9l7.6,0.4v3.8l5.7,0.3v-3.8l2.2,0.1
-						c24.4,11,48,19.6,70.6,25.8c10.4,2.8,20.6,5.2,30.5,7V551.8z M607.6,474.9v-1.8l-4.6-0.3c-1-0.4-2-0.9-3-1.3v-2.6l7.6,0.4v-3.8
-						l-7.6-0.4v-3.8l7.6,0.4V458l-7.6-0.4V452l74.4,4.1l28.9,32.8v16.5C670.6,499.3,638.2,488.3,607.6,474.9z M718.5,477.1v-18.5l17.2,1
-						L718.5,477.1z"/>
-					<polygon fill="#FFFFFF" points="829.4,464.7 823.7,464.4 823.7,470.1 816.1,469.6 816.1,473.4 823.7,473.8 823.7,477.6 
-						816.1,477.2 816.1,480.9 823.7,481.3 823.7,485.1 816.1,484.7 816.1,486.6 823.7,487 823.7,490.7 829.4,491.1 829.4,487.3 
-						835,487.6 835,485.7 829.4,485.4 829.4,481.7 835,482 835,478.2 829.4,477.9 829.4,474.1 835,474.4 835,470.7 829.4,470.4 	"/>
-					<path fill="#FFFFFF" d="M556.1,133c10.3-2.8,13.2-9.8,23.2-7.3c10.7,3,8.2,29.1,50.8,32.7c27.9,2.3,50.5-15.1,51.6-36.7
-						c1.3-26.1-18-28.8-17.4-33.9c0.4-7,26.8-5.1,26.8-29.1c0-15.6-23.7-27-48.1-25.2c-15.9,1.1-24.7,8.2-27.9,6.6
-						c-4.7-0.7-6-17-40.1-15.7c-21.1,0.8-38,13.1-37,25.4c0.6,6.9,6.7,9.2,6.1,13.7c-0.7,3.4-1.6,2.8-7.1,4.3
-						c-24.3,6.5-39.9,26.2-34.9,44.1C507.1,129.7,531.7,139.5,556.1,133z M675.7,118.9c-1,17.9-20.4,31.6-44.5,30.4
-						c-24.1-1.3-43.4-17.6-42.4-35.5c1-17.9,21.4-31.5,45.5-30.2C658.4,84.9,676.7,101,675.7,118.9z M614.8,55c1-11.5,17.1-19.5,36.1-18
-						c18.9,1.5,33.5,12.1,32.5,23.6c-1,11.5-17.1,19.5-36.1,18C628.3,77,613.8,66.5,614.8,55z M613,76.5c-0.4,4.5-6.8,7.7-14.3,7.1
-						c-7.5-0.6-13.2-4.8-12.8-9.3c0.4-4.5,6.8-7.7,14.3-7.1C607.7,67.8,613.4,71.9,613,76.5z M575.3,27.7c17.9-1.5,33.1,5.6,34,15.7
-						c0.9,10.2-12.9,19.6-30.8,21c-17.9,1.5-33.1-5.6-34-15.7C543.6,38.5,557.4,29.1,575.3,27.7z M536.1,71.6
-						c21.3-6.7,42.3,0.1,47.1,14.6c4.8,14.4-7.7,31.4-29.1,38c-21.3,6.7-43.3,0-48-14.4C501.4,95.4,514.8,78.2,536.1,71.6z"/>
-					<path fill="#FFFFFF" d="M632.7,109.1l-12.5-17.8c0,0-3.6-0.4-6.6,1.3c-0.3,0.2,9.1,18.2,9.1,18.2s4.5,0.9,6.8,3.5
-						c1.8,2,16.5,25.3,16.5,25.3l6.8,0.2c0,0-10.8-18.1-12.9-21.2c-1.1-1.7-4.4-2.8-5.9-4.8L632.7,109.1z"/>
-					<path fill="#FFFFFF" d="M540.8,98.7c2.9-0.4,32.9,0.6,32.9,0.6l3.9-5.8c0,0-23-1.3-27.1-1.4c-2.2,0-5,2.2-7.7,2.2l-5-1.5l-23.7,0.3
-						c0,0-2.4,2.9-2.4,6.5c0,0.3,22.2,2.9,22.2,2.9S537.2,99.1,540.8,98.7z"/>
-					<path fill="#FFFFFF" d="M569.9,53.3c0,0,1.8-3,4.4-4c2-0.8,24-5.2,24-5.2l1.8-4.9c0,0-16.9,3-19.9,3.6c-1.6,0.4-3.3,2.5-5.2,3
-						l-3.9-0.2l-17.1,4.3c0,0-1.2,2.5-0.6,5.2C553.4,55.2,569.9,53.3,569.9,53.3z"/>
-					<path fill="#FFFFFF" d="M649.9,57.3c1.1,1.1,1.2,3.1,2.1,4c1.6,1.6,11.2,10.4,11.2,10.4l1-3.9c0,0-12.2-11.7-13.1-13
-						c-1.2-1.6-1.1-4.3-1.1-4.3s-9.8-7.9-9.9-7.8c-1.5,1.4-1.8,3.5-1.8,3.5l9.1,9.7L649.9,57.3z"/>
+					<g>
+						<g>
+							<polygon fill="#FFFFFF" points="210,140.1 210,128.1 110,122.6 110,45.6 168,48.8 168,37.8 110,34.6 110,0 98,0 98,33.9 40,30.7 
+								40,41.7 98,44.9 98,121.9 0,116.5 0,128.5 98,133.9 98,206.9 29,203.1 29,215.1 98,218.9 98,446 110,446 110,219.6 181,223.5 
+								181,211.5 110,207.6 110,134.6 			"/>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="61,63.9 58,63.7 58,42.7 61,42.9 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="67,51.2 52,50.3 52,47.3 67,48.2 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="67,57.2 52,56.3 52,52.3 67,53.2 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="67,63.2 52,62.3 52,57.3 67,58.2 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="152,68.9 148,68.7 148,47.7 152,47.9 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="158,56.2 142,55.4 142,52.4 158,53.2 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="158,62.2 142,61.4 142,57.4 158,58.2 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="158,68.2 142,67.4 142,62.4 158,63.2 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="52,237.3 49,237.2 49,216.2 52,216.3 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="58,223.7 43,222.8 43,218.8 58,219.7 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="58,228.7 43,227.8 43,224.8 58,225.7 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="58,234.7 43,233.8 43,230.8 58,231.7 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="162,243.5 158,243.2 158,222.2 162,222.5 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="168,229.8 152,228.9 152,224.9 168,225.8 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="168,234.8 152,233.9 152,230.9 168,231.8 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="168,240.8 152,239.9 152,236.9 168,237.8 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="18,150.5 13,150.2 13,129.2 18,129.5 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="24,136.8 8,135.9 8,132.9 24,133.8 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="24,142.8 8,141.9 8,138.9 24,139.8 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="24,147.8 8,146.9 8,144.9 24,145.8 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="195,160.3 191,160.1 191,139.1 195,139.3 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="200,146.6 185,145.7 185,142.7 200,143.6 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="200,152.6 185,151.7 185,148.7 200,149.6 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="200,157.6 185,156.7 185,154.7 200,155.6 				"/>
+							</g>
+						</g>
+						<g>
+							<polygon fill="#FFFFFF" points="100.3,246.1 71.8,213.7 77.4,208.8 106,241.1 			"/>
+						</g>
+						<g>
+							<polygon fill="#FFFFFF" points="100.3,161.4 71.8,129 77.4,124.1 106,156.5 			"/>
+						</g>
+						<g>
+							<polygon fill="#FFFFFF" points="100.3,72.9 71.8,40.5 77.4,35.6 106,67.9 			"/>
+						</g>
+						<g>
+							<polygon fill="#FFFFFF" points="108.2,246.5 102.6,240.9 131.1,211.7 136.8,217.3 			"/>
+						</g>
+						<g>
+							<polygon fill="#FFFFFF" points="108.2,161.8 102.6,156.3 131.1,127.1 136.8,132.6 			"/>
+						</g>
+						<g>
+							<polygon fill="#FFFFFF" points="108.2,73.3 102.6,67.8 131.1,38.5 136.8,44.1 			"/>
+						</g>
+					</g>
+					<g>
+						<g>
+							<polygon fill="#FFFFFF" points="451,246.5 451,238.5 382,234.7 382,181.7 422,183.9 422,175.9 382,173.7 382,150 374,150 
+								374,173.3 334,171 334,179 374,181.3 374,234.3 307,230.5 307,238.5 374,242.3 374,292.3 327,289.6 327,297.6 374,300.3 374,446 
+								382,446 382,300.7 431,303.4 431,295.4 382,292.7 382,242.7 			"/>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="349,193.9 347,193.8 347,179.8 349,179.9 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="353,185.1 343,184.5 343,182.5 353,183.1 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="353,189.1 343,188.5 343,186.5 353,187.1 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="353,193.1 343,192.5 343,189.5 353,190.1 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="411,197.3 408,197.2 408,183.2 411,183.3 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="415,188.5 404,187.9 404,185.9 415,186.5 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="415,192.5 404,191.9 404,189.9 415,190.5 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="415,196.5 404,195.9 404,192.9 415,193.5 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="343,313.5 340,313.4 340,298.4 343,298.5 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="347,303.8 336,303.1 336,300.1 347,300.8 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="347,306.8 336,306.1 336,304.1 347,304.8 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="347,310.8 336,310.1 336,308.1 347,308.8 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="418,317.7 415,317.5 415,302.5 418,302.7 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="422,307.9 411,307.3 411,304.3 422,304.9 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="422,310.9 411,310.3 411,308.3 422,308.9 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="422,314.9 411,314.3 411,312.3 422,312.9 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="319,253.2 316,253 316,239 319,239.2 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="323,244.4 312,243.8 312,241.8 323,242.4 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="323,248.4 312,247.8 312,245.8 323,246.4 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="323,251.4 312,250.8 312,249.8 323,250.4 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="441,260 438,259.8 438,245.8 441,246 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="444,251.2 434,250.6 434,248.6 444,249.2 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="444,255.2 434,254.6 434,252.6 444,253.2 				"/>
+							</g>
+						</g>
+						<g>
+							<g>
+								<polygon fill="#FFFFFF" points="444,258.2 434,257.6 434,256.6 444,257.2 				"/>
+							</g>
+						</g>
+						<g>
+							<polygon fill="#FFFFFF" points="375.7,319 356.1,296.8 360,293.4 379.6,315.6 			"/>
+						</g>
+						<g>
+							<polygon fill="#FFFFFF" points="375.7,260.9 356.1,238.7 360,235.3 379.6,257.5 			"/>
+						</g>
+						<g>
+							<polygon fill="#FFFFFF" points="375.7,200.1 356.1,177.9 360,174.5 379.6,196.7 			"/>
+						</g>
+						<g>
+							<polygon fill="#FFFFFF" points="381.1,319.3 377.3,315.5 396.9,295.5 400.7,299.3 			"/>
+						</g>
+						<g>
+							<polygon fill="#FFFFFF" points="381.1,261.2 377.3,257.4 396.9,237.3 400.7,241.1 			"/>
+						</g>
+						<g>
+							<polygon fill="#FFFFFF" points="381.1,200.4 377.3,196.6 396.9,176.6 400.7,180.4 			"/>
+						</g>
+					</g>
+					<g>
+						<path fill="#FFFFFF" d="M369,205c-14.4,0-29.9-2.8-46.3-8.3c-25.9-8.7-54.1-24.2-83.8-46.1c-50.7-37.3-88.8-80.9-89.2-81.3
+							l0.8-0.7c0.4,0.4,38.5,43.9,89.1,81.2c46.6,34.3,113.7,70.3,168.4,46.4l0.4,0.9C396.2,202.3,383,205,369,205z"/>
+					</g>
+					<g>
+						<path fill="#FFFFFF" d="M303.9,200.6c-18.8,0-38.5-3.2-58.9-9.5c-29.6-9.2-60.9-25-92.8-46.9c-54.4-37.4-92.5-80.4-92.9-80.8
+							l0.8-0.7c0.4,0.4,38.4,43.3,92.7,80.7c50.1,34.4,124.5,71,195.1,49.9l0.3,1C334.1,198.5,319.3,200.6,303.9,200.6z"/>
+					</g>
+					<g>
+						<path fill="#FFFFFF" d="M401.2,266.3c-13.6,0-28.2-2.1-43.6-6.3c-24.5-6.7-51.2-18.8-79.2-35.9c-47.7-29.1-84.3-63.9-83.8-63.4
+							l0.7-0.7c-0.5-0.5,36,34.3,83.6,63.3c43.9,26.8,107.3,54.7,159.8,35.8l0.3,0.9C427.5,264.2,414.8,266.3,401.2,266.3z"/>
+					</g>
+					<g>
+						<path fill="#FFFFFF" d="M276.9,258.2c-19.6,0-40.3-2.6-62.4-7.8c-30.6-7.2-63.6-19.5-97.8-36.4c-58.3-28.8-101-63.6-101.4-63.9
+							l0.6-0.8c0.4,0.3,43,35.1,101.2,63.8c53.7,26.5,132.2,54.9,200.8,39.8l0.2,1C305.2,256.8,291.4,258.2,276.9,258.2z"/>
+					</g>
+					<g>
+						<path fill="#FFFFFF" d="M368.9,324.5c-12.7,0-26-1.3-39.8-3.8c-25.9-4.8-53.7-14-82.7-27.4c-49.3-22.9-85.3-50.3-85.7-50.6
+							l0.6-0.8c0.4,0.3,36.3,27.7,85.5,50.5c45.4,21,111.6,42.3,169.6,24.3l0.3,1C401.9,322.2,385.9,324.5,368.9,324.5z"/>
+					</g>
+					<g>
+						<path fill="#FFFFFF" d="M283.2,322.3c-13,0.1-26.6-0.9-40.7-3.1c-29.4-4.4-61-13.7-93.9-27.6c-56.1-23.6-98.2-54.7-98.6-55
+							l0.6-0.8c0.4,0.3,42.5,31.3,98.5,54.9c51.6,21.7,126.9,43.1,192.3,21.5l0.3,0.9C323.7,319.1,304.2,322.1,283.2,322.3z"/>
+					</g>
+				</g>
+				<g id="damage-drone">
+					<path fill="#FFFFFF" d="M266.9,58.4c2.7,9.5,15.8,14.7,28.7,11.3c5.5-1.5,7-5.2,12.3-3.9c5.7,1.6,4.4,15.5,27,17.4
+						c14.8,1.2,26.9-8,27.4-19.5c0.7-13.9-9.6-15.3-9.2-18c0.2-3.7,14.3-2.7,14.2-15.5c0-8.3-12.6-14.3-25.6-13.4
+						c-8.5,0.6-13.1,4.4-14.8,3.5c-2.5-0.4-3.2-9.1-21.3-8.3c-11.2,0.4-20.2,7-19.6,13.5c0.3,3.7,3.6,4.9,3.2,7.3
+						c-0.4,1.8-0.8,1.5-3.8,2.3C272.6,38.4,264.3,48.9,266.9,58.4z M307.5,33.2c-9.5,0.8-17.6-3-18.1-8.4c-0.5-5.4,6.9-10.4,16.4-11.2
+						c9.5-0.8,17.6,3,18.1,8.4C324.4,27.4,317,32.4,307.5,33.2z M344.1,40.7c-10.1-0.8-17.8-6.4-17.3-12.5c0.5-6.1,9.1-10.4,19.2-9.5
+						c10.1,0.8,17.8,6.4,17.3,12.5C362.8,37.2,354.2,41.5,344.1,40.7z M313,59.4c0.5-9.5,11.4-16.7,24.2-16c12.8,0.7,22.6,9.2,22,18.8
+						c-0.5,9.5-10.8,16.8-23.7,16.1C322.8,77.6,312.5,69,313,59.4z M311.5,38.4c0.2-2.4,3.6-4.1,7.6-3.8c4,0.3,7,2.5,6.8,5
+						c-0.2,2.4-3.6,4.1-7.6,3.8C314.4,43,311.3,40.8,311.5,38.4z M285,37c11.3-3.6,22.5,0.1,25,7.7c2.5,7.7-4.1,16.7-15.5,20.2
+						c-11.3,3.6-23,0-25.5-7.6C266.6,49.6,273.7,40.5,285,37z"/>
+					<path fill="#FFFFFF" d="M337.1,59.3l-0.7-2.4l-6.6-9.5c0,0-1.9-0.2-3.5,0.7c-0.1,0.1,4.8,9.7,4.8,9.7s2.4,0.5,3.6,1.8
+						c1,1.1,8.8,13.4,8.8,13.4l3.6,0.1c0,0-5.8-9.6-6.9-11.3C339.6,61,337.8,60.4,337.1,59.3z"/>
+					<path fill="#FFFFFF" d="M288.5,49.1l-2.7-0.8l-12.6,0.1c0,0-1.3,1.6-1.3,3.5c0,0.2,11.8,1.5,11.8,1.5s1.8-1.8,3.7-2.1
+						c1.5-0.2,17.5,0.3,17.5,0.3l2.1-3.1c0,0-12.2-0.7-14.4-0.7C291.5,47.8,290,49.1,288.5,49.1z"/>
+					<path fill="#FFFFFF" d="M305.7,23.3l-2.1-0.1l-9.1,2.3c0,0-0.6,1.3-0.3,2.7c0,0.1,8.8-0.9,8.8-0.9s1-1.6,2.3-2.1
+						c1.1-0.4,12.7-2.8,12.7-2.8l1-2.6c0,0-9,1.6-10.6,1.9C307.6,21.9,306.7,23,305.7,23.3z"/>
+					<path fill="#FFFFFF" d="M345.5,29.4l-1.4-0.8l-4.9-5.1c0,0,0.2-1.1,1-1.9c0.1-0.1,5.3,4.2,5.3,4.2s-0.1,1.4,0.6,2.3
+						c0.5,0.7,7,6.9,7,6.9l-0.5,2.1c0,0-5.1-4.7-6-5.5C346.1,31,346.1,29.9,345.5,29.4z"/>
 				</g>
 				</svg>
+
 
 			</div>
 			<div id="damage-copy">
 				<div class="copy">
-					<img src="http://placehold.it/160x160?text=Icon" /><br />
-					Even a micro unmanned aircraft (under 4.4 lbs.) can cause <em>extreme damage</em> and put lives in&nbsp;danger.
+					<?php
+						foreach ($homepage_contentRecord['damage_icon'] as $index => $upload){
+							$damage_icon = htmlencode($upload['urlPath']);
+						}
+					?>
+					<br />
+					<img src="<?php echo $damage_icon ?>" />
+					<br />
+					<?php echo $homepage_contentRecord['damage_copy'] ?>
 					<div class="more-info">
 						<div class="more-info-left">
-						Learn what can happen if there is a mid-air collision or accident.
+						<?php echo htmlencode($homepage_contentRecord['damage_learn_more_button_copy']) ?>
 						</div>
 						<div class="more-info-right">
 							<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
@@ -444,8 +927,9 @@
 			<div id="check-yourself-copy">
 				<div class="copy">
 					<div class="arrow-section">
-						<h3>Check Yourself</h3>
-						<div class="arrow-copy">Before you take flight with your unmanned aircraft be sure to follow these steps to insure the safety of other aerial vehicles.</div>
+						<h3><?php echo htmlencode($homepage_contentRecord['checkbox_section_arrow_headline']) ?></h3>
+						<div class="arrow-copy"><?php echo htmlencode($homepage_contentRecord['checkbox_section_arrow_copy']) ?></div>
+						<div class="right-triangle"></div>
 					</div>
 					<div class="check-item">
 						<div class="check-mark">
@@ -549,28 +1033,7 @@
 							</svg>
 						</div>
 						<div class="check-copy">
-							Maintain situational awareness and be prepared to take evasive action if a low flying manned aircraft enters the area.
-						</div>
-					</div>
-					<div class="check-item">
-						<div class="check-mark">
-							<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
-							<svg version="1.1"
-								 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-								 x="0px" y="0px" viewBox="0 0 132.7 137.6" xml:space="preserve">
-							<defs>
-							</defs>
-							<path d="M132.5,3.1c-0.4,0.5-22.7,28.2-33.3,42.8c-14,19.4-27.5,39.1-40.8,59c-4.5,6.7-10.5,4.9-16.4,5.2c-4.7,0.2-5.7-3.5-6.9-6.7
-								c-2.9-7.9-5.9-15.8-8.3-23.9c-2.2-7.4,7.2-16.6,14.6-14.4c1.6,0.5,3.2,2.4,4,4c1.4,2.8,2,6,3.3,8.8c0.8,1.9,2.3,3.4,3.5,5.1
-								c1.5-1.4,3.3-2.6,4.4-4.2C65.4,66.1,73.6,53,82.6,40.4c8.1-11.3,16.5-22.5,25.8-32.9c3.3-3.7,12.2-7.2,14.2-7.4S126.9,0,130,0
-								C133.1,0,132.9,2.6,132.5,3.1z"/>
-							<path d="M114.1,32.2l-5.1,6.8c7.3,9.5,11.6,21.3,11.6,34.2c0,31.1-25.2,56.2-56.2,56.2S8.2,104.2,8.2,73.1s25.2-56.2,56.2-56.2
-								c9.7,0,18.8,2.4,26.7,6.7l5-6.6c-9.4-5.3-20.2-8.3-31.7-8.3C28.8,8.7,0,37.6,0,73.1s28.8,64.4,64.4,64.4s64.4-28.8,64.4-64.4
-								C128.8,57.6,123.3,43.3,114.1,32.2z"/>
-							</svg>
-						</div>
-						<div class="check-copy">
-							Minimize distractions for the UAS operator i.e. no headphones, no reading a book, etc.
+							Check to see if you are outside of 5 miles from any airport/airfield.
 						</div>
 					</div>
 				</div>
@@ -601,16 +1064,16 @@
 							c11.3-15.2,27-23.2,45.4-26.3c8.6-1.5,13.9-8.3,13-16.6C222.8,124.6,216.2,118.7,207.5,118.6z M249.9,157
 							c1.6,6.1,2.4,12.4,4.8,18.1c8.8,21.2,33.3,27.2,50.2,12.5c17.5-15.2,17-47.7-1.1-62.2c-13.8-11.1-33.5-8.8-44.3,5.3
 							C253.7,138.4,250.9,147.1,249.9,157z"/>
-						<path d="M0,204c0.8-4.7,1.6-9.4,2.2-14.1c4.4-33.4,15.5-64.2,34.1-92.3c32.1-48.7,77-79.1,133.3-93.2c4.5-1.1,9.1-2,13.7-2.8
+						<path id="wave-big" d="M0,204c0.8-4.7,1.6-9.4,2.2-14.1c4.4-33.4,15.5-64.2,34.1-92.3c32.1-48.7,77-79.1,133.3-93.2c4.5-1.1,9.1-2,13.7-2.8
 							c7.9-1.4,14.1,1.4,17.2,7.8c3.3,6.7,2.4,14.2-3,18.7c-2.5,2.1-6.1,3.5-9.4,4c-36.5,6.5-68.8,22-95.9,47.1
 							c-38.8,36-59.2,80.9-60.5,134c-0.2,9.1,0.6,18.3,1.1,27.4c0.3,6.9-2.6,11.9-8.7,14.9c-5.5,2.7-13.6,2.1-17.4-2.9
 							c-2.9-3.8-3.8-9.3-5.3-14.1c-0.8-2.4-0.9-5.1-1.3-7.6C0,222,0,213,0,204z"/>
 						<path fill="#FFFFFF" d="M267,540.9c2.7-37,5.5-73.9,8.2-110.9c0.9-11.9,2.1-23.9,2.5-35.8c0.2-4.4,2.5-6.5,5.7-6.8
 							c3.7-0.3,4.3,3.2,4.6,6.4c2.7,32.8,5.3,65.6,8.1,98.4c1.4,16.2,3.2,32.4,4.8,48.6C289.6,540.9,278.3,540.9,267,540.9z"/>
-						<path d="M60.1,219.7c0.9-47.4,16.8-86.1,49.2-117.5c23.1-22.4,51.1-35.6,82.5-41.7c5.4-1,11-1.6,15.7,2.6c5,4.6,6.8,10.3,5.2,16.7
+						<path id="wave-md" d="M60.1,219.7c0.9-47.4,16.8-86.1,49.2-117.5c23.1-22.4,51.1-35.6,82.5-41.7c5.4-1,11-1.6,15.7,2.6c5,4.6,6.8,10.3,5.2,16.7
 							c-1.7,6.5-6.3,9.8-12.8,11c-38.8,7.3-69.6,26.7-90.1,60.8c-15.2,25.2-20.4,52.7-17.4,81.9c0.9,9.1-4.5,16.2-12.8,17
 							c-10.1,1.1-16.7-3.8-17.9-13.5C60.8,230.6,60.4,224,60.1,219.7z"/>
-						<path d="M207.5,118.6c8.7,0.1,15.2,6,16.1,14.7c0.8,8.3-4.5,15.1-13,16.6c-18.4,3.1-34.1,11.2-45.4,26.3
+						<path id="wave-sm" d="M207.5,118.6c8.7,0.1,15.2,6,16.1,14.7c0.8,8.3-4.5,15.1-13,16.6c-18.4,3.1-34.1,11.2-45.4,26.3
 							c-10.5,14.1-15.3,30-13.4,47.8c0.4,3.3,0.5,6.7-0.2,9.9c-1.6,7.1-8.1,11.2-16.4,10.8c-7.3-0.4-12.9-5.2-14.1-12.3
 							c-8.4-49.2,24.8-99.5,73.3-111C198.8,120.3,203.1,119.5,207.5,118.6z"/>
 						<path d="M249.9,157c0.9-9.9,3.7-18.6,9.6-26.3c10.8-14.1,30.5-16.5,44.3-5.3c18,14.5,18.6,47,1.1,62.2
@@ -637,88 +1100,102 @@
 	<div id="prepared">
 		<div class="container">
 			<div id="prepared-headline">
-				<h3>Make Sure You're Always Prepared</h3>
-				<div class="accent-button">Download the Infographic</div>
+				<h3><?php echo htmlencode($homepage_contentRecord['infographic_download_headline']) ?></h3>
+				<div class="accent-button"><a href="/_img/TBYL-infographic.pdf" target="_blank"><?php echo htmlencode($homepage_contentRecord['infographic_download_button_copy']) ?></a></div>
 			</div>
 		</div>
 	</div>
 	<div id="share">
 		<div class="container">
 			<div id="share-headline">
-				<h3>Think People Should Hear About This?</h3>
-				Get the word out by clicking an icon below.
+				<h3><?php echo htmlencode($homepage_contentRecord['share_headline']) ?></h3>
+				<?php echo htmlencode($homepage_contentRecord['share_subhead']) ?>
 				<div id="share-buttons">
 					<div class="share-button">
-						<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
-						<svg version="1.1"
-							 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-							 x="0px" y="0px" viewBox="0 0 39.7 39.7" xml:space="preserve">
-						<defs>
-						</defs>
-						<g>
-							<path d="M19.9,0C8.9,0,0,8.9,0,19.9c0,11,8.9,19.9,19.9,19.9c11,0,19.9-8.9,19.9-19.9C39.7,8.9,30.8,0,19.9,0L19.9,0z M24.8,20.6
-								h-3.2v11.5h-4.8V20.6h-2.3v-4.1h2.3v-2.6c0-1.9,0.9-4.8,4.8-4.8l3.5,0v4h-2.6c-0.4,0-1,0.2-1,1.1v2.4h3.6L24.8,20.6z M24.8,20.6"/>
-						</g>
-						</svg>
+						<a href="https://www.facebook.com/sharer/sharer.php?u=http://www.thinkbeforeyoulaunch.com/"onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;">
+							<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
+							<svg version="1.1"
+								 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+								 x="0px" y="0px" viewBox="0 0 39.7 39.7" xml:space="preserve">
+							<defs>
+							</defs>
+							<g>
+								<path d="M19.9,0C8.9,0,0,8.9,0,19.9c0,11,8.9,19.9,19.9,19.9c11,0,19.9-8.9,19.9-19.9C39.7,8.9,30.8,0,19.9,0L19.9,0z M24.8,20.6
+									h-3.2v11.5h-4.8V20.6h-2.3v-4.1h2.3v-2.6c0-1.9,0.9-4.8,4.8-4.8l3.5,0v4h-2.6c-0.4,0-1,0.2-1,1.1v2.4h3.6L24.8,20.6z M24.8,20.6"/>
+							</g>
+							</svg>
+						</a>
 					</div>
 					<div class="share-button">
-						<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
-						<svg version="1.1"
-							 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-							 x="0px" y="0px" viewBox="0 0 39.7 39.7" xml:space="preserve">
-						<defs>
-						</defs>
-						<g>
-							<path d="M19.9,0C8.9,0,0,8.9,0,19.9c0,11,8.9,19.9,19.9,19.9c11,0,19.9-8.9,19.9-19.9C39.7,8.9,30.8,0,19.9,0L19.9,0z M28.7,15.3
-								c0,0.2,0,0.4,0,0.6c0,6-4.6,13-13,13c-2.6,0-5-0.8-7-2.1c0.4,0,0.7,0.1,1.1,0.1c2.1,0,4.1-0.7,5.7-2c-2,0-3.7-1.4-4.3-3.2
-								c0.3,0.1,0.6,0.1,0.9,0.1c0.4,0,0.8-0.1,1.2-0.2c-2.1-0.4-3.7-2.3-3.7-4.5c0,0,0,0,0-0.1c0.6,0.3,1.3,0.5,2.1,0.6
-								c-1.2-0.8-2-2.2-2-3.8c0-0.8,0.2-1.6,0.6-2.3c2.3,2.8,5.6,4.6,9.4,4.8c-0.1-0.3-0.1-0.7-0.1-1c0-2.5,2-4.6,4.6-4.6
-								c1.3,0,2.5,0.6,3.3,1.4c1-0.2,2-0.6,2.9-1.1c-0.3,1.1-1.1,2-2,2.5c0.9-0.1,1.8-0.4,2.6-0.7C30.4,13.9,29.6,14.7,28.7,15.3
-								L28.7,15.3z M28.7,15.3"/>
-						</g>
-						</svg>
+						<a href="https://twitter.com/home?status=http://thinkbeforeyoulaunch.org/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;">
+							<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
+							<svg version="1.1"
+								 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+								 x="0px" y="0px" viewBox="0 0 39.7 39.7" xml:space="preserve">
+							<defs>
+							</defs>
+							<g>
+								<path d="M19.9,0C8.9,0,0,8.9,0,19.9c0,11,8.9,19.9,19.9,19.9c11,0,19.9-8.9,19.9-19.9C39.7,8.9,30.8,0,19.9,0L19.9,0z M28.7,15.3
+									c0,0.2,0,0.4,0,0.6c0,6-4.6,13-13,13c-2.6,0-5-0.8-7-2.1c0.4,0,0.7,0.1,1.1,0.1c2.1,0,4.1-0.7,5.7-2c-2,0-3.7-1.4-4.3-3.2
+									c0.3,0.1,0.6,0.1,0.9,0.1c0.4,0,0.8-0.1,1.2-0.2c-2.1-0.4-3.7-2.3-3.7-4.5c0,0,0,0,0-0.1c0.6,0.3,1.3,0.5,2.1,0.6
+									c-1.2-0.8-2-2.2-2-3.8c0-0.8,0.2-1.6,0.6-2.3c2.3,2.8,5.6,4.6,9.4,4.8c-0.1-0.3-0.1-0.7-0.1-1c0-2.5,2-4.6,4.6-4.6
+									c1.3,0,2.5,0.6,3.3,1.4c1-0.2,2-0.6,2.9-1.1c-0.3,1.1-1.1,2-2,2.5c0.9-0.1,1.8-0.4,2.6-0.7C30.4,13.9,29.6,14.7,28.7,15.3
+									L28.7,15.3z M28.7,15.3"/>
+							</g>
+							</svg>
+						</a>
 					</div>
 					<div class="share-button">
-						<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
-						<svg version="1.1"
-							 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-							 x="0px" y="0px" viewBox="0 0 39.7 39.7" xml:space="preserve">
-						<defs>
-						</defs>
-						<g>
-							<path d="M19.9,23.8c2.2,0,4-1.8,4-4c0-0.9-0.3-1.7-0.8-2.3c-0.7-1-1.9-1.7-3.2-1.7c-1.3,0-2.5,0.7-3.2,1.7
-								c-0.5,0.7-0.8,1.5-0.8,2.3C15.9,22.1,17.7,23.8,19.9,23.8L19.9,23.8z M19.9,23.8"/>
-							<path d="M28.5,15v-3.8H28l-3.3,0l0,3.8L28.5,15z M28.5,15"/>
-							<path d="M19.9,0C8.9,0,0,8.9,0,19.9c0,11,8.9,19.9,19.9,19.9c11,0,19.9-8.9,19.9-19.9C39.7,8.9,30.8,0,19.9,0L19.9,0z M31.2,17.5
-								v9.3c0,2.4-2,4.4-4.4,4.4H12.9c-2.4,0-4.4-2-4.4-4.4V12.9c0-2.4,2-4.4,4.4-4.4h13.9c2.4,0,4.4,2,4.4,4.4V17.5z M31.2,17.5"/>
-							<path d="M26,19.9c0,3.4-2.8,6.2-6.2,6.2c-3.4,0-6.2-2.8-6.2-6.2c0-0.8,0.2-1.6,0.5-2.3h-3.4v9.3c0,1.2,1,2.2,2.2,2.2h13.9
-								c1.2,0,2.2-1,2.2-2.2v-9.3h-3.4C25.9,18.3,26,19,26,19.9L26,19.9z M26,19.9"/>
-						</g>
-						</svg>
+						<a href="https://plus.google.com/share?url=http://thinkbeforeyoulaunch.org/" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;">
+							<svg version="1.1"
+								 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+								 x="0px" y="0px" viewBox="0 0 39.7 39.7" xml:space="preserve">
+							<defs>
+							</defs>
+							<g>
+								<path d="M17.2,23.2c-0.1-0.1-0.3-0.2-0.4-0.3c-0.4-0.1-0.8-0.2-1.3-0.2h-0.1c-2,0-3.8,1.2-3.8,2.6c0,1.5,1.5,2.7,3.4,2.7
+									c2.5,0,3.8-0.9,3.8-2.6c0-0.2,0-0.3-0.1-0.5C18.7,24.2,18.1,23.8,17.2,23.2L17.2,23.2z M17.2,23.2"/>
+								<path d="M15.8,17.9L15.8,17.9c0.5,0,0.9-0.2,1.2-0.6c0.5-0.6,0.7-1.5,0.6-2.5c-0.2-1.8-1.5-3.2-2.8-3.2l-0.1,0
+									c-0.5,0-0.9,0.2-1.2,0.6c-0.5,0.6-0.7,1.4-0.6,2.4C13.2,16.3,14.5,17.8,15.8,17.9L15.8,17.9z M15.8,17.9"/>
+								<path d="M19.9,0C8.9,0,0,8.9,0,19.9c0,11,8.9,19.9,19.9,19.9c11,0,19.9-8.9,19.9-19.9C39.7,8.9,30.8,0,19.9,0L19.9,0z M17.6,29.5
+									c-0.8,0.2-1.6,0.3-2.4,0.3c-0.9,0-1.9-0.1-2.7-0.3c-1.6-0.4-2.9-1.2-3.4-2.2c-0.2-0.4-0.4-0.9-0.4-1.4c0-0.5,0.1-1,0.4-1.5
+									c0.9-1.9,3.3-3.2,5.9-3.2H15c-0.2-0.4-0.3-0.8-0.3-1.2c0-0.2,0-0.4,0.1-0.6c-2.8-0.1-4.8-2.1-4.8-4.7c0-1.9,1.5-3.7,3.7-4.5
+									c0.6-0.2,1.3-0.3,1.9-0.3h5.9c0.2,0,0.4,0.1,0.4,0.3c0.1,0.2,0,0.4-0.2,0.5l-1.3,1c-0.1,0.1-0.2,0.1-0.3,0.1h-0.5
+									c0.6,0.7,1,1.8,1,2.9c0,1.3-0.7,2.5-1.8,3.4c-0.9,0.7-1,0.9-1,1.3c0,0.2,0.7,1,1.4,1.5c1.6,1.2,2.3,2.3,2.3,4.2
+									C21.4,27.1,19.9,28.9,17.6,29.5L17.6,29.5z M30.9,19.4c0,0.3-0.2,0.5-0.5,0.5h-3.4v3.4c0,0.3-0.2,0.5-0.5,0.5h-1
+									c-0.3,0-0.5-0.2-0.5-0.5v-3.4h-3.4c-0.3,0-0.5-0.2-0.5-0.5v-1c0-0.3,0.2-0.5,0.5-0.5h3.4v-3.4c0-0.3,0.2-0.5,0.5-0.5h1
+									c0.3,0,0.5,0.2,0.5,0.5V18h3.4c0.3,0,0.5,0.2,0.5,0.5V19.4z M30.9,19.4"/>
+							</g>
+							</svg>
+						</a>
 					</div>
-					<div class="share-button">
-						<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
-						<svg version="1.1"
-							 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-							 x="0px" y="0px" viewBox="0 0 39.7 39.7" xml:space="preserve">
-						<defs>
-						</defs>
-						<g>
-							<path d="M17.2,23.2c-0.1-0.1-0.3-0.2-0.4-0.3c-0.4-0.1-0.8-0.2-1.3-0.2h-0.1c-2,0-3.8,1.2-3.8,2.6c0,1.5,1.5,2.7,3.4,2.7
-								c2.5,0,3.8-0.9,3.8-2.6c0-0.2,0-0.3-0.1-0.5C18.7,24.2,18.1,23.8,17.2,23.2L17.2,23.2z M17.2,23.2"/>
-							<path d="M15.8,17.9L15.8,17.9c0.5,0,0.9-0.2,1.2-0.6c0.5-0.6,0.7-1.5,0.6-2.5c-0.2-1.8-1.5-3.2-2.8-3.2l-0.1,0
-								c-0.5,0-0.9,0.2-1.2,0.6c-0.5,0.6-0.7,1.4-0.6,2.4C13.2,16.3,14.5,17.8,15.8,17.9L15.8,17.9z M15.8,17.9"/>
-							<path d="M19.9,0C8.9,0,0,8.9,0,19.9c0,11,8.9,19.9,19.9,19.9c11,0,19.9-8.9,19.9-19.9C39.7,8.9,30.8,0,19.9,0L19.9,0z M17.6,29.5
-								c-0.8,0.2-1.6,0.3-2.4,0.3c-0.9,0-1.9-0.1-2.7-0.3c-1.6-0.4-2.9-1.2-3.4-2.2c-0.2-0.4-0.4-0.9-0.4-1.4c0-0.5,0.1-1,0.4-1.5
-								c0.9-1.9,3.3-3.2,5.9-3.2H15c-0.2-0.4-0.3-0.8-0.3-1.2c0-0.2,0-0.4,0.1-0.6c-2.8-0.1-4.8-2.1-4.8-4.7c0-1.9,1.5-3.7,3.7-4.5
-								c0.6-0.2,1.3-0.3,1.9-0.3h5.9c0.2,0,0.4,0.1,0.4,0.3c0.1,0.2,0,0.4-0.2,0.5l-1.3,1c-0.1,0.1-0.2,0.1-0.3,0.1h-0.5
-								c0.6,0.7,1,1.8,1,2.9c0,1.3-0.7,2.5-1.8,3.4c-0.9,0.7-1,0.9-1,1.3c0,0.2,0.7,1,1.4,1.5c1.6,1.2,2.3,2.3,2.3,4.2
-								C21.4,27.1,19.9,28.9,17.6,29.5L17.6,29.5z M30.9,19.4c0,0.3-0.2,0.5-0.5,0.5h-3.4v3.4c0,0.3-0.2,0.5-0.5,0.5h-1
-								c-0.3,0-0.5-0.2-0.5-0.5v-3.4h-3.4c-0.3,0-0.5-0.2-0.5-0.5v-1c0-0.3,0.2-0.5,0.5-0.5h3.4v-3.4c0-0.3,0.2-0.5,0.5-0.5h1
-								c0.3,0,0.5,0.2,0.5,0.5V18h3.4c0.3,0,0.5,0.2,0.5,0.5V19.4z M30.9,19.4"/>
-						</g>
-						</svg>
-					</div>
+					<!-- <div class="share-button">
+						<a href="https://www.facebook.com/sharer/sharer.php?u=http://www.thinkbeforeyoulaunch.com/">
+							<svg version="1.1"
+								 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+								 x="0px" y="0px" viewBox="0 0 39.7 39.7" xml:space="preserve">
+							<defs>
+							</defs>
+							<g>
+								<path d="M17.2,23.2c-0.1-0.1-0.3-0.2-0.4-0.3c-0.4-0.1-0.8-0.2-1.3-0.2h-0.1c-2,0-3.8,1.2-3.8,2.6c0,1.5,1.5,2.7,3.4,2.7
+									c2.5,0,3.8-0.9,3.8-2.6c0-0.2,0-0.3-0.1-0.5C18.7,24.2,18.1,23.8,17.2,23.2L17.2,23.2z M17.2,23.2"/>
+								<path d="M15.8,17.9L15.8,17.9c0.5,0,0.9-0.2,1.2-0.6c0.5-0.6,0.7-1.5,0.6-2.5c-0.2-1.8-1.5-3.2-2.8-3.2l-0.1,0
+									c-0.5,0-0.9,0.2-1.2,0.6c-0.5,0.6-0.7,1.4-0.6,2.4C13.2,16.3,14.5,17.8,15.8,17.9L15.8,17.9z M15.8,17.9"/>
+								<path d="M19.9,0C8.9,0,0,8.9,0,19.9c0,11,8.9,19.9,19.9,19.9c11,0,19.9-8.9,19.9-19.9C39.7,8.9,30.8,0,19.9,0L19.9,0z M17.6,29.5
+									c-0.8,0.2-1.6,0.3-2.4,0.3c-0.9,0-1.9-0.1-2.7-0.3c-1.6-0.4-2.9-1.2-3.4-2.2c-0.2-0.4-0.4-0.9-0.4-1.4c0-0.5,0.1-1,0.4-1.5
+									c0.9-1.9,3.3-3.2,5.9-3.2H15c-0.2-0.4-0.3-0.8-0.3-1.2c0-0.2,0-0.4,0.1-0.6c-2.8-0.1-4.8-2.1-4.8-4.7c0-1.9,1.5-3.7,3.7-4.5
+									c0.6-0.2,1.3-0.3,1.9-0.3h5.9c0.2,0,0.4,0.1,0.4,0.3c0.1,0.2,0,0.4-0.2,0.5l-1.3,1c-0.1,0.1-0.2,0.1-0.3,0.1h-0.5
+									c0.6,0.7,1,1.8,1,2.9c0,1.3-0.7,2.5-1.8,3.4c-0.9,0.7-1,0.9-1,1.3c0,0.2,0.7,1,1.4,1.5c1.6,1.2,2.3,2.3,2.3,4.2
+									C21.4,27.1,19.9,28.9,17.6,29.5L17.6,29.5z M30.9,19.4c0,0.3-0.2,0.5-0.5,0.5h-3.4v3.4c0,0.3-0.2,0.5-0.5,0.5h-1
+									c-0.3,0-0.5-0.2-0.5-0.5v-3.4h-3.4c-0.3,0-0.5-0.2-0.5-0.5v-1c0-0.3,0.2-0.5,0.5-0.5h3.4v-3.4c0-0.3,0.2-0.5,0.5-0.5h1
+									c0.3,0,0.5,0.2,0.5,0.5V18h3.4c0.3,0,0.5,0.2,0.5,0.5V19.4z M30.9,19.4"/>
+							</g>
+							</svg>
+						</a>
+					</div> -->
 				</div>
 			</div>
 		</div>
@@ -726,8 +1203,8 @@
 	<div id="organizations">
 		<div class="container">
 			<div id="organizations-headline">
-				<h3>Collaborating Organizations</h3>
-				<h4>Groups and associations dedicated to keeping everyone safe, on the ground and in our skies.</h4>
+				<h3><?php echo htmlencode($homepage_contentRecord['organizations_headline']) ?></h3>
+				<h4><?php echo htmlencode($homepage_contentRecord['organizations_subhead']) ?></h4>
 			</div>
 			<div id="organizations-list">
 				<div class="organizations-item">
@@ -772,8 +1249,8 @@
 	<div id="contact">
 		<div class="container">
 			<div class="col-xs-24 col-sm-10">
-				<h3>Contact Us</h3>
-				Interested in helping our cause or have a question? Complete the form below and we will get back to you as soon as we can.
+				<h3><?php echo htmlencode($homepage_contentRecord['contact_headline']) ?></h3>
+				<?php echo $homepage_contentRecord['contact_copy']; ?>
 				<form>
 					<div class="form-group">
 						<label for="name">Name</label>
@@ -792,13 +1269,13 @@
 				<hr class="visible-xs" />
 			</div>
 			<div class="col-xs-24 col-sm-14">
-				<h3>Stay Up To Date</h3>
-				Sign up for our monthly newsletter to receive articles, videos and we will announce one lucky winner of some Think Before You Launch swag.<br /><br />
-				<a href="#">Sign Up For Our Monthly Newsletter &gt;</a>
+				<h3><?php echo htmlencode($homepage_contentRecord['newsletter_headline']) ?></h3>
+				<?php echo $homepage_contentRecord['newsletter_copy']; ?><br /><br />
+				<a href="<?php echo htmlencode($homepage_contentRecord['newsletter_link_url']) ?>"><?php echo htmlencode($homepage_contentRecord['newsletter_link_copy']) ?> &gt;</a>
 				<hr />
-				<h3>We're Here to Help</h3>
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius, justo eu semper tincidunt, diam felis lobortis lectus, non convallis leo erat eu mi. Vestibulum pretium a massa vel aliquet. Nam nec elit sollicitudin, lacinia risus vitae, sodales sapien. Praesent ac orci nec nunc venenatis lacinia at ut nunc. Integer suscipit posuere eros, fringilla luctus.<br /><br />
-				<a href="#">Learn More About TBYL &gt;</a>
+				<h3><?php echo htmlencode($homepage_contentRecord['learn_more_headline']) ?></h3>
+				<?php echo $homepage_contentRecord['learn_more_copy']; ?><br /><br />
+				<a href="<?php echo htmlencode($homepage_contentRecord['learn_more_link_url']) ?>"><?php echo htmlencode($homepage_contentRecord['learn_more_link_copy']) ?> &gt;</a>
 			</div>
 		</div>
 	</div>
@@ -820,111 +1297,43 @@
 			</svg>
 		</div>
 		<div class="panel-content">
-			<div class="panel-headline">News</div>
+			<div class="panel-headline"><?php echo htmlencode($homepage_contentRecord['news_headline']) ?></div>
 			<div class="form-group">
 		    	<label for="news-category">Filter by Category</label>
 				<select class="form-control" name="news-category">
 					<option>All</option>
+					<?php foreach ($news_categoriesRecords as $record): ?>
+						<option><?php echo htmlencode($record['title']) ?></option>
+					<?php endforeach; ?>
 				</select>
 			</div>
 			<div id="news-posts-wrapper">
 				<div id="news-posts">
-					<div class="news-post">
-						<a href="news.html">
-							<div class="news-post-image">
-								<img src="http://placehold.it/128x128?text=Image" />
-							</div>
-							<div class="news-post-copy">
-								<div class="headline">FAA 'looking into' Lake Fire Drone</div>
-								<div class="date">July 11, 2015</div>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius, justo eu semper tincidunt, diam felis lobortis lectus, non convallis leo erat eu mi.
-							</div>
-						</a>
-					</div>
-					<div class="news-post">
-						<a href="news.html">
-							<div class="news-post-image">
-								<img src="http://placehold.it/128x128?text=Image" />
-							</div>
-							<div class="news-post-copy">
-								<div class="headline">FAA 'looking into' Lake Fire Drone</div>
-								<div class="date">July 11, 2015</div>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius, justo eu semper tincidunt, diam felis lobortis lectus, non convallis leo erat eu mi.
-							</div>
-						</a>
-					</div>
-					<div class="news-post">
-						<a href="news.html">
-							<div class="news-post-image">
-								<img src="http://placehold.it/128x128?text=Image" />
-							</div>
-							<div class="news-post-copy">
-								<div class="headline">FAA 'looking into' Lake Fire Drone</div>
-								<div class="date">July 11, 2015</div>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius, justo eu semper tincidunt, diam felis lobortis lectus, non convallis leo erat eu mi.
-							</div>
-						</a>
-					</div>
-					<div class="news-post">
-						<a href="news.html">
-							<div class="news-post-image">
-								<img src="http://placehold.it/128x128?text=Image" />
-							</div>
-							<div class="news-post-copy">
-								<div class="headline">FAA 'looking into' Lake Fire Drone</div>
-								<div class="date">July 11, 2015</div>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius, justo eu semper tincidunt, diam felis lobortis lectus, non convallis leo erat eu mi.
-							</div>
-						</a>
-					</div>
-					<div class="news-post">
-						<a href="news.html">
-							<div class="news-post-image">
-								<img src="http://placehold.it/128x128?text=Image" />
-							</div>
-							<div class="news-post-copy">
-								<div class="headline">FAA 'looking into' Lake Fire Drone</div>
-								<div class="date">July 11, 2015</div>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius, justo eu semper tincidunt, diam felis lobortis lectus, non convallis leo erat eu mi.
-							</div>
-						</a>
-					</div>
-					<div class="news-post">
-						<a href="news.html">
-							<div class="news-post-image">
-								<img src="http://placehold.it/128x128?text=Image" />
-							</div>
-							<div class="news-post-copy">
-								<div class="headline">FAA 'looking into' Lake Fire Drone</div>
-								<div class="date">July 11, 2015</div>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius, justo eu semper tincidunt, diam felis lobortis lectus, non convallis leo erat eu mi.
-							</div>
-						</a>
-					</div>
-					<div class="news-post">
-						<a href="news.html">
-							<div class="news-post-image">
-								<img src="http://placehold.it/128x128?text=Image" />
-							</div>
-							<div class="news-post-copy">
-								<div class="headline">FAA 'looking into' Lake Fire Drone</div>
-								<div class="date">July 11, 2015</div>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius, justo eu semper tincidunt, diam felis lobortis lectus, non convallis leo erat eu mi.
-							</div>
-						</a>
-					</div>
-					<div class="news-post">
-						<a href="news.html">
-							<div class="news-post-image">
-								<img src="http://placehold.it/128x128?text=Image" />
-							</div>
-							<div class="news-post-copy">
-								<div class="headline">FAA 'looking into' Lake Fire Drone</div>
-								<div class="date">July 11, 2015</div>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius, justo eu semper tincidunt, diam felis lobortis lectus, non convallis leo erat eu mi.
-							</div>
-						</a>
-					</div>
+					<?php foreach ($articlesRecords as $record): ?>
+						<div class="news-post">
+							<?php 
+								if (@$record['link_to_article']){
+									$newsLink = $record['article_url'] . '" target="_blank';
+								} else {
+									$newsLink = 'news/?num=' . htmlencode($record['num']);
+								}
+							?>
+							<a href="<?php echo $newsLink; ?>">
+								<?php if (@$record['thumbnail']): ?>
+									<div class="news-post-image">
+										<?php foreach ($record['thumbnail'] as $index => $upload): ?>
+											<img src="<?php echo htmlencode($upload['urlPath']) ?>" />
+										<?php endforeach; ?>
+									</div>
+								<?php endif; ?>
+								<div class="news-post-copy">
+									<div class="headline"><?php echo htmlencode($record['title']) ?></div>
+									<div class="date"><?php echo date("F jS, Y", strtotime($record['date'])) ?></div>
+									<?php echo $record['short_description'] ?>
+								</div>
+							</a>
+						</div>
+					<?php endforeach; ?>
 				</div>
 			</div>
 		</div>
@@ -942,7 +1351,7 @@
 			</svg>
 		</div>
 		<div class="panel-content">
-			<div class="panel-headline">Photos &amp; Videos</div>
+			<div class="panel-headline"><?php echo htmlencode($homepage_contentRecord['photos_headline']) ?></div>
 			<div class="form-group">
 		    	<label for="media-category">Filter by Category</label>
 				<select class="form-control" name="media-category">
@@ -1070,6 +1479,25 @@
 	<div class="overlay"></div>
 	<script>
 		$(document).ready(function(){
+			// $('#main-scroll-indicator').click(function(){
+			// 	$('html,body').animate({scrollTop: $('#about-blurb').position().top - ($(window).outerWidth() > 767 ? 88 : 44) + "px"}, {duration: 1000})
+			// });
+
+			Draggable.create("#hero-drone", {
+				type:"y,x",
+				edgeResistance:0.65,
+				bounds:"#main-image",
+				throwProps: true,
+				throwResistance: 2000,
+				onDragEnd: function(){
+					droneHover();
+				}
+			});
+
+			function droneHover(){
+				TweenMax.to($('#hero-drone'), 2.5, {y:"-=30", yoyo: true, repeat: -1, ease: Power1.easeInOut}); 
+			}droneHover();
+
 			$('#news-view-more').click(function(){
 				$('#news-panel, .overlay').addClass('active');
 				$('body').addClass('no-scroll');
@@ -1084,10 +1512,45 @@
 			});
 
 			$('.airspace-item').click(function(){
-				$(this).toggleClass('selected');
-				$('.airspace-item').not($(this)).toggleClass('not-selected');
-			})
+				$(this).addClass('selected').removeClass('not-selected');
+				$('.airspace-item').not($(this)).addClass('not-selected').removeClass('selected');
+			});
+
+			$(window).on('load scroll', function(){
+				if (!$('#damage').hasClass('active')) {
+					if ($(window).scrollTop() + $(window).height() > ($('#damage').offset().top + ($(window).height() / 3)) && $(window).scrollTop() < $('#damage').offset().top) {
+						$('#damage').addClass('active');
+					}	
+				} else {	
+					if ($(window).scrollTop() + $(window).height() < ($('#damage').offset().top) || $(window).scrollTop() > ($('#damage').offset().top + $('#damage').height())) {
+						$('#damage').removeClass('active');
+					}			
+				}
+			});
+
 		});
+
+		$(function() {
+		  $('a[href*=#]:not([href=#])').click(function() {
+		    if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
+		      var target = $(this.hash);
+		      target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+		      if (target.length) {
+		        $('html,body').animate({
+		          scrollTop: target.offset().top - ($(window).outerWidth() > 767 ? 88 : 44)
+		        }, {duration:1000, queue: false});
+		        return false;
+		      }
+		    }
+		  });
+		});
+
+		window.onload = function(){
+			if(window.location.hash) {
+				var hash = window.location.hash.substring(1);
+				$(window).scrollTop($('#' + hash).position().top - ($(window).outerWidth() > 767 ? 88 : 44));
+			}
+		}
 	</script>
 </body>
 </html>
