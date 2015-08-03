@@ -32,6 +32,24 @@
     'allowSearch' => false,
   ));
 
+  // load record from 'contact_info'
+  list($contact_infoRecords, $contact_infoMetaData) = getRecords(array(
+    'tableName'   => 'contact_info',
+    'where'       => '', // load first record
+    'loadUploads' => true,
+    'allowSearch' => false,
+    'limit'       => '1',
+  ));
+  $contact_infoRecord = @$contact_infoRecords[0]; // get first record
+  if (!$contact_infoRecord) { dieWith404("Record not found!"); } // show error message if no record found
+
+  // load records from 'organization_listings'
+  list($organization_listingsRecords, $organization_listingsMetaData) = getRecords(array(
+    'tableName'   => 'organization_listings',
+    'loadUploads' => true,
+    'allowSearch' => false,
+  ));
+
   foreach ($homepage_contentRecord['open_graph_image'] as $index => $upload){
   	$open_graph_image = htmlencode($upload['urlPath']);
   }
@@ -64,8 +82,10 @@
 <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.16.1/TweenMax.min.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.17.0/utils/Draggable.min.js"></script>
 <script src="js/ThrowPropsPlugin.min.js"></script>
+<script src="libs/magnific-popup/jquery.magnific-popup.min.js"></script>
 <!-- Google Web Fonts -->
 <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,800,600' rel='stylesheet' type='text/css'>
+<link href='libs/magnific-popup/magnific-popup.css' rel='stylesheet' type='text/css'>
 <!-- Styles -->
 <link rel="stylesheet" href="css/styles.css" />
 </head>
@@ -165,7 +185,7 @@
 					</svg>
 				</div>
 				<div id="follow">
-					<a href="#">
+					<a href="<?php echo htmlencode($contact_infoRecord['facebook_url']) ?>" target="_blank">
 						<svg version="1.1"
 							 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
 							 x="0px" y="0px" viewBox="0 0 39.7 39.7" xml:space="preserve">
@@ -289,39 +309,52 @@
 					<h3><?php echo htmlencode($homepage_contentRecord['photos_headline']) ?></h3>
 					<div class="media">
 						<div class="page clearfix">
+							<?php 
+								function getVimeoInfo($id, $info = 'thumbnail_medium') {
+									if (!function_exists('curl_init')) die('CURL is not installed!');
+									$ch = curl_init();
+									curl_setopt($ch, CURLOPT_URL, "http://vimeo.com/api/v2/video/$id.php");
+									curl_setopt($ch, CURLOPT_HEADER, 0);
+									curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+									curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+									$output = unserialize(curl_exec($ch));
+									$output = $output[0][$info];
+									curl_close($ch);
+									return $output;
+								}
+							?>
 							<?php foreach ($photo_and_video_linksRecords as $record): ?>
 								<?php
+
 									if (@$record['photo_upload']){
 										foreach ($record['photo_upload'] as $index => $upload):
 											$imgLocation = $upload['urlPath'];
+											$imgUrl = $upload['urlPath'];
+											$imgType = '';
+											$imgTitle = $record['title'];
 										endforeach;
 									} else if (@$record['photo_url']){
 										$imgLocation = $record['photo_url'];
+										$imgUrl = $record['photo_url'];
+										$imgType = '';
+										$imgTitle = $record['title'];
 									} else if (@$record['youtube_video_id']){
 										$imgLocation = 'http://img.youtube.com/vi/' . $record['youtube_video_id'] . '/mqdefault.jpg';
+										$imgUrl = 'http://www.youtube.com/?v=' . $record['youtube_video_id'];
+										$imgType = ' mfp-iframe"';
+										$imgTitle = '';
 									} else if (@$record['vimeo_video_id']){
-
-										function getVimeoInfo($id, $info = 'thumbnail_medium') {
-											if (!function_exists('curl_init')) die('CURL is not installed!');
-											$ch = curl_init();
-											curl_setopt($ch, CURLOPT_URL, "http://vimeo.com/api/v2/video/$id.php");
-											curl_setopt($ch, CURLOPT_HEADER, 0);
-											curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-											curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-											$output = unserialize(curl_exec($ch));
-											$output = $output[0][$info];
-											curl_close($ch);
-											return $output;
-										}
-
 										$imgLocation = getVimeoInfo($record['vimeo_video_id']);
+										$imgUrl = 'http://www.vimeo.com/' . $record['vimeo_video_id'];
+										$imgType = ' mfp-iframe"';
+										$imgTitle = '';
 
 									} else {
 										continue;
 									}
 								?>
 								<div class="media-item">
-									<a href="#" class="entry" style="background-image:url('<?php echo $imgLocation; ?>');">
+									<a href="<?php echo $imgUrl; ?>" class="entry<?php echo $imgType; ?>" style="background-image:url('<?php echo $imgLocation; ?>');">
 									</a>
 								</div>
 							<?php endforeach; ?>
@@ -875,6 +908,11 @@
 					<path fill="#FFFFFF" d="M345.5,29.4l-1.4-0.8l-4.9-5.1c0,0,0.2-1.1,1-1.9c0.1-0.1,5.3,4.2,5.3,4.2s-0.1,1.4,0.6,2.3
 						c0.5,0.7,7,6.9,7,6.9l-0.5,2.1c0,0-5.1-4.7-6-5.5C346.1,31,346.1,29.9,345.5,29.4z"/>
 				</g>
+				<g>
+					<polygon id="lightning1" fill="#eac670" points="316.8,164.0 312.8,164.0 312.8,134.0 302,168.8 307.9,168.8 307.7,200.7 "/>
+					<polygon id="lightning2" fill="#eac670" points="300.8,196.0 298.8,196.0 298.8,166.0 286,200.8 291.9,200.8 291.7,232.7 "/>
+					<!-- -16, +32 -->
+				</g>
 				</svg>
 
 
@@ -1100,7 +1138,7 @@
 	<div id="prepared">
 		<div class="container">
 			<div id="prepared-headline">
-				<h3><?php echo htmlencode($homepage_contentRecord['infographic_download_headline']) ?></h3>
+				<h3><?php echo $homepage_contentRecord['infographic_download_headline'] ?></h3>
 				<div class="accent-button"><a href="/_img/TBYL-infographic.pdf" target="_blank"><?php echo htmlencode($homepage_contentRecord['infographic_download_button_copy']) ?></a></div>
 			</div>
 		</div>
@@ -1206,82 +1244,17 @@
 				<h3><?php echo htmlencode($homepage_contentRecord['organizations_headline']) ?></h3>
 				<h4><?php echo htmlencode($homepage_contentRecord['organizations_subhead']) ?></h4>
 			</div>
-			<div id="organizations-list">
-				<div class="organizations-item">
-					<a href="organizations.html">
-						<img src="http://placehold.it/200x100?text=Organization" />
-					</a>
-				</div>
-				<div class="organizations-item">
-					<a href="organizations.html">
-						<img src="http://placehold.it/200x100?text=Organization" />
-					</a>
-				</div>
-				<div class="organizations-item">
-					<a href="organizations.html">
-						<img src="http://placehold.it/200x100?text=Organization" />
-					</a>
-				</div>
-				<div class="organizations-item">
-					<a href="organizations.html">
-						<img src="http://placehold.it/200x100?text=Organization" />
-					</a>
-				</div>
-				<div class="organizations-item">
-					<a href="organizations.html">
-						<img src="http://placehold.it/200x100?text=Organization" />
-					</a>
-				</div>
-				<div class="organizations-item">
-					<a href="organizations.html">
-						<img src="http://placehold.it/200x100?text=Organization" />
-					</a>
-				</div>
-				<div class="organizations-item">
-					<a href="organizations.html">
-						<img src="http://placehold.it/200x100?text=Organization" />
-					</a>
-				</div>
-			</div>
-			<div class="primary-button"><a href="organizations.html">Learn More About Our Stakeholders</a></div>
-		</div>
-	</div>
-	<div id="contact">
-		<div class="container">
-			<div class="col-xs-24 col-sm-10">
-				<h3><?php echo htmlencode($homepage_contentRecord['contact_headline']) ?></h3>
-				<?php echo $homepage_contentRecord['contact_copy']; ?>
-				<form>
-					<div class="form-group">
-						<label for="name">Name</label>
-						<input type="text" class="form-control" name="name" placeholder="Your Name">
+				<div id="organizations-list">
+				<?php foreach ($organization_listingsRecords as $record): ?>
+					<div class="organizations-item">
+						<a href="organizations/">
+							<?php foreach ($record['logo'] as $index => $upload): ?>
+								<img src="<?php echo htmlencode($upload['urlPath']) ?>" />
+							<?php endforeach; ?>
+						</a>
 					</div>
-					<div class="form-group">
-						<label for="name">Email Address</label>
-						<input type="email" class="form-control" name="email" placeholder="Your Email Address">
-					</div>
-					<div class="form-group">
-						<label for="name">Comments/Questions</label>
-						<textarea class="form-control" name="comments" placeholder="Your Comments/Questions"></textarea>
-					</div>
-					<button type="submit" class="btn btn-default">Submit</button>
-				</form>
-				<hr class="visible-xs" />
-			</div>
-			<div class="col-xs-24 col-sm-14">
-				<h3><?php echo htmlencode($homepage_contentRecord['newsletter_headline']) ?></h3>
-				<?php echo $homepage_contentRecord['newsletter_copy']; ?><br /><br />
-				<a href="<?php echo htmlencode($homepage_contentRecord['newsletter_link_url']) ?>"><?php echo htmlencode($homepage_contentRecord['newsletter_link_copy']) ?> &gt;</a>
-				<hr />
-				<h3><?php echo htmlencode($homepage_contentRecord['learn_more_headline']) ?></h3>
-				<?php echo $homepage_contentRecord['learn_more_copy']; ?><br /><br />
-				<a href="<?php echo htmlencode($homepage_contentRecord['learn_more_link_url']) ?>"><?php echo htmlencode($homepage_contentRecord['learn_more_link_copy']) ?> &gt;</a>
-			</div>
-		</div>
-	</div>
-	<div id="footer">
-		<div class="container">
-			&copy; 2015 Think Before You Launch
+				<?php endforeach; ?>
+			<div class="primary-button"><a href="organizations/">Learn More About Our Stakeholders</a></div>
 		</div>
 	</div>
 	<div id="news-panel" class="panel">
@@ -1301,16 +1274,16 @@
 			<div class="form-group">
 		    	<label for="news-category">Filter by Category</label>
 				<select class="form-control" name="news-category">
-					<option>All</option>
+					<option value="all">All</option>
 					<?php foreach ($news_categoriesRecords as $record): ?>
-						<option><?php echo htmlencode($record['title']) ?></option>
+						<option value="<?php echo htmlencode($record['title']) ?>"><?php echo htmlencode($record['title']) ?></option>
 					<?php endforeach; ?>
 				</select>
 			</div>
 			<div id="news-posts-wrapper">
 				<div id="news-posts">
 					<?php foreach ($articlesRecords as $record): ?>
-						<div class="news-post">
+						<div class="news-post" category="<?php echo htmlencode($record['category']) ?>">
 							<?php 
 								if (@$record['link_to_article']){
 									$newsLink = $record['article_url'] . '" target="_blank';
@@ -1352,131 +1325,54 @@
 		</div>
 		<div class="panel-content">
 			<div class="panel-headline"><?php echo htmlencode($homepage_contentRecord['photos_headline']) ?></div>
-			<div class="form-group">
+			<!-- <div class="form-group">
 		    	<label for="media-category">Filter by Category</label>
 				<select class="form-control" name="media-category">
 					<option>All</option>
 				</select>
-			</div>
+			</div> -->
 			<div id="media-posts-wrapper">
 				<div id="media-posts">
-					<div class="media-post">
-						<a href="#">
-							<div class="media-post-image">
-								<img src="http://placehold.it/300x200?text=Image" />
-							</div>
-						</a>
-					</div>
-					<div class="media-post">
-						<a href="#">
-							<div class="media-post-image">
-								<img src="http://placehold.it/300x200?text=Image" />
-							</div>
-						</a>
-					</div>
-					<div class="media-post">
-						<a href="#">
-							<div class="media-post-image">
-								<img src="http://placehold.it/300x200?text=Image" />
-							</div>
-						</a>
-					</div>
-					<div class="media-post">
-						<a href="#">
-							<div class="media-post-image">
-								<img src="http://placehold.it/300x200?text=Image" />
-							</div>
-						</a>
-					</div>
-					<div class="media-post">
-						<a href="#">
-							<div class="media-post-image">
-								<img src="http://placehold.it/300x200?text=Image" />
-							</div>
-						</a>
-					</div>
-					<div class="media-post">
-						<a href="#">
-							<div class="media-post-image">
-								<img src="http://placehold.it/300x200?text=Image" />
-							</div>
-						</a>
-					</div>
-					<div class="media-post">
-						<a href="#">
-							<div class="media-post-image">
-								<img src="http://placehold.it/300x200?text=Image" />
-							</div>
-						</a>
-					</div>
-					<div class="media-post">
-						<a href="#">
-							<div class="media-post-image">
-								<img src="http://placehold.it/300x200?text=Image" />
-							</div>
-						</a>
-					</div>
-					<div class="media-post">
-						<a href="#">
-							<div class="media-post-image">
-								<img src="http://placehold.it/300x200?text=Image" />
-							</div>
-						</a>
-					</div>
-					<div class="media-post">
-						<a href="#">
-							<div class="media-post-image">
-								<img src="http://placehold.it/300x200?text=Image" />
-							</div>
-						</a>
-					</div>
-					<div class="media-post">
-						<a href="#">
-							<div class="media-post-image">
-								<img src="http://placehold.it/300x200?text=Image" />
-							</div>
-						</a>
-					</div>
-					<div class="media-post">
-						<a href="#">
-							<div class="media-post-image">
-								<img src="http://placehold.it/300x200?text=Image" />
-							</div>
-						</a>
-					</div>
-					<div class="media-post">
-						<a href="#">
-							<div class="media-post-image">
-								<img src="http://placehold.it/300x200?text=Image" />
-							</div>
-						</a>
-					</div>
-					<div class="media-post">
-						<a href="#">
-							<div class="media-post-image">
-								<img src="http://placehold.it/300x200?text=Image" />
-							</div>
-						</a>
-					</div>
-					<div class="media-post">
-						<a href="#">
-							<div class="media-post-image">
-								<img src="http://placehold.it/300x200?text=Image" />
-							</div>
-						</a>
-					</div>
-					<div class="media-post">
-						<a href="#">
-							<div class="media-post-image">
-								<img src="http://placehold.it/300x200?text=Image" />
-							</div>
-						</a>
-					</div>
+					<?php foreach ($photo_and_video_linksRecords as $record): ?>
+						<?php
+							if (@$record['photo_upload']){
+								foreach ($record['photo_upload'] as $index => $upload):
+									$imgLocation = $upload['urlPath'];
+									$imgUrl = $upload['urlPath'];
+									$imgType = '';
+									$imgTitle = $record['title'];
+								endforeach;
+							} else if (@$record['photo_url']){
+								$imgLocation = $record['photo_url'];
+								$imgUrl = $record['photo_url'];
+								$imgType = '';
+								$imgTitle = $record['title'];
+							} else if (@$record['youtube_video_id']){
+								$imgLocation = 'http://img.youtube.com/vi/' . $record['youtube_video_id'] . '/mqdefault.jpg';
+								$imgUrl = 'http://www.youtube.com/?v=' . $record['youtube_video_id'];
+								$imgType = ' class="mfp-iframe"';
+								$imgTitle = '';
+							} else if (@$record['vimeo_video_id']){
+								$imgLocation = getVimeoInfo($record['vimeo_video_id']);
+								$imgUrl = 'http://www.vimeo.com/' . $record['vimeo_video_id'];
+								$imgType = ' class="mfp-iframe"';
+								$imgTitle = '';
+
+							} else {
+								continue;
+							}
+						?>
+						<div class="media-post">
+							<a href="<?php echo $imgUrl; ?>"<?php echo $imgType; ?> data-title="<?php echo $imgTitle; ?>">
+								<div class="media-post-image" style="background-image:url('<?php echo $imgLocation; ?>');"></div>
+							</a>
+						</div>
+					<?php endforeach; ?>
 				</div>
 			</div>
 		</div>
 	</div>
-	<div class="overlay"></div>
+	<?php include "includes/footer.php"; ?>
 	<script>
 		$(document).ready(function(){
 			// $('#main-scroll-indicator').click(function(){
@@ -1520,14 +1416,55 @@
 				if (!$('#damage').hasClass('active')) {
 					if ($(window).scrollTop() + $(window).height() > ($('#damage').offset().top + ($(window).height() / 3)) && $(window).scrollTop() < $('#damage').offset().top) {
 						$('#damage').addClass('active');
+						TweenMax.fromTo(lightning1, .4, {opacity:1}, {y: "-=20", opacity:0, scale:1, clearProps:"all", delay: 1.1});
+						TweenMax.fromTo(lightning2, .4, {opacity:1}, {y: "-=20", opacity:0, scale:1, clearProps:"all", delay: 1.4});
 					}	
 				} else {	
 					if ($(window).scrollTop() + $(window).height() < ($('#damage').offset().top) || $(window).scrollTop() > ($('#damage').offset().top + $('#damage').height())) {
 						$('#damage').removeClass('active');
+						// TweenLite.set(lightning1, {clearProps:"all"});
+						// TweenLite.set(lightning2, {clearProps:"all"});
 					}			
 				}
 			});
 
+			$('select[name="news-category"]').on('change',function(){
+				if ($(this).find('option:selected').attr('value') !== "all"){
+					$('.news-post[category!="' + $(this).find('option:selected').attr('value') + '"]').hide();
+					$('.news-post[category="' + $(this).find('option:selected').attr('value') + '"]').show();
+				} else {
+					$('.news-post').show();
+				}
+			});
+
+		    function initializeGallery() {
+		      
+		        $('.media .page').each(function() { // the containers for all your galleries
+		          $(this).magnificPopup({
+		              delegate: 'a', // the selector for gallery item
+		              type: 'image',
+		              gallery: {
+		                enabled:true
+		              },
+		              image: {
+		                titleSrc: 'data-title'
+		              },
+		          });
+		        });
+		      
+		        $('#media-posts').each(function() { // the containers for all your galleries
+		          $(this).magnificPopup({
+		              delegate: 'a', // the selector for gallery item
+		              type: 'image',
+		              gallery: {
+		                enabled:true
+		              },
+		              image: {
+		                titleSrc: 'data-title'
+		              },
+		          });
+		        });
+	        }initializeGallery();
 		});
 
 		$(function() {
@@ -1539,6 +1476,7 @@
 		        $('html,body').animate({
 		          scrollTop: target.offset().top - ($(window).outerWidth() > 767 ? 88 : 44)
 		        }, {duration:1000, queue: false});
+				$('#navigation').removeClass('active');
 		        return false;
 		      }
 		    }

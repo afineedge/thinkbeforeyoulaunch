@@ -19,6 +19,17 @@
   ));
   $articlesRecord = @$articlesRecords[0]; // get first record
 
+  // load record from 'contact_info'
+  list($contact_infoRecords, $contact_infoMetaData) = getRecords(array(
+    'tableName'   => 'contact_info',
+    'where'       => '', // load first record
+    'loadUploads' => true,
+    'allowSearch' => false,
+    'limit'       => '1',
+  ));
+  $contact_infoRecord = @$contact_infoRecords[0]; // get first record
+  if (!$contact_infoRecord) { dieWith404("Record not found!"); } // show error message if no record found
+
   foreach ($homepage_contentRecord['open_graph_image'] as $index => $upload){
   	$open_graph_image = htmlencode($upload['urlPath']);
   }
@@ -152,6 +163,7 @@
 
 				</div>
 				<div id="follow">
+					<a href="<?php echo htmlencode($contact_infoRecord['facebook_url']) ?>" target="_blank">
 						<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
 						<svg version="1.1"
 							 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
@@ -163,15 +175,16 @@
 								h-3.2v11.5h-4.8V20.6h-2.3v-4.1h2.3v-2.6c0-1.9,0.9-4.8,4.8-4.8l3.5,0v4h-2.6c-0.4,0-1,0.2-1,1.1v2.4h3.6L24.8,20.6z M24.8,20.6"/>
 						</g>
 						</svg>
-					Connect With Us <span class="no-mobile">on Facebook</span>
+						Connect With Us <span class="no-mobile">on Facebook</span>
+					</a>
 				</div>
 				<div id="navigation">
 					<ul>
-						<li><a href="index.html#main-image">Home</a></li>
-						<li><a href="index.html#news-and-multimedia">News &amp; Media</a></li>
-						<li><a href="index.html#organizations">Organizations</a></li>
-						<li><a href="index.html#about-blurb">About Us</a></li>
-						<li><a href="index.html#contact">Contact Us</a></li>
+						<li><a href="../#main-image">Home</a></li>
+						<li><a href="../#news-and-multimedia">News &amp; Media</a></li>
+						<li><a href="../#organizations">Organizations</a></li>
+						<li><a href="../#about-blurb">About Us</a></li>
+						<li><a href="#contact">Contact Us</a></li>
 						<li>
 							<a href="#" id="download-btn">
 								<div class="accent-bg">Download Infographic</div>
@@ -219,48 +232,6 @@
 			<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
 		</div>
 	</div>
-	<div id="contact">
-		<div class="container">
-			<div class="col-xs-24 col-sm-10">
-				<h3>Contact Us</h3>
-				Interested in helping our cause or have a question? Complete the form below and we will get back to you as soon as we can.
-				<form>
-					<div class="form-group">
-						<label for="name">Name</label>
-						<input type="text" class="form-control" name="name" placeholder="Your Name">
-					</div>
-					<div class="form-group">
-						<label for="name">Email Address</label>
-						<input type="email" class="form-control" name="email" placeholder="Your Email Address">
-					</div>
-					<div class="form-group">
-						<label for="name">Comments/Questions</label>
-						<textarea class="form-control" name="comments" placeholder="Your Comments/Questions"></textarea>
-					</div>
-					<button type="submit" class="btn btn-default">Submit</button>
-				</form>
-				<hr class="visible-xs" />
-			</div>
-			<div class="col-xs-24 col-sm-14">
-				<h3>Stay Up To Date</h3>
-				Sign up for our monthly newsletter to receive articles, videos and we will announce one lucky winner of some Think Before You Launch swag.<br /><br />
-				<a href="#">Sign Up For Our Monthly Newsletter &gt;</a>
-				<hr />
-				<h3>We're Here to Help</h3>
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius, justo eu semper tincidunt, diam felis lobortis lectus, non convallis leo erat eu mi. Vestibulum pretium a massa vel aliquet. Nam nec elit sollicitudin, lacinia risus vitae, sodales sapien. Praesent ac orci nec nunc venenatis lacinia at ut nunc. Integer suscipit posuere eros, fringilla luctus.<br /><br />
-				<a href="#">Learn More About TBYL &gt;</a>
-			</div>
-		</div>
-	</div>
-	<div id="footer">
-		<div class="container">
-			&copy; 2015 Think Before You Launch
-		</div>
-	</div>
-	<div class="overlay"></div>
-	<script>
-		$(document).ready(function(){
-		});
-	</script>
+	<?php include "../includes/footer.php"; ?>
 </body>
 </html>
