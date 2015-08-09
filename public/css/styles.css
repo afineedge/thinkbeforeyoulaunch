@@ -4768,8 +4768,8 @@ body.no-scroll {
 }
 #about-blurb {
   padding: 12px 0;
-  font-size: 12px;
-  line-height: 20px;
+  font-size: 16px;
+  line-height: 1.5;
   background-color: #2d3a4a;
   color: #ffffff;
   position: relative;
@@ -4854,11 +4854,13 @@ body.no-scroll {
   margin: 0px 0px 8px;
   font-weight: 600;
 }
+#about-blurb .container p {
+  margin-bottom: 20px;
+}
+#about-blurb .container p:last-child {
+  margin-bottom: 0;
+}
 @media (min-width: 768px) {
-  #about-blurb {
-    font-size: 14px;
-    line-height: 24px;
-  }
   #about-blurb .container {
     padding-top: 60px;
     padding-bottom: 60px;
@@ -5469,7 +5471,6 @@ body.no-scroll {
     padding-top: 0px;
     padding-bottom: 0px;
     padding-left: 0px;
-    text-align: left;
   }
 }
 #check-yourself .container #check-yourself-image-wrapper #check-yourself-image {

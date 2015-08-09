@@ -267,7 +267,7 @@
 		</div>
 	</div>
 	<div id="about-blurb">
-		<div class="container">
+		<div class="container text-center">
 			<h3><?php echo htmlencode($homepage_contentRecord['mission_headline']) ?></h3>
 			<?php echo $homepage_contentRecord['mission_content']; ?>
 		</div>
@@ -526,7 +526,7 @@
 						<defs>
 						</defs>
 						<g>
-							<path d="M8.5,13.6c0.7,1.5,1.8,2.9,3.2,4.3c-2.8-0.4-5.1-2-6.4-4.3L8.5,13.6z M11.6,0.1c-2.6,0.4-4.9,2-6.3,4.2l3.2,0
+							<path fill="#2C3A49" d="M8.5,13.6c0.7,1.5,1.8,2.9,3.2,4.3c-2.8-0.4-5.1-2-6.4-4.3L8.5,13.6z M11.6,0.1c-2.6,0.4-4.9,2-6.3,4.2l3.2,0
 								C9.2,2.8,10.2,1.4,11.6,0.1L11.6,0.1z M12.6,4.3l0-4.3h0C11.2,1.3,10,2.8,9.2,4.3L12.6,4.3z M5.3,5.7l-0.6,0L4,5.7L4,10.2L1.5,5.6
 								l-0.7,0l-0.7,0L0,12l0.6,0l0.6,0l0.1-4.6l2.6,4.6l0.7,0l0.7,0L5.3,5.7z M11.3,6.9l0-0.6l0-0.6l-4.7,0l-0.1,6.4l4.9,0.1l0-0.6l0-0.6
 								l-3.5,0l0-1.7l3.1,0l0-0.6l0-0.6l-3.1,0l0-1.4L11.3,6.9z M17.7,10.4l-0.9-4.7l-0.7,0l-0.7,0l-1,4.7l-1-4.7l-1.4,0l1.7,6.4l0.6,0
@@ -1071,7 +1071,7 @@
 							</svg>
 						</div>
 						<div class="check-copy">
-							Check to see if you are outside of 5 miles from any airport/airfield.
+							Maintain situational awareness and be prepared to take evasive action if a low flying manned aircraft enters the area.
 						</div>
 					</div>
 				</div>
