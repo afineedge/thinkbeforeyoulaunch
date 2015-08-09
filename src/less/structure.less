@@ -1,13 +1,12 @@
 body {
+
+	h3 {
+	    font-weight: 600;
+	}
 	
 	&.no-scroll {
 		overflow: hidden;
 	}
-}
-
-.max-container {
-	margin: 0 auto;
-	max-width: 1170px;
 }
 
 #header {
@@ -20,12 +19,8 @@ body {
 	.purple-bg;
 	box-shadow: 0 0 8px 0 rgba(0,0,0,1);
 
-	.container-fluid{
+	.container{
 		position: relative;
-
-		.max-container {
-			position: relative;
-		}
 
 		#logo {
 			width: 60px;
@@ -42,7 +37,10 @@ body {
 		}
 
 		#navigation-wrapper {
-			padding-left: 120px;
+
+			@media (min-width: @screen-sm-min) {
+				padding-left: 120px;
+			}
 
 			#navigation-button {
 				width:40px;
@@ -96,24 +94,58 @@ body {
 			}
 
 			#navigation {
-				display: table;
-				table-layout: fixed;
-				clear: both;
-				float: right;
-				margin-top:16px;
+			    clear: both;
+			    background-color: @brand-primary;
+			    position: absolute;
+			    width: 100%;
+			    top: 44px;
+			    border-top: 1px solid #fff;
+			    right: -104%;
+				font-size: 14px;
+				transition: .5s;
+				-webkit-transition: .5s;
+				box-shadow: 0 0 3px 0 rgba(0,0,0,.6);
+
+				@media (min-width: @screen-sm-min) {
+					position: relative;
+					width: auto;
+					border-top: 0px;
+					display: table;
+					table-layout: fixed;
+					float: right;
+					margin: 0px;
+					font-size: 11px;
+					right: auto;
+					top: auto;
+					transition: 0s;
+					-webkit-transition: 0s;
+					box-shadow: none;
+				}
+
+				&.active {
+					right: 0;
+				}
 
 				ul {
-					display: none;
 					list-style: none;
 					margin: 0px;
-					padding: 0px;
+					padding: 15px;
+					text-align: right;
+
+					@media (min-width: @screen-sm-min) {
+						display: inline-block;
+						padding: 16px 0 0;
+					}
 
 					li {
-						display: inline-block;
+						display: block;
+
+						@media (min-width: @screen-sm-min) {
+							display: inline-block;
+						}
 
 						a {
 							display: block;
-							font-size: 11px;
 							line-height: 20px;
 							text-decoration: none;
 							text-transform: uppercase;
@@ -121,11 +153,14 @@ body {
 							font-weight: 600;
 							padding: 10px;
 
-							&:hover {
-								text-decoration: none;
-								background-color: rgba(255,255,255,.1);
-								transition: .3s all;
-								-webkit-transition: .3s all;
+							@media (min-width: @screen-sm-min) {
+
+								&:hover {
+									text-decoration: none;
+									background-color: rgba(255,255,255,.1);
+									transition: .3s all;
+									-webkit-transition: .3s all;
+								}
 							}
 
 							&#download-btn{
@@ -155,7 +190,7 @@ body {
 	@media (min-width: @screen-sm-min){
 		height: 88px;
 
-		.container-fluid{
+		.container{
 
 			#logo {
 				width: 90px;
@@ -170,19 +205,6 @@ body {
 
 				#follow {
 					display: block;
-				}
-
-				#navigation {
-
-					ul {			
-						display: inline-block;			
-
-						li {
-
-							a {
-							}
-						}
-					}
 				}
 			}
 		}
@@ -363,6 +385,14 @@ body {
 	.purple-bg;
 	position: relative;
 	overflow:hidden;
+	background-image: none;
+    background-position-x: 70%;
+    background-position-y: 30px;
+    background-repeat: repeat-y;
+
+    @media (min-width: @screen-sm-min){
+    	background-image: url(../img/dots.png);
+    }
 
 	&:before { 
 		display: block; 
@@ -396,10 +426,10 @@ body {
 	    top: 50%;
 	    margin-left: -300px;
 	    margin-top: -300px;
-	    opacity: .6;
+	    opacity: .9;
 
 	    @media (min-width: @screen-sm-min){
-	    	opacity: 1;
+	    	opacity: .9;
 	    }
 
 	    @media (min-width: @screen-lg-min){
@@ -477,6 +507,7 @@ body {
 				.entry {
 					display:block;
 					margin: 16px;
+					height: 60px;
 
 					.headline {
 						font-weight: 600;
@@ -490,8 +521,8 @@ body {
 					}
 
 					img {
-						width: 60px;
-						height: 60px;
+						max-width: 60px;
+						max-height: 60px;
 						float: left;
 						margin-right: 16px;
 
@@ -502,9 +533,11 @@ body {
 					border-top: 1px solid transparent;
 
 					.entry {
-						 img {
-							width: 85px;
-							height: 85px;
+						height: 85px;
+
+						img {
+							max-width: 85px;
+							max-height: 85px;
 						}
 					}
 				}
@@ -517,18 +550,26 @@ body {
 			.page{
 				padding: 8px;
 
-				.entry {
-					display:block;
-					float: left;
-					width: 50%;
-					padding: 8px;
-
-					img {
+				.media-item {
+				    float: left;
+				    width: 50%;
+				    padding: 8px;
+				
+					.entry {
+						display:block;
+						float: left;
 						width: 100%;
-						display: block;
+					    background-size: cover;
+					    padding-top: 66.7777777777%;
 
 						&:hover{
 							outline:1px solid rgba(0,0,0,.05);
+						}
+
+						img {
+							width: 100%;
+							display: block;
+							opacity: 0;
 						}
 					}
 				}
@@ -541,6 +582,7 @@ body {
 					.entry {
 
 						width: 25%;
+				    	padding-top: 16.666666667%;
 					}
 				}
 			}
@@ -583,6 +625,14 @@ body {
 	.purple-bg;
 	position: relative;
 	overflow:hidden;
+	background-image: none;
+    background-position-x: 70%;
+    background-position-y: 30px;
+    background-repeat: repeat-y;
+
+    @media (min-width: @screen-sm-min){
+    	background-image: url(../img/dots.png);
+    }
 
 	&:after {
 	    width: 600px;
@@ -603,10 +653,10 @@ body {
 	    top: 50%;
 	    margin-left: -300px;
 	    margin-top: -300px;
-	    opacity: .6;
+	    opacity: .9;
 
 	    @media (min-width: @screen-sm-min){
-	    	opacity: 1;
+	    	opacity: .9;
 	    }
 
 	    @media (min-width: @screen-lg-min){
@@ -653,9 +703,10 @@ body {
 					text-align: left;
 				}
 
-				svg {
-					width: 80px;
-					height: 80px;
+				svg,
+				img {
+					height: 60px;
+					margin-bottom: 6px;
 					display: inline-block;
 				}
 			}
@@ -708,7 +759,6 @@ body {
 	margin: 0 auto;
 	
 	#airspace-items {
-		background-image: url('../img/airspace.jpg');
 	    background-image: url('../img/airspace.jpg');
 	    background-size: cover;
 	    background-attachment: fixed;
@@ -750,26 +800,28 @@ body {
 			 	.airspace-item-content {
 			 		display:table-cell;
 					vertical-align: middle;
-					font-size:12px;
+					font-size:13px;
 					font-weight: 800;
-					text-shadow: 1px 1px 3px rgba(0,0,0,.4);
+					text-shadow: 1px 1px 3px rgba(0,0,0,.2);
 
-					svg {
+					svg,
+					img {
 						width: 60px;
 						height: 60px;
 						display: block;
 						margin: 0 auto 4px;
 						transition: .2s ease-out;
 						-webkit-transition: .2s ease-out;
-						-webkit-backface-appearance: none;
+						-webkit-backface-visibility: hidden;
 					}
 			 		
 			 	}
 
 			 	&:hover .airspace-item-content {
-			 		svg {
-				 		transform: translateY(-4px);
-				 		-webkit-transform: translateY(-4px);
+			 		svg,
+			 		img {
+				 		transform: translateY(-6px) translateZ(1px) scale(1.1);
+				 		-webkit-transform: translateY(-6px) translateZ(1px) scale(1.1);
 			 		}
 			 	}
 			 }
@@ -782,6 +834,14 @@ body {
 	.purple-bg;
 	position: relative;
 	overflow:hidden;
+	background-image: none;
+    background-position-x: 30%;
+    background-position-y: 30px;
+    background-repeat: repeat-y;
+
+    @media (min-width: @screen-sm-min){
+    	background-image: url(../img/dots.png);
+    }
 
 	&:after {
 	    width: 600px;
@@ -802,10 +862,10 @@ body {
 	    top: 50%;
 	    margin-left: -300px;
 	    margin-top: -300px;
-	    opacity: .6;
+	    opacity: .9;
 
 	    @media (min-width: @screen-sm-min){
-	    	opacity: 1;
+	    	opacity: .9;
 	    }
 
 	    @media (min-width: @screen-lg-min){
@@ -816,7 +876,7 @@ body {
 	    }
 	}
 
-	.container-fluid{
+	.container{
 		min-height: 400px;
 		position: relative;
 		z-index: 2;
@@ -831,10 +891,12 @@ body {
 			-webkit-transform: rotateX(70deg) scale(.4);
 		}
 
-		&:hover #damage-drone {
-		    transition: 1s ease-in;
-		    transform: translateX(-40%) translateY(210%) rotateX(-20deg) scale(1);
-		    -webkit-transform: translateX(-40%) translateY(210%) rotateX(-20deg) scale(1);
+	    #lightning1,
+	    #lightning2 {
+		    transform-origin: bottom;
+		    transform: scale(0);
+		    -webkit-transform-origin: bottom;
+		    -webkit-transform: scale(0);
 		}
 
 		#damage-copy {
@@ -862,9 +924,10 @@ body {
 					text-align: right;
 				}
 
-				svg {
-					width: 60px;
+				svg,
+				img {
 					height: 60px;
+					margin-bottom: 6px;
 					display: inline-block;
 				}
 
@@ -885,7 +948,6 @@ body {
 			vertical-align: bottom;
 			padding-top: 20px;
 			text-align: center;
-			overflow-y: hidden;
 
 			@media (min-width: @screen-xs-min){
 				display: table-cell;
@@ -893,8 +955,8 @@ body {
 				text-align: right;
 			}
 
-			svg {
-				margin-bottom: -5px;
+			svg,
+			img {
 				width:100%;
 				display: inline-block;
 				max-width: 200px;
@@ -905,6 +967,15 @@ body {
 				}
 			}
 		}
+	}
+
+	&.active{
+		 #damage-drone {
+		    transition: 1s ease-in;
+		    transform: translateX(-40%) translateY(210%) rotateX(-20deg) scale(1);
+		    -webkit-transform: translateX(-40%) translateY(210%) rotateX(-20deg) scale(1);
+	    }
+
 	}
 }
 #check-yourself {
@@ -934,7 +1005,8 @@ body {
 
 				@media (min-width: @screen-sm-min){
 					max-width: 400px;
-					padding-top: 0px;
+					padding-top: 40px;
+					padding-bottom: 40px;
 					padding-right: 40px;
 				}
 
@@ -949,6 +1021,8 @@ body {
 					margin: 10px 0;
 					transition: .3s;
 					-webkit-transition: .3s;
+					backface-visibility: hidden;
+					-webkit-backface-visibility: hidden;
 
 					&:hover {
 						transform: translatex(4px);
@@ -993,6 +1067,7 @@ body {
 				padding-top: 0px;
 				padding-bottom: 0px;
 				padding-left: 0px;
+				text-align: left;
 			}
 
 			#check-yourself-image {
@@ -1062,15 +1137,25 @@ body {
 			display: table-cell;
 			transition: .3s;
 			-webkit-transition: .3s;
-
-			&:hover {
-				transform:scale(1.06) translateY(-2px);
-				-webkit-transform:scale(1.06) translateY(-2px);
-			}
+			backface-visibility: hidden;
+			-webkit-backface-visibility: hidden;
 
 			svg {
+				backface-visibility: hidden;
+				-webkit-backface-visibility: hidden;
 				width: 40px;
 				fill:#fff;
+				border-radius: 50%;
+			}
+
+			&:hover {
+
+				svg {
+					transition: .1s;
+					-webkit-transition: .1s;
+					border: 2px solid @brand-accent;
+					box-shadow: 0 0 3px 0 @brand-accent inset;
+				}
 			}
 		}
 	}
@@ -1266,8 +1351,9 @@ body {
 
 			    .news-post-image {
 				    display: table-cell;
-				    width: 80px;
+				    width: 104px;
 			   	 	vertical-align: top;
+				    padding-right: 24px;
 
 				    img {
 					    width: 100%;
@@ -1276,7 +1362,6 @@ body {
 
 				.news-post-copy {
 				    display: table-cell;
-				    padding-left: 24px;
 				    font-size: 12px;
 			   	 	vertical-align: top;
 			   	 	line-height: 14px;
@@ -1302,6 +1387,9 @@ body {
 			    width: 49%;
 
 			    .media-post-image {
+				    padding-bottom: 66%;
+				    background-size: cover;
+				    background-position: center;
 
 				    img {
 					    width: 100%;
@@ -1315,29 +1403,37 @@ body {
 #news-header {
 	.inverted-bg;
 	margin: 0 auto;
-	padding-top: 44px;
+	padding:44px 15px 0px;
 
 	@media (min-width: @screen-sm-min){
-		padding-top: 88px;
+		padding: 88px 40px 10px;
 	}
 
-	.container{
-		max-width: 670px;
+	.container {
+		padding-left: 0px;
+		padding-right: 0px;
+		max-width: 570px;
+		padding-bottom: 20px;
+		border-bottom: 2px solid #ccc;
 
 		#news-photo{
 			margin-top: 40px;
 			position: relative;
-			.inverted;
+			text-shadow: 1px 1px 3px rgba(0,0,0,.75);
 
 			img {
 				width: 100%;
 			}
 
 			#news-photo-copy {
-				position: absolute;
-				bottom: 10px;
-				left: 20px;
-				right: 20px;
+
+				&.img{
+					position: absolute;
+					bottom: 10px;
+					left: 20px;
+					right: 20px;
+					.inverted;
+				}
 
 				@media (min-width: @screen-sm-min){
 					bottom: 20px;
@@ -1369,7 +1465,7 @@ body {
 	line-height: 22px;
 
 	@media (min-width: @screen-sm-min){
-		padding:40px 40px 10px;
+		padding:10px 40px 10px;
 	}
 
 	.container {
@@ -1429,7 +1525,7 @@ body {
 }
 
 #organizations-items {
-	padding: 60px;	
+	padding: 60px 0 0;	
 	.intermediate-bg;
 
 	.container {
@@ -1442,16 +1538,37 @@ body {
 		}
 	
 		.organizations-item {
-			padding: 10px;
+			padding: 30px;
+
+			@media (min-width: @screen-sm-min){
+				height: 144px;
+			}
 
 			img {
 				max-width:100%;
 			}
+
+			.organizations-item-content {
+				display: none;
+					padding: 20px !important;
+
+				p {
+					margin: 0px;
+					padding: 0px;
+					font-size: 12px;
+				}
+			}
 		}
 	}
+}
+#organizations-button {
+	padding: 0 60px;	
+	.intermediate-bg;
 
 	.accent-button {
-		margin: 30px 30px 0;
+		@media (min-width: @screen-sm-min){
+			margin: 30px;
+		}
 	}
 }
 
