@@ -217,11 +217,18 @@
 		<div class="container">
 			<?php foreach ($organization_listingsRecords as $record): ?>
 				<div class="organizations-item col-xs-24 col-sm-8">
-					<?php foreach ($record['logo'] as $index => $upload): ?>
-						<img src="<?php echo htmlencode($upload['urlPath']) ?>" />
-					<?php endforeach; ?>
+					<?php if (@$record['logo']){?>
+						<?php foreach ($record['logo'] as $index => $upload): ?>
+							<img src="<?php echo htmlencode($upload['urlPath']) ?>" />
+						<?php endforeach; ?>
+					<?php } else { ?>
+						<div class="organization-name"><?php echo $record['title']; ?></div>
+					<?php } ?>
 					<div class="organizations-item-content">
+						<h3><?php echo $record['title']; ?></h3>
 						<?php echo $record['content']; ?>
+						<hr />
+						<a href="<?php echo $record['site_url']; ?>" target="_blank"><img src="../img/globe.png" />Visit Website</a>
 					</div>
 				</div>
 			<?php endforeach; ?>
@@ -235,10 +242,34 @@
 	<?php include "../includes/footer.php"; ?>
 	<script>
 		$(document).ready(function(){
-			// $('.organizations-item').click(function(){
-			// 	$('.organizations-item-content').hide();
-			// 	$(this).find('.organizations-item-content').slideDown();
-			// })
+			$(window).on('load resize', function(){
+				$('.organizations-item-content.active').remove();
+				$('.organizations-item').removeClass('active');
+				offsets = [];
+				$('.organizations-item').each(function(){
+					offsets.push($(this).offset().top);
+				});
+			});
+			$('.organizations-item').click(function(){
+				if (!$(this).hasClass('active')){
+					$('.organizations-item-content.active').remove();
+					$('.organizations-item').removeClass('active');
+					var insertIndex = offsets.lastIndexOf($(this).offset().top);
+					if ($(window).width() < 768){
+						$('html, body').animate({scrollTop: $(this).offset().top - 64 });
+					}
+					$(this)
+						.addClass('active')
+						.find('.organizations-item-content')
+						.clone()
+						.addClass('active')
+						.insertAfter('.organizations-item:eq(' + insertIndex + ')')
+						.slideDown();
+				} else {
+					$('.organizations-item-content.active').remove();
+					$('.organizations-item').removeClass('active');
+				}
+			});
 		})
 	</script>
 </body>
