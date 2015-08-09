@@ -22,10 +22,6 @@
 				<hr class="visible-xs" />
 			</div>
 			<div class="col-xs-24 col-sm-14">
-				<h3><?php echo htmlencode($homepage_contentRecord['newsletter_headline']) ?></h3>
-				<?php echo $homepage_contentRecord['newsletter_copy']; ?>
-				<a href="<?php echo htmlencode($homepage_contentRecord['newsletter_link_url']) ?>"><?php echo htmlencode($homepage_contentRecord['newsletter_link_copy']) ?> &gt;</a>
-				<hr />
 				<h3><?php echo htmlencode($homepage_contentRecord['learn_more_headline']) ?></h3>
 				<?php echo $homepage_contentRecord['learn_more_copy']; ?>
 				<a href="<?php echo htmlencode($homepage_contentRecord['learn_more_link_url']) ?>"><?php echo htmlencode($homepage_contentRecord['learn_more_link_copy']) ?> &gt;</a>
