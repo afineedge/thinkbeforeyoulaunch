@@ -1248,9 +1248,13 @@
 				<?php foreach ($organization_listingsRecords as $record): ?>
 					<div class="organizations-item">
 						<a href="organizations/">
-							<?php foreach ($record['logo'] as $index => $upload): ?>
-								<img src="<?php echo htmlencode($upload['urlPath']) ?>" />
-							<?php endforeach; ?>
+							<?php if (@$record['logo']){?>
+								<?php foreach ($record['logo'] as $index => $upload): ?>
+									<img src="<?php echo htmlencode($upload['urlPath']) ?>" />
+								<?php endforeach; ?>
+							<?php } else { ?>
+								<div class="organization-name"><?php echo $record['title']; ?></div>
+							<?php } ?>
 						</a>
 					</div>
 				<?php endforeach; ?>
