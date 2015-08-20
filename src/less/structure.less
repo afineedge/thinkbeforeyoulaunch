@@ -898,8 +898,8 @@ body {
 				font-weight: 600;
 				overflow:hidden;
 				position: relative;
-				transition: opacity 2s;
-				-webkit-transition: opacity 2s;
+				transition: opacity 1.5s;
+				-webkit-transition: opacity 1.5s;
 
 				&.not-selected {
 				    opacity: 0;
@@ -1013,19 +1013,6 @@ body {
 			table-layout: fixed;
 		}
 
-		#damage-drone {
-			transform: rotateX(70deg) scale(.4);
-			-webkit-transform: rotateX(70deg) scale(.4);
-		}
-
-	    #lightning1,
-	    #lightning2 {
-		    transform-origin: bottom;
-		    transform: scale(0);
-		    -webkit-transform-origin: bottom;
-		    -webkit-transform: scale(0);
-		}
-
 		#damage-copy {
 			vertical-align: middle;
 			text-align: left;
@@ -1071,6 +1058,17 @@ body {
 			}
 		}
 
+		#damage-wrapper {
+			max-width: 200px;
+		    display: inline-block;
+		    width: 100%;
+		    position: relative;
+
+			@media (min-width: @screen-xs-min){
+				max-width:400px;
+			}
+		}
+
 		#damage-image {
 			vertical-align: bottom;
 			padding-top: 20px;
@@ -1093,15 +1091,29 @@ body {
 					max-width:400px;
 				}
 			}
+
+		    #lightning1,
+		    #lightning2 {
+			    transform-origin: bottom;
+			    -webkit-transform-origin: bottom;
+			    opacity: 0;
+			}
+
+		    #damage-drone {
+			    transform-origin: bottom;
+			    -webkit-transform-origin: bottom;
+			    position: absolute;
+			    width:30%;
+			    bottom: 100%;
+			    right: 100%;
+			    transform: scale(.2);
+			    -webkit-transform: scale(.2);
+			}
+		
 		}
 	}
 
 	&.active{
-		 #damage-drone {
-		    transition: 1s ease-in;
-		    transform: translateX(-40%) translateY(210%) rotateX(-20deg) scale(1);
-		    -webkit-transform: translateX(-40%) translateY(210%) rotateX(-20deg) scale(1);
-	    }
 
 	}
 }
@@ -1709,6 +1721,7 @@ body {
 
 				img {
 					-webkit-filter: grayscale(0%);
+					-moz-filter: grayscale(0%);
 					filter: grayscale(0%);
 					opacity: 1;
 				}
@@ -1719,6 +1732,7 @@ body {
 
 				img {
 					-webkit-filter: grayscale(0%);
+					-moz-filter: grayscale(0%);
 					filter: grayscale(0%);
 					opacity: 1;
 				}
@@ -1734,6 +1748,7 @@ body {
 	line-height: 22px;
 	padding: 20px;
 	text-align: left;
+	margin-left: -2px;
 
 	@media (min-width: @screen-sm-min){
 		padding: 40px;

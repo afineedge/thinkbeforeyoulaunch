@@ -5290,8 +5290,8 @@ body.no-scroll {
   font-weight: 600;
   overflow: hidden;
   position: relative;
-  transition: opacity 2s;
-  -webkit-transition: opacity 2s;
+  transition: opacity 1.5s;
+  -webkit-transition: opacity 1.5s;
 }
 #airspace #airspace-wrapper #airspace-items .airspace-item.not-selected {
   opacity: 0;
@@ -5406,17 +5406,6 @@ body.no-scroll {
     table-layout: fixed;
   }
 }
-#damage .container #damage-drone {
-  transform: rotateX(70deg) scale(0.4);
-  -webkit-transform: rotateX(70deg) scale(0.4);
-}
-#damage .container #lightning1,
-#damage .container #lightning2 {
-  transform-origin: bottom;
-  transform: scale(0);
-  -webkit-transform-origin: bottom;
-  -webkit-transform: scale(0);
-}
 #damage .container #damage-copy {
   vertical-align: middle;
   text-align: left;
@@ -5460,6 +5449,17 @@ body.no-scroll {
   height: 30px;
   display: inline-block;
 }
+#damage .container #damage-wrapper {
+  max-width: 200px;
+  display: inline-block;
+  width: 100%;
+  position: relative;
+}
+@media (min-width: 480px) {
+  #damage .container #damage-wrapper {
+    max-width: 400px;
+  }
+}
 #damage .container #damage-image {
   vertical-align: bottom;
   padding-top: 20px;
@@ -5485,10 +5485,21 @@ body.no-scroll {
     max-width: 400px;
   }
 }
-#damage.active #damage-drone {
-  transition: 1s ease-in;
-  transform: translateX(-40%) translateY(210%) rotateX(-20deg) scale(1);
-  -webkit-transform: translateX(-40%) translateY(210%) rotateX(-20deg) scale(1);
+#damage .container #damage-image #lightning1,
+#damage .container #damage-image #lightning2 {
+  transform-origin: bottom;
+  -webkit-transform-origin: bottom;
+  opacity: 0;
+}
+#damage .container #damage-image #damage-drone {
+  transform-origin: bottom;
+  -webkit-transform-origin: bottom;
+  position: absolute;
+  width: 30%;
+  bottom: 100%;
+  right: 100%;
+  transform: scale(0.2);
+  -webkit-transform: scale(0.2);
 }
 #check-yourself {
   font-size: 16px;
@@ -6050,6 +6061,7 @@ body.no-scroll {
 }
 #organizations-items .container .organizations-item:hover img {
   -webkit-filter: grayscale(0%);
+  -moz-filter: grayscale(0%);
   filter: grayscale(0%);
   opacity: 1;
 }
@@ -6058,6 +6070,7 @@ body.no-scroll {
 }
 #organizations-items .container .organizations-item.active img {
   -webkit-filter: grayscale(0%);
+  -moz-filter: grayscale(0%);
   filter: grayscale(0%);
   opacity: 1;
 }
@@ -6069,6 +6082,7 @@ body.no-scroll {
   line-height: 22px;
   padding: 20px;
   text-align: left;
+  margin-left: -2px;
 }
 @media (min-width: 768px) {
   .organizations-item-content {
