@@ -5181,7 +5181,7 @@ body.no-scroll {
   text-transform: uppercase;
 }
 #airspace {
-  margin: 0 auto;
+  margin: 0 auto 60px;
 }
 #airspace #airspace-wrapper {
   background-image: url('../img/airspace.jpg');
@@ -5198,8 +5198,8 @@ body.no-scroll {
   width: 100%;
   z-index: 3;
   background: rgba(255, 255, 255, 0.6);
-  transition: bottom 2s;
-  -webkit-transition: bottom 2s;
+  transition: bottom 1s;
+  -webkit-transition: bottom 1s;
 }
 #airspace #airspace-wrapper .airspace-selected .close-btn {
   position: absolute;
@@ -5226,8 +5226,8 @@ body.no-scroll {
   opacity: 0;
   transform: scale(0.5);
   -webkit-transform: scale(0.5);
-  transition: 2s;
-  -webkit-transition: 2s;
+  transition: 1s;
+  -webkit-transition: 1s;
 }
 @media (min-width: 768px) {
   #airspace #airspace-wrapper .airspace-selected .airspace-selected-content {
@@ -5262,12 +5262,12 @@ body.no-scroll {
 #airspace #airspace-wrapper .airspace-selected .airspace-selected-content .airspace-selected-content-right {
   width: 100%;
   display: block;
-  padding-left: 40px;
   vertical-align: middle;
 }
 @media (min-width: 768px) {
   #airspace #airspace-wrapper .airspace-selected .airspace-selected-content .airspace-selected-content-right {
     display: table-cell;
+    padding-left: 40px;
     width: 100%;
   }
 }

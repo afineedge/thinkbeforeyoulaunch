@@ -548,7 +548,7 @@
 				<?php endforeach ?>
 			</div>
 		</div>
-		<div class="accent-button">Learn More</div>
+		<!-- <div class="accent-button">Learn More</div> -->
 	</div>
 	<div id="damage">
 		<div class="container">
