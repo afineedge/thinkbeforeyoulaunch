@@ -1149,9 +1149,10 @@
 				<h4><?php echo htmlencode($homepage_contentRecord['organizations_subhead']) ?></h4>
 			</div>
 			<div id="organizations-list">
+			<?php $counter = 1; ?>
 			<?php foreach ($organization_listingsRecords as $record): ?>
 				<div class="organizations-item">
-					<a href="organizations/?<?php echo $record['num']; ?>">
+					<a href="organizations/?<?php echo $counter; ?>">
 						<?php if (@$record['logo']){?>
 							<?php foreach ($record['logo'] as $index => $upload): ?>
 								<img src="<?php echo htmlencode($upload['urlPath']) ?>" />
@@ -1161,6 +1162,7 @@
 						<?php } ?>
 					</a>
 				</div>
+				<?php $counter++; ?>
 			<?php endforeach; ?>
 			</div>
 			<div class="primary-button"><a href="organizations/">Learn More About Our Stakeholders</a></div>

@@ -341,7 +341,7 @@
 				}
 			});
 		});
-		<?php if ($_SERVER['QUERY_STRING']){ ?>
+		<?php if (@$_SERVER['QUERY_STRING']){ ?>
 			$(document).ready(function(){
 				$(window).on('load', function(){
 
@@ -350,7 +350,7 @@
 						offsets.push($(this).offset().top);
 					});
 
-					var organization = $('.organizations-item').eq(<?php echo $_SERVER['QUERY_STRING'] - 1; ?>);
+					var organization = $('.organizations-item').eq(<?php echo @$_SERVER['QUERY_STRING'] - 1; ?>);
 					var insertIndex = offsets.lastIndexOf(organization.offset().top);
 
 					$('html, body').animate({scrollTop: organization.offset().top - 104 });
