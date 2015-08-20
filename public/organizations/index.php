@@ -40,6 +40,13 @@
   $contact_infoRecord = @$contact_infoRecords[0]; // get first record
   if (!$contact_infoRecord) { dieWith404("Record not found!"); } // show error message if no record found
 
+  // load records from 'supporters_listings'
+  list($supporters_listingsRecords, $supporters_listingsMetaData) = getRecords(array(
+    'tableName'   => 'supporters_listings',
+    'loadUploads' => true,
+    'allowSearch' => false,
+  ));
+
   foreach ($homepage_contentRecord['open_graph_image'] as $index => $upload){
   	$open_graph_image = htmlencode($upload['urlPath']);
   }
@@ -175,7 +182,7 @@
 
 				</div>
 				<div id="follow">
-						<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
+					<a href="<?php echo htmlencode($contact_infoRecord['facebook_url']) ?>" target="_blank">
 						<svg version="1.1"
 							 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
 							 x="0px" y="0px" viewBox="0 0 39.7 39.7" xml:space="preserve">
@@ -186,7 +193,8 @@
 								h-3.2v11.5h-4.8V20.6h-2.3v-4.1h2.3v-2.6c0-1.9,0.9-4.8,4.8-4.8l3.5,0v4h-2.6c-0.4,0-1,0.2-1,1.1v2.4h3.6L24.8,20.6z M24.8,20.6"/>
 						</g>
 						</svg>
-					Connect With Us <span class="no-mobile">on Facebook</span>
+						Connect With Us <span class="no-mobile">on Facebook</span>
+					</a>
 				</div>
 				<div id="navigation">
 					<ul>
@@ -232,6 +240,11 @@
 					</div>
 				</div>
 			<?php endforeach; ?>
+			<div class="clearfix"></div><br/>
+			<?php /* <h4><strong>And thank you to our supporters:</strong></h4>
+			<?php foreach ($supporters_listingsRecords as $record): ?>
+				<a href="<?php echo htmlencode($record['url']) ?>" target="_blank"><?php echo htmlencode($record['title']) ?></a><br/>
+			<?php endforeach ?> */ ?>
 		</div>
 	</div>
 	<div id="organizations-button">
@@ -249,6 +262,9 @@
 				$('.organizations-item').each(function(){
 					offsets.push($(this).offset().top);
 				});
+
+
+
 			});
 			$('.organizations-item').click(function(){
 				if (!$(this).hasClass('active')){
@@ -270,7 +286,31 @@
 					$('.organizations-item').removeClass('active');
 				}
 			});
-		})
+		});
+		<?php if ($_SERVER['QUERY_STRING']){ ?>
+			$(document).ready(function(){
+				$(window).on('load', function(){
+
+					offsets = [];
+					$('.organizations-item').each(function(){
+						offsets.push($(this).offset().top);
+					});
+
+					var organization = $('.organizations-item').eq(<?php echo $_SERVER['QUERY_STRING'] - 1; ?>);
+					var insertIndex = offsets.lastIndexOf(organization.offset().top);
+
+					$('html, body').animate({scrollTop: organization.offset().top - 104 });
+
+					organization
+						.addClass('active')
+						.find('.organizations-item-content')
+						.clone()
+						.addClass('active')
+						.insertAfter('.organizations-item:eq(' + insertIndex + ')')
+						.slideDown();
+				});
+			});
+		<?php } ?>
 	</script>
 </body>
 </html>

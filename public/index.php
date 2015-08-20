@@ -50,6 +50,13 @@
     'allowSearch' => false,
   ));
 
+  // load records from 'check_yourself_items'
+  list($check_yourself_itemsRecords, $check_yourself_itemsMetaData) = getRecords(array(
+    'tableName'   => 'check_yourself_items',
+    'loadUploads' => true,
+    'allowSearch' => false,
+  ));
+
   foreach ($homepage_contentRecord['open_graph_image'] as $index => $upload){
   	$open_graph_image = htmlencode($upload['urlPath']);
   }
@@ -217,7 +224,7 @@
 		</div>
 	</div>
 	<div id="main-image">
-		<div class="container">
+		<div class="container" id="hero-drone-container">
 			<div id="hero-drone">
 				<?php
 					foreach ($homepage_contentRecord['drone_image'] as $index => $upload){
@@ -287,6 +294,10 @@
 									$newsCounter++;
 									if (@$record['link_to_article']){
 										$newsLink = $record['article_url'] . '" target="_blank';
+									} else if (@$record['upload_resource']){
+										foreach ($record['upload_resource'] as $index => $upload){
+											$newsLink = $upload['urlPath'] . '" download="' . $upload['urlPath'] . '"';
+										}
 									} else {
 										$newsLink = 'news/?num=' . htmlencode($record['num']);
 									}
@@ -295,6 +306,12 @@
 									<?php if (@$record['thumbnail']): ?>
 										<?php foreach ($record['thumbnail'] as $index => $upload): ?>
 											<img src="<?php echo htmlencode($upload['urlPath']) ?>" />
+										<?php endforeach; ?>
+									<?php else: ?>
+										<?php foreach ($news_categoriesRecords as $category): ?>
+											<?php if ($category['title'] == $record['category']):?>
+												<img src="img/icon_<?php echo $category['icon'] ?>.jpg" />
+											<?php endif; ?>
 										<?php endforeach; ?>
 									<?php endif; ?>
 									<div class="headline"><?php echo htmlencode($record['title']) ?></div>
@@ -969,6 +986,7 @@
 						<div class="arrow-copy"><?php echo htmlencode($homepage_contentRecord['checkbox_section_arrow_copy']) ?></div>
 						<div class="right-triangle"></div>
 					</div>
+					<?php foreach ($check_yourself_itemsRecords as $record): ?>
 					<div class="check-item">
 						<div class="check-mark">
 							<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
@@ -987,93 +1005,10 @@
 							</svg>
 						</div>
 						<div class="check-copy">
-							Check to see if you are outside of 5 miles from any airport/airfield
+							<?php echo htmlencode($record['content']) ?>
 						</div>
 					</div>
-					<div class="check-item">
-						<div class="check-mark">
-							<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
-							<svg version="1.1"
-								 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-								 x="0px" y="0px" viewBox="0 0 132.7 137.6" xml:space="preserve">
-							<defs>
-							</defs>
-							<path d="M132.5,3.1c-0.4,0.5-22.7,28.2-33.3,42.8c-14,19.4-27.5,39.1-40.8,59c-4.5,6.7-10.5,4.9-16.4,5.2c-4.7,0.2-5.7-3.5-6.9-6.7
-								c-2.9-7.9-5.9-15.8-8.3-23.9c-2.2-7.4,7.2-16.6,14.6-14.4c1.6,0.5,3.2,2.4,4,4c1.4,2.8,2,6,3.3,8.8c0.8,1.9,2.3,3.4,3.5,5.1
-								c1.5-1.4,3.3-2.6,4.4-4.2C65.4,66.1,73.6,53,82.6,40.4c8.1-11.3,16.5-22.5,25.8-32.9c3.3-3.7,12.2-7.2,14.2-7.4S126.9,0,130,0
-								C133.1,0,132.9,2.6,132.5,3.1z"/>
-							<path d="M114.1,32.2l-5.1,6.8c7.3,9.5,11.6,21.3,11.6,34.2c0,31.1-25.2,56.2-56.2,56.2S8.2,104.2,8.2,73.1s25.2-56.2,56.2-56.2
-								c9.7,0,18.8,2.4,26.7,6.7l5-6.6c-9.4-5.3-20.2-8.3-31.7-8.3C28.8,8.7,0,37.6,0,73.1s28.8,64.4,64.4,64.4s64.4-28.8,64.4-64.4
-								C128.8,57.6,123.3,43.3,114.1,32.2z"/>
-							</svg>
-						</div>
-						<div class="check-copy">
-							Remain below 400 ft above ground level 
-						</div>
-					</div>
-					<div class="check-item">
-						<div class="check-mark">
-							<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
-							<svg version="1.1"
-								 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-								 x="0px" y="0px" viewBox="0 0 132.7 137.6" xml:space="preserve">
-							<defs>
-							</defs>
-							<path d="M132.5,3.1c-0.4,0.5-22.7,28.2-33.3,42.8c-14,19.4-27.5,39.1-40.8,59c-4.5,6.7-10.5,4.9-16.4,5.2c-4.7,0.2-5.7-3.5-6.9-6.7
-								c-2.9-7.9-5.9-15.8-8.3-23.9c-2.2-7.4,7.2-16.6,14.6-14.4c1.6,0.5,3.2,2.4,4,4c1.4,2.8,2,6,3.3,8.8c0.8,1.9,2.3,3.4,3.5,5.1
-								c1.5-1.4,3.3-2.6,4.4-4.2C65.4,66.1,73.6,53,82.6,40.4c8.1-11.3,16.5-22.5,25.8-32.9c3.3-3.7,12.2-7.2,14.2-7.4S126.9,0,130,0
-								C133.1,0,132.9,2.6,132.5,3.1z"/>
-							<path d="M114.1,32.2l-5.1,6.8c7.3,9.5,11.6,21.3,11.6,34.2c0,31.1-25.2,56.2-56.2,56.2S8.2,104.2,8.2,73.1s25.2-56.2,56.2-56.2
-								c9.7,0,18.8,2.4,26.7,6.7l5-6.6c-9.4-5.3-20.2-8.3-31.7-8.3C28.8,8.7,0,37.6,0,73.1s28.8,64.4,64.4,64.4s64.4-28.8,64.4-64.4
-								C128.8,57.6,123.3,43.3,114.1,32.2z"/>
-							</svg>
-						</div>
-						<div class="check-copy">
-							 Keep your aircraft in sight at all times 
-						</div>
-					</div>
-					<div class="check-item">
-						<div class="check-mark">
-							<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
-							<svg version="1.1"
-								 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-								 x="0px" y="0px" viewBox="0 0 132.7 137.6" xml:space="preserve">
-							<defs>
-							</defs>
-							<path d="M132.5,3.1c-0.4,0.5-22.7,28.2-33.3,42.8c-14,19.4-27.5,39.1-40.8,59c-4.5,6.7-10.5,4.9-16.4,5.2c-4.7,0.2-5.7-3.5-6.9-6.7
-								c-2.9-7.9-5.9-15.8-8.3-23.9c-2.2-7.4,7.2-16.6,14.6-14.4c1.6,0.5,3.2,2.4,4,4c1.4,2.8,2,6,3.3,8.8c0.8,1.9,2.3,3.4,3.5,5.1
-								c1.5-1.4,3.3-2.6,4.4-4.2C65.4,66.1,73.6,53,82.6,40.4c8.1-11.3,16.5-22.5,25.8-32.9c3.3-3.7,12.2-7.2,14.2-7.4S126.9,0,130,0
-								C133.1,0,132.9,2.6,132.5,3.1z"/>
-							<path d="M114.1,32.2l-5.1,6.8c7.3,9.5,11.6,21.3,11.6,34.2c0,31.1-25.2,56.2-56.2,56.2S8.2,104.2,8.2,73.1s25.2-56.2,56.2-56.2
-								c9.7,0,18.8,2.4,26.7,6.7l5-6.6c-9.4-5.3-20.2-8.3-31.7-8.3C28.8,8.7,0,37.6,0,73.1s28.8,64.4,64.4,64.4s64.4-28.8,64.4-64.4
-								C128.8,57.6,123.3,43.3,114.1,32.2z"/>
-							</svg>
-						</div>
-						<div class="check-copy">
-							Stay clear of temporary flight restrictions and any media interest areas (including fires, crime scenes, and sporting events)
-						</div>
-					</div>
-					<div class="check-item">
-						<div class="check-mark">
-							<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
-							<svg version="1.1"
-								 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-								 x="0px" y="0px" viewBox="0 0 132.7 137.6" xml:space="preserve">
-							<defs>
-							</defs>
-							<path d="M132.5,3.1c-0.4,0.5-22.7,28.2-33.3,42.8c-14,19.4-27.5,39.1-40.8,59c-4.5,6.7-10.5,4.9-16.4,5.2c-4.7,0.2-5.7-3.5-6.9-6.7
-								c-2.9-7.9-5.9-15.8-8.3-23.9c-2.2-7.4,7.2-16.6,14.6-14.4c1.6,0.5,3.2,2.4,4,4c1.4,2.8,2,6,3.3,8.8c0.8,1.9,2.3,3.4,3.5,5.1
-								c1.5-1.4,3.3-2.6,4.4-4.2C65.4,66.1,73.6,53,82.6,40.4c8.1-11.3,16.5-22.5,25.8-32.9c3.3-3.7,12.2-7.2,14.2-7.4S126.9,0,130,0
-								C133.1,0,132.9,2.6,132.5,3.1z"/>
-							<path d="M114.1,32.2l-5.1,6.8c7.3,9.5,11.6,21.3,11.6,34.2c0,31.1-25.2,56.2-56.2,56.2S8.2,104.2,8.2,73.1s25.2-56.2,56.2-56.2
-								c9.7,0,18.8,2.4,26.7,6.7l5-6.6c-9.4-5.3-20.2-8.3-31.7-8.3C28.8,8.7,0,37.6,0,73.1s28.8,64.4,64.4,64.4s64.4-28.8,64.4-64.4
-								C128.8,57.6,123.3,43.3,114.1,32.2z"/>
-							</svg>
-						</div>
-						<div class="check-copy">
-							Maintain situational awareness and be prepared to take evasive action if a low flying manned aircraft enters the area.
-						</div>
-					</div>
+					<?php endforeach ?>
 				</div>
 			</div>
 			<div id="check-yourself-image-wrapper">
@@ -1247,7 +1182,7 @@
 				<div id="organizations-list">
 				<?php foreach ($organization_listingsRecords as $record): ?>
 					<div class="organizations-item">
-						<a href="organizations/">
+						<a href="organizations/?<?php echo $record['num']; ?>">
 							<?php if (@$record['logo']){?>
 								<?php foreach ($record['logo'] as $index => $upload): ?>
 									<img src="<?php echo htmlencode($upload['urlPath']) ?>" />
@@ -1291,18 +1226,28 @@
 							<?php 
 								if (@$record['link_to_article']){
 									$newsLink = $record['article_url'] . '" target="_blank';
+								} else if (@$record['upload_resource']){
+									foreach ($record['upload_resource'] as $index => $upload){
+										$newsLink = $upload['urlPath'] . '" download="' . $upload['urlPath'] . '"';
+									}
 								} else {
 									$newsLink = 'news/?num=' . htmlencode($record['num']);
 								}
 							?>
 							<a href="<?php echo $newsLink; ?>">
-								<?php if (@$record['thumbnail']): ?>
-									<div class="news-post-image">
+								<div class="news-post-image">
+									<?php if (@$record['thumbnail']): ?>
 										<?php foreach ($record['thumbnail'] as $index => $upload): ?>
 											<img src="<?php echo htmlencode($upload['urlPath']) ?>" />
 										<?php endforeach; ?>
-									</div>
-								<?php endif; ?>
+									<?php else: ?>
+										<?php foreach ($news_categoriesRecords as $category): ?>
+											<?php if ($category['title'] == $record['category']):?>
+												<img src="img/icon_<?php echo $category['icon'] ?>.jpg" />
+											<?php endif; ?>
+										<?php endforeach; ?>
+									<?php endif; ?>
+								</div>
 								<div class="news-post-copy">
 									<div class="headline"><?php echo htmlencode($record['title']) ?></div>
 									<div class="date"><?php echo date("F jS, Y", strtotime($record['date'])) ?></div>
@@ -1385,11 +1330,10 @@
 
 			Draggable.create("#hero-drone", {
 				type:"y,x",
-				edgeResistance:0.65,
-				bounds:"#main-image",
+				edgeResistance:0.85,
+				bounds:"#hero-drone-container",
 				throwProps: true,
-				throwResistance: 2000,
-				onDragEnd: function(){
+				onThrowComplete: function(){
 					droneHover();
 				}
 			});
