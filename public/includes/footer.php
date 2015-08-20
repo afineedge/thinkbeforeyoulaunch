@@ -2,33 +2,20 @@
 	<div id="contact">
 		<div class="container">
 			<div class="col-xs-24 col-sm-10">
-				<?php if (@$errorsAndAlerts){ ?>
-					<div class="alert alert-danger" role="alert">
-					    We're sorry, there was an error with your submission:
-					    <ul>
-					        <?php echo $errorsAndAlerts; ?>
-					    </ul>
-					</div>
-					<?php } else if (@$success){ ?>
-					<div class="alert alert-success" role="alert">
-					  Thank you for contacting Think Before You Launch!
-					</div>
-				<?php } ?>
 				<h3><?php echo htmlencode($homepage_contentRecord['contact_headline']) ?></h3>
 				<?php echo $homepage_contentRecord['contact_copy']; ?>
-				<form action="#contact" method="post">
-					<input type="hidden" name="contact" value="1" />
+				<form>
 					<div class="form-group">
 						<label for="name">Name</label>
-						<input type="text" class="form-control" name="name" placeholder="Your Name" value="<?php echo @$_REQUEST['name']; ?>">
+						<input type="text" class="form-control" name="name" placeholder="Your Name">
 					</div>
 					<div class="form-group">
 						<label for="name">Email Address</label>
-						<input type="email" class="form-control" name="email" placeholder="Your Email Address" value="<?php echo @$_REQUEST['email']; ?>">
+						<input type="email" class="form-control" name="email" placeholder="Your Email Address">
 					</div>
 					<div class="form-group">
 						<label for="name">Comments/Questions</label>
-						<textarea class="form-control" name="comment" placeholder="Your Comments/Questions"><?php echo @$_REQUEST['comment']; ?></textarea>
+						<textarea class="form-control" name="comments" placeholder="Your Comments/Questions"></textarea>
 					</div>
 					<button type="submit" class="btn btn-default">Submit</button>
 				</form>
