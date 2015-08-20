@@ -511,6 +511,11 @@
 		</div>
 	</div>
 	<div id="airspace">
+		<div class="airspace-selected">
+			<div class="close-btn">
+				X
+			</div>
+		</div>
 		<div id="airspace-items" class="clearfix">
 			<div class="airspace-item col-xs-12 col-sm-8 col-md-4">
 				<div class="airspace-item-wrapper">
@@ -1411,9 +1416,15 @@
 			});
 
 			$('.airspace-item').click(function(){
+				$('.airspace-selected').addClass('active');
 				$(this).addClass('selected').removeClass('not-selected');
 				$('.airspace-item').not($(this)).addClass('not-selected').removeClass('selected');
 			});
+
+			$('.airspace-selected .close-btn').click(function(){
+				$('.airspace-selected').removeClass('active');
+				$('.airspace-item').removeClass('not-selected').removeClass('selected');
+			})
 
 			$(window).on('load scroll', function(){
 				if (!$('#damage').hasClass('active')) {
