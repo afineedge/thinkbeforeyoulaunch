@@ -5182,9 +5182,14 @@ body.no-scroll {
 }
 #airspace {
   margin: 0 auto;
-  position: relative;
 }
-#airspace .airspace-selected {
+#airspace #airspace-wrapper {
+  background-image: url('../img/airspace.jpg');
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center;
+}
+#airspace #airspace-wrapper .airspace-selected {
   position: absolute;
   top: 0;
   left: 0;
@@ -5196,23 +5201,87 @@ body.no-scroll {
   transition: bottom 2s;
   -webkit-transition: bottom 2s;
 }
-#airspace .airspace-selected.active {
-  bottom: 60px;
-}
-#airspace .airspace-selected .close-btn {
+#airspace #airspace-wrapper .airspace-selected .close-btn {
   position: absolute;
   top: 0;
   right: 0;
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  line-height: 40px;
+  font-size: 30px;
   background: #ffffff;
+  font-weight: bold;
 }
-#airspace #airspace-items {
-  background-image: url('../img/airspace.jpg');
-  background-size: cover;
-  background-attachment: fixed;
-  background-position: center;
+#airspace #airspace-wrapper .airspace-selected .airspace-selected-content {
+  width: 100%;
+  height: 606px;
+  max-width: 970px;
+  padding: 0 40px;
+  margin: 0px auto;
+  vertical-align: middle;
+  font-size: 18px;
+  text-align: center;
+  opacity: 0;
+  transform: scale(0.5);
+  -webkit-transform: scale(0.5);
+  transition: 2s;
+  -webkit-transition: 2s;
+}
+@media (min-width: 768px) {
+  #airspace #airspace-wrapper .airspace-selected .airspace-selected-content {
+    height: 404px;
+    display: table;
+    text-align: left;
+  }
+}
+@media (min-width: 992px) {
+  #airspace #airspace-wrapper .airspace-selected .airspace-selected-content {
+    height: 300px;
+  }
+}
+#airspace #airspace-wrapper .airspace-selected .airspace-selected-content .airspace-selected-content-left {
+  width: 100%;
+  display: block;
+  vertical-align: middle;
+}
+@media (min-width: 768px) {
+  #airspace #airspace-wrapper .airspace-selected .airspace-selected-content .airspace-selected-content-left {
+    display: table-cell;
+    width: 120px;
+  }
+}
+#airspace #airspace-wrapper .airspace-selected .airspace-selected-content .airspace-selected-content-left svg,
+#airspace #airspace-wrapper .airspace-selected .airspace-selected-content .airspace-selected-content-left img {
+  width: 120px;
+  display: inline-block;
+  padding: 20px 0;
+}
+#airspace #airspace-wrapper .airspace-selected .airspace-selected-content .airspace-selected-content-right {
+  width: 100%;
+  display: block;
+  padding-left: 40px;
+  vertical-align: middle;
+}
+@media (min-width: 768px) {
+  #airspace #airspace-wrapper .airspace-selected .airspace-selected-content .airspace-selected-content-right {
+    display: table-cell;
+    width: 100%;
+  }
+}
+#airspace #airspace-wrapper .airspace-selected.active {
+  bottom: 0px;
+}
+#airspace #airspace-wrapper .airspace-selected.active .airspace-selected-content {
+  opacity: 1;
+  transform: scale(1);
+  -webkit-transform: scale(1);
+}
+#airspace #airspace-wrapper #airspace-items {
   z-index: 2;
+  position: relative;
 }
-#airspace #airspace-items .airspace-item {
+#airspace #airspace-wrapper #airspace-items .airspace-item {
   border: 1px solid #fff;
   text-align: center;
   padding: 0 24px;
@@ -5222,31 +5291,31 @@ body.no-scroll {
   transition: opacity 2s;
   -webkit-transition: opacity 2s;
 }
-#airspace #airspace-items .airspace-item.not-selected {
+#airspace #airspace-wrapper #airspace-items .airspace-item.not-selected {
   opacity: 0;
 }
-#airspace #airspace-items .airspace-item.selected {
+#airspace #airspace-wrapper #airspace-items .airspace-item.selected {
   opacity: 0;
 }
-#airspace #airspace-items .airspace-item .airspace-item-wrapper {
+#airspace #airspace-wrapper #airspace-items .airspace-item .airspace-item-wrapper {
   height: 200px;
   display: table;
   width: 100%;
 }
 @media (min-width: 992px) {
-  #airspace #airspace-items .airspace-item .airspace-item-wrapper {
+  #airspace #airspace-wrapper #airspace-items .airspace-item .airspace-item-wrapper {
     height: 300px;
   }
 }
-#airspace #airspace-items .airspace-item .airspace-item-wrapper .airspace-item-content {
+#airspace #airspace-wrapper #airspace-items .airspace-item .airspace-item-wrapper .airspace-item-content {
   display: table-cell;
   vertical-align: middle;
   font-size: 13px;
   font-weight: 800;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
 }
-#airspace #airspace-items .airspace-item .airspace-item-wrapper .airspace-item-content svg,
-#airspace #airspace-items .airspace-item .airspace-item-wrapper .airspace-item-content img {
+#airspace #airspace-wrapper #airspace-items .airspace-item .airspace-item-wrapper .airspace-item-content svg,
+#airspace #airspace-wrapper #airspace-items .airspace-item .airspace-item-wrapper .airspace-item-content img {
   width: 60px;
   height: 60px;
   display: block;
@@ -5255,8 +5324,11 @@ body.no-scroll {
   -webkit-transition: 0.2s ease-out;
   -webkit-backface-visibility: hidden;
 }
-#airspace #airspace-items .airspace-item .airspace-item-wrapper:hover .airspace-item-content svg,
-#airspace #airspace-items .airspace-item .airspace-item-wrapper:hover .airspace-item-content img {
+#airspace #airspace-wrapper #airspace-items .airspace-item .airspace-item-wrapper .clone-content {
+  display: none;
+}
+#airspace #airspace-wrapper #airspace-items .airspace-item .airspace-item-wrapper:hover .airspace-item-content svg,
+#airspace #airspace-wrapper #airspace-items .airspace-item .airspace-item-wrapper:hover .airspace-item-content img {
   transform: translateY(-6px) translateZ(1px) scale(1.1);
   -webkit-transform: translateY(-6px) translateZ(1px) scale(1.1);
 }

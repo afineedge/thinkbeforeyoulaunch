@@ -57,6 +57,13 @@
     'allowSearch' => false,
   ));
 
+  // load records from 'whos_flying'
+  list($whos_flyingRecords, $whos_flyingMetaData) = getRecords(array(
+    'tableName'   => 'whos_flying',
+    'loadUploads' => true,
+    'allowSearch' => false,
+  ));
+
   foreach ($homepage_contentRecord['open_graph_image'] as $index => $upload){
   	$open_graph_image = htmlencode($upload['urlPath']);
   }
@@ -511,131 +518,34 @@
 		</div>
 	</div>
 	<div id="airspace">
-		<div class="airspace-selected">
-			<div class="close-btn">
-				X
-			</div>
-		</div>
-		<div id="airspace-items" class="clearfix">
-			<div class="airspace-item col-xs-12 col-sm-8 col-md-4">
-				<div class="airspace-item-wrapper">
-					<div class="airspace-item-content">
-						<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
-						<svg version="1.1"
-							 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-							 x="0px" y="0px" viewBox="0 0 59 59" xml:space="preserve">
-						<defs>
-						</defs>
-						<polygon fill="#2C3A49" points="21,0 21,21 0,21 0,38 21,38 21,59 38,59 38,38 59,38 59,21 38,21 38,0 "/>
-						</svg>
-						Police and First Responder Aircraft
+		<div id="airspace-wrapper">
+			<div id="airspace-items" class="clearfix">
+				<div class="airspace-selected">
+					<div class="close-btn">
+						X
+					</div>
+					<div class="airspace-selected-content">
+						<div class="airspace-selected-content-left">
+						</div>
+						<div class="airspace-selected-content-right">
+						</div>
 					</div>
 				</div>
-			</div>
-			<div class="airspace-item col-xs-12 col-sm-8 col-md-4">
-				<div class="airspace-item-wrapper">
-					<div class="airspace-item-content">
-						<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
-						<svg version="1.1"
-							 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-							 x="0px" y="0px" viewBox="0 0 89.5 68.9" xml:space="preserve">
-						<defs>
-						</defs>
-						<path fill="#2C3A49" d="M0,41h19.6c0,0,3.7,0.2,4.2,6.9c1.4,18.5,7.2,20.9,7.2,20.9s-0.8-26.5,7.3-27.3c4.6-0.4,13.3-0.4,13.3-0.4
-							L45,37.3V36h-7.6c0,0,4-6.5,0.8-16.7C36.2,12.4,43,7.1,41.3,0c-2.8,5.4-13.7,9.3-13.8,20.7c0,10.5-4.5,16.2-10.5,16.2
-							c-9.5,0-10.4-2.6-13.2-1.4C1.1,36.6,0,41,0,41"/>
-						<path fill="#2C3A49" d="M78.1,49c0.5-8.5-1.2-13.6-5.3-19.7c10.7-3.2,16.7-9.5,16.7-9.5s-2.5,0-13.7,0c-8.3,0-10.3,1.6-13.2,3.6
-							c-2.2,1.5-5.3,2.7-9,2.7c-3.7,0-6.1-1.5-8.1-0.8c-2,0.7-2.8,3.5-2.8,3.5H55c0,0,3.6-0.6,4.5,3.5c0,0,3.5,10.1,9.4,13.4
-							c0.9-1.8,1.3-3.9,1.3-3.9S75.3,47.5,78.1,49"/>
-						</svg>
-						Birds
+				<?php foreach ($whos_flyingRecords as $record): ?>
+				<div class="airspace-item col-xs-12 col-sm-8 col-md-4">
+					<div class="airspace-item-wrapper">
+						<div class="airspace-item-content">
+							<?php foreach ($record['image'] as $index => $upload): ?>
+							 	<img src="<?php echo htmlencode($upload['urlPath']) ?>" alt="<?php echo htmlencode($record['title']) ?>" />
+							 <?php endforeach ?>
+							<?php echo htmlencode($record['title']) ?>
+							<div class="clone-content">
+								<?php echo $record['content']; ?>
+							</div>
+						</div>
 					</div>
 				</div>
-			</div>
-			<div class="airspace-item col-xs-12 col-sm-8 col-md-4">
-				<div class="airspace-item-wrapper">
-					<div class="airspace-item-content">
-						<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
-						<svg version="1.1"
-							 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-							 x="0px" y="0px"viewBox="0 0 54 63.5" xml:space="preserve">
-						<defs>
-						</defs>
-						<path fill="#2C3A49" d="M16.8,63.5c0,0-30.6-4.2-9.2-42.6c2.6,3.7,3.3,7.8,3.3,7.8S22.5,20.9,21.4,0c9.5,3,17.9,14.4,18.1,22.3
-							c0,0,2.7-5.1,2.5-8.5c6.7,4.7,15.7,17.9,10.3,35.4c-6.2,14.4-15.7,14.3-15.7,14.3s12.9-15.2-9-30.6c0,0,3.5,11.3-4.1,16.3
-							c-3.7-3.7-3.7-8-3.7-8S8.3,51,16.8,63.5"/>
-						</svg>
-						Aerial Firefighters
-					</div>
-				</div>
-			</div>
-			<div class="airspace-item col-xs-12 col-sm-8 col-md-4">
-				<div class="airspace-item-wrapper">
-					<div class="airspace-item-content">
-						<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
-						<svg version="1.1"
-							 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-							 x="0px" y="0px" viewBox="0 0 35.7 64.1" xml:space="preserve">
-						<defs>
-						</defs>
-						<path fill="#2C3A49" d="M22.2,12.6c0,3.8-2.4,6.8-5.4,6.8c-3,0-5.4-3-5.4-6.8C11.3,6.2,16.7,0,16.7,0S22.2,5.1,22.2,12.6"/>
-						<path fill="#2C3A49" d="M28.8,44.2C25,47,20,46.4,18,43.3c-2-3.1-0.7-8.3,3.6-10.2c6.9-3.1,14-4.3,14-4.3S35.7,39.1,28.8,44.2"/>
-						<path fill="#2C3A49" d="M28.5,61.5c-3.6,3.4-8.9,3.4-11.4,0.5c-2.5-2.9-1.8-8.5,2.4-11.1c6.7-4.1,14-6.3,14-6.3S35,55.2,28.5,61.5"
-							/>
-						<path fill="#2C3A49" d="M5.2,58.5c3.6,3.4,8.9,3.4,11.4,0.5c2.5-2.9,1.8-8.5-2.4-11.1c-6.7-4.1-14-6.3-14-6.3S-1.3,52.3,5.2,58.5"/>
-						<path fill="#2C3A49" d="M27.4,29.1c-3.3,2.5-7.8,2-9.5-0.7c-1.8-2.7-0.7-7.3,3.1-9c6-2.8,12.3-3.9,12.3-3.9S33.4,24.5,27.4,29.1"/>
-						<path fill="#2C3A49" d="M4.8,41.7c3.1,3,7.8,3,9.9,0.4c2.2-2.5,1.6-7.4-2.1-9.7c-5.9-3.6-12.2-5.5-12.2-5.5S-0.8,36.2,4.8,41.7"/>
-						<path fill="#2C3A49" d="M6.4,28c2.7,2.6,6.8,2.6,8.7,0.4c1.9-2.2,1.4-6.5-1.9-8.5C8.1,16.8,2.6,15,2.6,15S1.4,23.2,6.4,28"/>
-						</svg>
-
-						Aerial Applicators / Crop Sprayers
-					</div>
-				</div>
-			</div>
-			<div class="airspace-item col-xs-12 col-sm-8 col-md-4">
-				<div class="airspace-item-wrapper">
-					<div class="airspace-item-content">
-						<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
-						<svg version="1.1"
-							 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-							 x="0px" y="0px" viewBox="0 0 25.8 17.9" xml:space="preserve">
-						<defs>
-						</defs>
-						<g>
-							<path fill="#2C3A49" d="M8.5,13.6c0.7,1.5,1.8,2.9,3.2,4.3c-2.8-0.4-5.1-2-6.4-4.3L8.5,13.6z M11.6,0.1c-2.6,0.4-4.9,2-6.3,4.2l3.2,0
-								C9.2,2.8,10.2,1.4,11.6,0.1L11.6,0.1z M12.6,4.3l0-4.3h0C11.2,1.3,10,2.8,9.2,4.3L12.6,4.3z M5.3,5.7l-0.6,0L4,5.7L4,10.2L1.5,5.6
-								l-0.7,0l-0.7,0L0,12l0.6,0l0.6,0l0.1-4.6l2.6,4.6l0.7,0l0.7,0L5.3,5.7z M11.3,6.9l0-0.6l0-0.6l-4.7,0l-0.1,6.4l4.9,0.1l0-0.6l0-0.6
-								l-3.5,0l0-1.7l3.1,0l0-0.6l0-0.6l-3.1,0l0-1.4L11.3,6.9z M17.7,10.4l-0.9-4.7l-0.7,0l-0.7,0l-1,4.7l-1-4.7l-1.4,0l1.7,6.4l0.6,0
-								l0.6,0l1.1-5l1,5l0.6,0l0.6,0l1.8-6.4l-1.4,0L17.7,10.4z M13.4,0L13.4,0l-0.1,4.3l3.4,0C16,2.8,14.9,1.4,13.4,0L13.4,0z M20.7,4.4
-								c-1.3-2.2-3.6-3.8-6.2-4.3c1.3,1.3,2.3,2.8,3,4.3L20.7,4.4z M14,17.9c2.8-0.3,5.1-1.9,6.5-4.2l-3.3,0C16.5,15.2,15.5,16.6,14,17.9
-								L14,17.9z M16.5,13.7l-3.3,0l0,4.1C14.6,16.5,15.8,15.1,16.5,13.7L16.5,13.7z M25.4,9.2c-0.3-0.3-0.9-0.5-1.9-0.7
-								c-0.6-0.2-1.1-0.3-1.3-0.4C22,8,21.9,7.8,21.9,7.6c0-0.3,0.1-0.5,0.3-0.6c0.2-0.1,0.5-0.2,0.8-0.2c0.4,0,0.7,0.1,1,0.3
-								c0.2,0.2,0.4,0.4,0.4,0.7l1.3,0c0-0.6-0.3-1.2-0.7-1.5c-0.4-0.4-1-0.6-1.7-0.6c-0.8,0-1.4,0.2-1.8,0.5c-0.5,0.4-0.7,0.9-0.7,1.5
-								c0,0.6,0.2,1,0.5,1.2c0.3,0.3,1,0.5,2,0.8c0.6,0.1,0.9,0.3,1.1,0.4c0.2,0.1,0.3,0.3,0.2,0.5c0,0.2-0.1,0.4-0.4,0.6
-								c-0.2,0.1-0.6,0.2-1,0.2c-0.4,0-0.7-0.1-1-0.3c-0.2-0.2-0.4-0.4-0.4-0.8l-1.3,0c0,0.7,0.3,1.2,0.7,1.6c0.5,0.4,1.1,0.6,1.9,0.6
-								c0.8,0,1.4-0.2,1.9-0.5c0.5-0.3,0.7-0.8,0.7-1.4C25.8,9.9,25.7,9.5,25.4,9.2L25.4,9.2z M12.5,17.8l0-4.1l-3.3,0
-								C10,15.1,11.1,16.5,12.5,17.8L12.5,17.8z M12.5,17.8"/>
-						</g>
-						</svg>
-						News Helicopters
-					</div>
-				</div>
-			</div>
-			<div class="airspace-item col-xs-12 col-sm-8 col-md-4">
-				<div class="airspace-item-wrapper">
-					<div class="airspace-item-content">
-						<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
-						<svg version="1.1"
-							 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-							 x="0px" y="0px" viewBox="0 0 61 55.8" xml:space="preserve">
-						<defs>
-						</defs>
-						<path fill="#2C3A49" d="M61,42.7v-7.9L34,19.3V4.1C34,1.9,31.4,0,29.5,0S25,1.9,25,4.1v16.3L0,34.8v7.9l25-9v11.7L19,51v4.8
-							l10.8-3.6L40,55.8V51l-6-5V33L61,42.7z"/>
-						</svg>
-						General Aviation Aircraft
-					</div>
-				</div>
+				<?php endforeach ?>
 			</div>
 		</div>
 		<div class="accent-button">Learn More</div>
@@ -1416,6 +1326,10 @@
 			});
 
 			$('.airspace-item').click(function(){
+				$('.airspace-selected-content-left').empty();
+				$(this).find('img').clone().appendTo('.airspace-selected-content-left');
+				$('.airspace-selected-content-right').empty();
+				$(this).find('.clone-content p').clone().appendTo('.airspace-selected-content-right');
 				$('.airspace-selected').addClass('active');
 				$(this).addClass('selected').removeClass('not-selected');
 				$('.airspace-item').not($(this)).addClass('not-selected').removeClass('selected');
