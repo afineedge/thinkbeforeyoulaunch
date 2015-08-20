@@ -61,6 +61,60 @@
   	$open_graph_image = htmlencode($upload['urlPath']);
   }
 
+
+	// FORM CODE
+
+	$errorsAndAlerts = "";
+	$success = "";
+
+
+	if (@$_REQUEST['contact']) {
+	  //set error messages
+	    if (!@$_REQUEST['name'])  { $errorsAndAlerts .= "<li>Please enter your name.</li>"; }
+	    if (!@$_REQUEST['email'])  { $errorsAndAlerts .= "<li>Please enter your email address.</li>"; }
+	    elseif(!isValidEmail(@$_REQUEST['email']))  { $errorsAndAlerts .= "<li>Please enter a valid email address.</li>"; }
+	    if (!@$_REQUEST['comment'])  { $errorsAndAlerts .= "<li>Please enter your comment.</li>"; }
+
+	  // IF NO ERRORS, SUBMIT FORM
+	  if (!@$errorsAndAlerts) { 
+	  
+	    // turn off strict mysql error checking for: STRICT_ALL_TABLES
+	    mysqlStrictMode(false); // disable Mysql strict errors for when a field isn't defined below (can be caused when fields are added later)
+	  
+	    // add record
+	    mysql_query("INSERT INTO `{$TABLE_PREFIX}contact_form_submissions` SET
+	              name       = '".mysql_real_escape_string( $_REQUEST['name'] )."',
+	              email_address        = '".mysql_real_escape_string( $_REQUEST['email'] )."',
+	              comment        = '".mysql_real_escape_string( $_REQUEST['comment'] )."',
+
+	              createdDate      = NOW(),
+	              updatedDate      = NOW(),
+	              createdByUserNum = '0',
+	              updatedByUserNum = '0'")
+	    or die("MySQL Error Creating Record:<br/>\n". htmlspecialchars(mysql_error()) . "\n");
+	    $recordNum = mysql_insert_id();
+
+	      	  // email everyone who wants to know
+	          // $emailHeaders = emailTemplate_loadFromDB(array(
+	          //   'template_id'  => 'CMS-CONTACT-US',
+	          //   'placeholders' => array(
+	          //       'user.name'    => $_REQUEST['name'],
+	          //       'user.email'        => $_REQUEST['email'],
+	          //       'user.comment'     => $_REQUEST['comment'],
+	          //       'yyyy-mm-dd'        => date("Y-m-d"),
+	          //       'time'              => date("H:i"),
+	          //   ),
+	          // ));
+	          // $mailErrors = sendMessage($emailHeaders);
+	          // if ($mailErrors) { die("Mail Error: $mailErrors"); }
+	  
+
+	    // go to confirmation page
+	    $success = 'true';
+	  
+	  }// End of form processing.
+	} // End of form IF.
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -1179,20 +1233,21 @@
 				<h3><?php echo htmlencode($homepage_contentRecord['organizations_headline']) ?></h3>
 				<h4><?php echo htmlencode($homepage_contentRecord['organizations_subhead']) ?></h4>
 			</div>
-				<div id="organizations-list">
-				<?php foreach ($organization_listingsRecords as $record): ?>
-					<div class="organizations-item">
-						<a href="organizations/?<?php echo $record['num']; ?>">
-							<?php if (@$record['logo']){?>
-								<?php foreach ($record['logo'] as $index => $upload): ?>
-									<img src="<?php echo htmlencode($upload['urlPath']) ?>" />
-								<?php endforeach; ?>
-							<?php } else { ?>
-								<div class="organization-name"><?php echo $record['title']; ?></div>
-							<?php } ?>
-						</a>
-					</div>
-				<?php endforeach; ?>
+			<div id="organizations-list">
+			<?php foreach ($organization_listingsRecords as $record): ?>
+				<div class="organizations-item">
+					<a href="organizations/?<?php echo $record['num']; ?>">
+						<?php if (@$record['logo']){?>
+							<?php foreach ($record['logo'] as $index => $upload): ?>
+								<img src="<?php echo htmlencode($upload['urlPath']) ?>" />
+							<?php endforeach; ?>
+						<?php } else { ?>
+							<div class="organization-name"><?php echo $record['title']; ?></div>
+						<?php } ?>
+					</a>
+				</div>
+			<?php endforeach; ?>
+			</div>
 			<div class="primary-button"><a href="organizations/">Learn More About Our Stakeholders</a></div>
 		</div>
 	</div>
