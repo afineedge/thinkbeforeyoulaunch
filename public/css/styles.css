@@ -5296,6 +5296,7 @@ body.no-scroll {
   position: relative;
   transition: opacity 1.5s;
   -webkit-transition: opacity 1.5s;
+  cursor: pointer;
 }
 #airspace #airspace-wrapper #airspace-items .airspace-item.not-selected {
   opacity: 0;
@@ -5555,10 +5556,6 @@ body.no-scroll {
   -webkit-transition: .3s;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-}
-#check-yourself .container #check-yourself-copy .copy .check-item:hover {
-  transform: translatex(4px);
-  -webkit-transform: translatex(4px);
 }
 #check-yourself .container #check-yourself-copy .copy .check-item .check-mark {
   display: table-cell;
