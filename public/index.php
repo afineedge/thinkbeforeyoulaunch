@@ -299,15 +299,13 @@
 				<div id="main-headline"><?php echo $homepage_contentRecord['headline'] ?></div>
 				<div id="main-subhead">
 					<div id="main-subhead-left">
-						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0" y="0" viewBox="0 0 14 24" xml:space="preserve"><polygon points="14,24 14,0 0,0 "/></svg>
-						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0" y="0" viewBox="0 0 14 24" xml:space="preserve"><polygon points="14,0 14,24 0,24 "/></svg>
+						<img src="img/banner-left.png" />
 					</div>
 					<div id="main-subhead-center">
 						<?php echo strip_tags($homepage_contentRecord['subhead'], '<em><em/><strong><strong/>'); ?>
 					</div>
 					<div id="main-subhead-right">
-						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0" y="0" viewBox="0 0 14 24" xml:space="preserve"><polygon points="0,24 0,0 14,0 "/></svg>
-						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0" y="0" viewBox="0 0 14 24" xml:space="preserve"><polygon points="0,0 0,24 14,24 "/></svg>
+						<img src="img/banner-right.png" />
 					</div>
 				</div>
 			</div>
@@ -1335,7 +1333,7 @@
 						tl.to(lightning1, .15, {y: "-=20", opacity:0, clearProps:"all", transformOrigin:"0% 0%", ease:Power0.easeNone});
 						tl.to(lightning2, .15, {y: "-=10", opacity:1, transformOrigin:"0% 0%", ease:Power0.easeNone});
 						tl.to(lightning2, .15, {y: "-=20", opacity:0, clearProps:"all", transformOrigin:"0% 0%", ease:Power0.easeNone});
-						
+
 						tl.restart();
 					}	
 				} else {	
@@ -1409,6 +1407,11 @@
 				$(window).scrollTop($('#' + hash).position().top - ($(window).outerWidth() > 767 ? 88 : 44));
 			}
 		}
+
+		$(window).on('load resize', function() {
+		    $("#damage-wrapper svg").attr("width",  $('#damage-wrapper').width());
+		    $("#damage-wrapper svg").attr("height", $('#damage-wrapper').width());
+		});
 	</script>
 </body>
 </html>
