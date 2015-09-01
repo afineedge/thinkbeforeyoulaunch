@@ -29,6 +29,13 @@
     'allowSearch' => false,
   ));
 
+  // load records from 'supporters_listings'
+  list($supporters_listingsRecords, $supporters_listingsMetaData) = getRecords(array(
+    'tableName'   => 'supporters_listings',
+    'loadUploads' => true,
+    'allowSearch' => false,
+  ));
+
   // load record from 'contact_info'
   list($contact_infoRecords, $contact_infoMetaData) = getRecords(array(
     'tableName'   => 'contact_info',
@@ -232,6 +239,23 @@
 					</div>
 				</div>
 			<?php endforeach; ?>
+		</div>
+	</div>
+	<div id="sponsors-header">
+		<div class="container">
+			<div id="sponsors-header-copy">
+				<h3><?php echo htmlencode($organizations_pageRecord['sponsors_title']); ?></h3>
+				<?php echo $organizations_pageRecord['sponsors_content']; ?>
+				<ul>
+				<?php foreach ($supporters_listingsRecords as $record): ?>
+					<li>
+						<a href="<?php echo $record['url'] ?>">
+						<?php echo $record['title']; ?>
+						</a>
+					</li>
+				<?php endforeach; ?>
+				</ul>
+			</div>
 		</div>
 	</div>
 	<div id="organizations-button">
