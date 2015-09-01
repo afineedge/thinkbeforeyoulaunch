@@ -50,9 +50,77 @@
     'allowSearch' => false,
   ));
 
+  // load records from 'check_yourself_items'
+  list($check_yourself_itemsRecords, $check_yourself_itemsMetaData) = getRecords(array(
+    'tableName'   => 'check_yourself_items',
+    'loadUploads' => true,
+    'allowSearch' => false,
+  ));
+
+  // load records from 'whos_flying'
+  list($whos_flyingRecords, $whos_flyingMetaData) = getRecords(array(
+    'tableName'   => 'whos_flying',
+    'loadUploads' => true,
+    'allowSearch' => false,
+  ));
+
   foreach ($homepage_contentRecord['open_graph_image'] as $index => $upload){
   	$open_graph_image = htmlencode($upload['urlPath']);
   }
+
+
+	// FORM CODE
+
+	$errorsAndAlerts = "";
+	$success = "";
+
+
+	if (@$_REQUEST['contact']) {
+	  //set error messages
+	    if (!@$_REQUEST['name'])  { $errorsAndAlerts .= "<li>Please enter your name.</li>"; }
+	    if (!@$_REQUEST['email'])  { $errorsAndAlerts .= "<li>Please enter your email address.</li>"; }
+	    elseif(!isValidEmail(@$_REQUEST['email']))  { $errorsAndAlerts .= "<li>Please enter a valid email address.</li>"; }
+	    if (!@$_REQUEST['comment'])  { $errorsAndAlerts .= "<li>Please enter your comment.</li>"; }
+
+	  // IF NO ERRORS, SUBMIT FORM
+	  if (!@$errorsAndAlerts) { 
+	  
+	    // turn off strict mysql error checking for: STRICT_ALL_TABLES
+	    mysqlStrictMode(false); // disable Mysql strict errors for when a field isn't defined below (can be caused when fields are added later)
+	  
+	    // add record
+	    mysql_query("INSERT INTO `{$TABLE_PREFIX}contact_form_submissions` SET
+	              name       = '".mysql_real_escape_string( $_REQUEST['name'] )."',
+	              email_address        = '".mysql_real_escape_string( $_REQUEST['email'] )."',
+	              comment        = '".mysql_real_escape_string( $_REQUEST['comment'] )."',
+
+	              createdDate      = NOW(),
+	              updatedDate      = NOW(),
+	              createdByUserNum = '0',
+	              updatedByUserNum = '0'")
+	    or die("MySQL Error Creating Record:<br/>\n". htmlspecialchars(mysql_error()) . "\n");
+	    $recordNum = mysql_insert_id();
+
+	      	  // email everyone who wants to know
+	          // $emailHeaders = emailTemplate_loadFromDB(array(
+	          //   'template_id'  => 'CMS-CONTACT-US',
+	          //   'placeholders' => array(
+	          //       'user.name'    => $_REQUEST['name'],
+	          //       'user.email'        => $_REQUEST['email'],
+	          //       'user.comment'     => $_REQUEST['comment'],
+	          //       'yyyy-mm-dd'        => date("Y-m-d"),
+	          //       'time'              => date("H:i"),
+	          //   ),
+	          // ));
+	          // $mailErrors = sendMessage($emailHeaders);
+	          // if ($mailErrors) { die("Mail Error: $mailErrors"); }
+	  
+
+	    // go to confirmation page
+	    $success = 'true';
+	  
+	  }// End of form processing.
+	} // End of form IF.
 
 ?>
 <!DOCTYPE html>
@@ -217,7 +285,7 @@
 		</div>
 	</div>
 	<div id="main-image">
-		<div class="container">
+		<div class="container" id="hero-drone-container">
 			<div id="hero-drone">
 				<?php
 					foreach ($homepage_contentRecord['drone_image'] as $index => $upload){
@@ -231,15 +299,13 @@
 				<div id="main-headline"><?php echo $homepage_contentRecord['headline'] ?></div>
 				<div id="main-subhead">
 					<div id="main-subhead-left">
-						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0" y="0" viewBox="0 0 14 24" xml:space="preserve"><polygon points="14,24 14,0 0,0 "/></svg>
-						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0" y="0" viewBox="0 0 14 24" xml:space="preserve"><polygon points="14,0 14,24 0,24 "/></svg>
+						<img src="img/banner-left.png" />
 					</div>
 					<div id="main-subhead-center">
 						<?php echo strip_tags($homepage_contentRecord['subhead'], '<em><em/><strong><strong/>'); ?>
 					</div>
 					<div id="main-subhead-right">
-						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0" y="0" viewBox="0 0 14 24" xml:space="preserve"><polygon points="0,24 0,0 14,0 "/></svg>
-						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0" y="0" viewBox="0 0 14 24" xml:space="preserve"><polygon points="0,0 0,24 14,24 "/></svg>
+						<img src="img/banner-right.png" />
 					</div>
 				</div>
 			</div>
@@ -287,6 +353,10 @@
 									$newsCounter++;
 									if (@$record['link_to_article']){
 										$newsLink = $record['article_url'] . '" target="_blank';
+									} else if (@$record['upload_resource']){
+										foreach ($record['upload_resource'] as $index => $upload){
+											$newsLink = $upload['urlPath'] . '" download="' . $upload['urlPath'] . '"';
+										}
 									} else {
 										$newsLink = 'news/?num=' . htmlencode($record['num']);
 									}
@@ -295,6 +365,12 @@
 									<?php if (@$record['thumbnail']): ?>
 										<?php foreach ($record['thumbnail'] as $index => $upload): ?>
 											<img src="<?php echo htmlencode($upload['urlPath']) ?>" />
+										<?php endforeach; ?>
+									<?php else: ?>
+										<?php foreach ($news_categoriesRecords as $category): ?>
+											<?php if ($category['title'] == $record['category']):?>
+												<img src="img/icon_<?php echo $category['icon'] ?>.jpg" />
+											<?php endif; ?>
 										<?php endforeach; ?>
 									<?php endif; ?>
 									<div class="headline"><?php echo htmlencode($record['title']) ?></div>
@@ -440,482 +516,372 @@
 		</div>
 	</div>
 	<div id="airspace">
-		<div id="airspace-items" class="clearfix">
-			<div class="airspace-item col-xs-12 col-sm-8 col-md-4">
-				<div class="airspace-item-wrapper">
-					<div class="airspace-item-content">
-						<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
-						<svg version="1.1"
-							 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-							 x="0px" y="0px" viewBox="0 0 59 59" xml:space="preserve">
-						<defs>
-						</defs>
-						<polygon fill="#2C3A49" points="21,0 21,21 0,21 0,38 21,38 21,59 38,59 38,38 59,38 59,21 38,21 38,0 "/>
-						</svg>
-						Police and First Responder Aircraft
+		<div id="airspace-wrapper">
+			<div id="airspace-items" class="clearfix">
+				<div class="airspace-selected">
+					<div class="close-btn">
+						X
+					</div>
+					<div class="airspace-selected-content">
+						<div class="airspace-selected-content-left">
+						</div>
+						<div class="airspace-selected-content-right">
+						</div>
 					</div>
 				</div>
-			</div>
-			<div class="airspace-item col-xs-12 col-sm-8 col-md-4">
-				<div class="airspace-item-wrapper">
-					<div class="airspace-item-content">
-						<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
-						<svg version="1.1"
-							 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-							 x="0px" y="0px" viewBox="0 0 89.5 68.9" xml:space="preserve">
-						<defs>
-						</defs>
-						<path fill="#2C3A49" d="M0,41h19.6c0,0,3.7,0.2,4.2,6.9c1.4,18.5,7.2,20.9,7.2,20.9s-0.8-26.5,7.3-27.3c4.6-0.4,13.3-0.4,13.3-0.4
-							L45,37.3V36h-7.6c0,0,4-6.5,0.8-16.7C36.2,12.4,43,7.1,41.3,0c-2.8,5.4-13.7,9.3-13.8,20.7c0,10.5-4.5,16.2-10.5,16.2
-							c-9.5,0-10.4-2.6-13.2-1.4C1.1,36.6,0,41,0,41"/>
-						<path fill="#2C3A49" d="M78.1,49c0.5-8.5-1.2-13.6-5.3-19.7c10.7-3.2,16.7-9.5,16.7-9.5s-2.5,0-13.7,0c-8.3,0-10.3,1.6-13.2,3.6
-							c-2.2,1.5-5.3,2.7-9,2.7c-3.7,0-6.1-1.5-8.1-0.8c-2,0.7-2.8,3.5-2.8,3.5H55c0,0,3.6-0.6,4.5,3.5c0,0,3.5,10.1,9.4,13.4
-							c0.9-1.8,1.3-3.9,1.3-3.9S75.3,47.5,78.1,49"/>
-						</svg>
-						Birds
+				<?php foreach ($whos_flyingRecords as $record): ?>
+				<div class="airspace-item col-xs-12 col-sm-8 col-md-4">
+					<div class="airspace-item-wrapper">
+						<div class="airspace-item-content">
+							<?php foreach ($record['image'] as $index => $upload): ?>
+							 	<img src="<?php echo htmlencode($upload['urlPath']) ?>" alt="<?php echo htmlencode($record['title']) ?>" />
+							 <?php endforeach ?>
+							<?php echo htmlencode($record['title']) ?>
+							<div class="clone-content">
+								<?php echo $record['content']; ?>
+							</div>
+						</div>
 					</div>
 				</div>
-			</div>
-			<div class="airspace-item col-xs-12 col-sm-8 col-md-4">
-				<div class="airspace-item-wrapper">
-					<div class="airspace-item-content">
-						<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
-						<svg version="1.1"
-							 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-							 x="0px" y="0px"viewBox="0 0 54 63.5" xml:space="preserve">
-						<defs>
-						</defs>
-						<path fill="#2C3A49" d="M16.8,63.5c0,0-30.6-4.2-9.2-42.6c2.6,3.7,3.3,7.8,3.3,7.8S22.5,20.9,21.4,0c9.5,3,17.9,14.4,18.1,22.3
-							c0,0,2.7-5.1,2.5-8.5c6.7,4.7,15.7,17.9,10.3,35.4c-6.2,14.4-15.7,14.3-15.7,14.3s12.9-15.2-9-30.6c0,0,3.5,11.3-4.1,16.3
-							c-3.7-3.7-3.7-8-3.7-8S8.3,51,16.8,63.5"/>
-						</svg>
-						Aerial Firefighters
-					</div>
-				</div>
-			</div>
-			<div class="airspace-item col-xs-12 col-sm-8 col-md-4">
-				<div class="airspace-item-wrapper">
-					<div class="airspace-item-content">
-						<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
-						<svg version="1.1"
-							 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-							 x="0px" y="0px" viewBox="0 0 35.7 64.1" xml:space="preserve">
-						<defs>
-						</defs>
-						<path fill="#2C3A49" d="M22.2,12.6c0,3.8-2.4,6.8-5.4,6.8c-3,0-5.4-3-5.4-6.8C11.3,6.2,16.7,0,16.7,0S22.2,5.1,22.2,12.6"/>
-						<path fill="#2C3A49" d="M28.8,44.2C25,47,20,46.4,18,43.3c-2-3.1-0.7-8.3,3.6-10.2c6.9-3.1,14-4.3,14-4.3S35.7,39.1,28.8,44.2"/>
-						<path fill="#2C3A49" d="M28.5,61.5c-3.6,3.4-8.9,3.4-11.4,0.5c-2.5-2.9-1.8-8.5,2.4-11.1c6.7-4.1,14-6.3,14-6.3S35,55.2,28.5,61.5"
-							/>
-						<path fill="#2C3A49" d="M5.2,58.5c3.6,3.4,8.9,3.4,11.4,0.5c2.5-2.9,1.8-8.5-2.4-11.1c-6.7-4.1-14-6.3-14-6.3S-1.3,52.3,5.2,58.5"/>
-						<path fill="#2C3A49" d="M27.4,29.1c-3.3,2.5-7.8,2-9.5-0.7c-1.8-2.7-0.7-7.3,3.1-9c6-2.8,12.3-3.9,12.3-3.9S33.4,24.5,27.4,29.1"/>
-						<path fill="#2C3A49" d="M4.8,41.7c3.1,3,7.8,3,9.9,0.4c2.2-2.5,1.6-7.4-2.1-9.7c-5.9-3.6-12.2-5.5-12.2-5.5S-0.8,36.2,4.8,41.7"/>
-						<path fill="#2C3A49" d="M6.4,28c2.7,2.6,6.8,2.6,8.7,0.4c1.9-2.2,1.4-6.5-1.9-8.5C8.1,16.8,2.6,15,2.6,15S1.4,23.2,6.4,28"/>
-						</svg>
-
-						Aerial Applicators / Crop Sprayers
-					</div>
-				</div>
-			</div>
-			<div class="airspace-item col-xs-12 col-sm-8 col-md-4">
-				<div class="airspace-item-wrapper">
-					<div class="airspace-item-content">
-						<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
-						<svg version="1.1"
-							 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-							 x="0px" y="0px" viewBox="0 0 25.8 17.9" xml:space="preserve">
-						<defs>
-						</defs>
-						<g>
-							<path fill="#2C3A49" d="M8.5,13.6c0.7,1.5,1.8,2.9,3.2,4.3c-2.8-0.4-5.1-2-6.4-4.3L8.5,13.6z M11.6,0.1c-2.6,0.4-4.9,2-6.3,4.2l3.2,0
-								C9.2,2.8,10.2,1.4,11.6,0.1L11.6,0.1z M12.6,4.3l0-4.3h0C11.2,1.3,10,2.8,9.2,4.3L12.6,4.3z M5.3,5.7l-0.6,0L4,5.7L4,10.2L1.5,5.6
-								l-0.7,0l-0.7,0L0,12l0.6,0l0.6,0l0.1-4.6l2.6,4.6l0.7,0l0.7,0L5.3,5.7z M11.3,6.9l0-0.6l0-0.6l-4.7,0l-0.1,6.4l4.9,0.1l0-0.6l0-0.6
-								l-3.5,0l0-1.7l3.1,0l0-0.6l0-0.6l-3.1,0l0-1.4L11.3,6.9z M17.7,10.4l-0.9-4.7l-0.7,0l-0.7,0l-1,4.7l-1-4.7l-1.4,0l1.7,6.4l0.6,0
-								l0.6,0l1.1-5l1,5l0.6,0l0.6,0l1.8-6.4l-1.4,0L17.7,10.4z M13.4,0L13.4,0l-0.1,4.3l3.4,0C16,2.8,14.9,1.4,13.4,0L13.4,0z M20.7,4.4
-								c-1.3-2.2-3.6-3.8-6.2-4.3c1.3,1.3,2.3,2.8,3,4.3L20.7,4.4z M14,17.9c2.8-0.3,5.1-1.9,6.5-4.2l-3.3,0C16.5,15.2,15.5,16.6,14,17.9
-								L14,17.9z M16.5,13.7l-3.3,0l0,4.1C14.6,16.5,15.8,15.1,16.5,13.7L16.5,13.7z M25.4,9.2c-0.3-0.3-0.9-0.5-1.9-0.7
-								c-0.6-0.2-1.1-0.3-1.3-0.4C22,8,21.9,7.8,21.9,7.6c0-0.3,0.1-0.5,0.3-0.6c0.2-0.1,0.5-0.2,0.8-0.2c0.4,0,0.7,0.1,1,0.3
-								c0.2,0.2,0.4,0.4,0.4,0.7l1.3,0c0-0.6-0.3-1.2-0.7-1.5c-0.4-0.4-1-0.6-1.7-0.6c-0.8,0-1.4,0.2-1.8,0.5c-0.5,0.4-0.7,0.9-0.7,1.5
-								c0,0.6,0.2,1,0.5,1.2c0.3,0.3,1,0.5,2,0.8c0.6,0.1,0.9,0.3,1.1,0.4c0.2,0.1,0.3,0.3,0.2,0.5c0,0.2-0.1,0.4-0.4,0.6
-								c-0.2,0.1-0.6,0.2-1,0.2c-0.4,0-0.7-0.1-1-0.3c-0.2-0.2-0.4-0.4-0.4-0.8l-1.3,0c0,0.7,0.3,1.2,0.7,1.6c0.5,0.4,1.1,0.6,1.9,0.6
-								c0.8,0,1.4-0.2,1.9-0.5c0.5-0.3,0.7-0.8,0.7-1.4C25.8,9.9,25.7,9.5,25.4,9.2L25.4,9.2z M12.5,17.8l0-4.1l-3.3,0
-								C10,15.1,11.1,16.5,12.5,17.8L12.5,17.8z M12.5,17.8"/>
-						</g>
-						</svg>
-						News Helicopters
-					</div>
-				</div>
-			</div>
-			<div class="airspace-item col-xs-12 col-sm-8 col-md-4">
-				<div class="airspace-item-wrapper">
-					<div class="airspace-item-content">
-						<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
-						<svg version="1.1"
-							 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-							 x="0px" y="0px" viewBox="0 0 61 55.8" xml:space="preserve">
-						<defs>
-						</defs>
-						<path fill="#2C3A49" d="M61,42.7v-7.9L34,19.3V4.1C34,1.9,31.4,0,29.5,0S25,1.9,25,4.1v16.3L0,34.8v7.9l25-9v11.7L19,51v4.8
-							l10.8-3.6L40,55.8V51l-6-5V33L61,42.7z"/>
-						</svg>
-						General Aviation Aircraft
-					</div>
-				</div>
+				<?php endforeach ?>
 			</div>
 		</div>
-		<div class="accent-button">Learn More</div>
+		<!-- <div class="accent-button">Learn More</div> -->
 	</div>
 	<div id="damage">
 		<div class="container">
 			<div id="damage-image">
-				<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
-				<svg version="1.1"
-					 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-					 x="0px" y="0px" viewBox="0 0 451 446" enable-background="new 0 0 451 446" xml:space="preserve">
-				<defs>
-				</defs>
-				<g>
+				<div id="damage-wrapper">
+					<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
+					<svg version="1.1"
+						 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+						 x="0px" y="0px" viewBox="0 0 451 446" enable-background="new 0 0 451 446" xml:space="preserve">
+					<defs>
+					</defs>
 					<g>
 						<g>
-							<polygon fill="#FFFFFF" points="210,140.1 210,128.1 110,122.6 110,45.6 168,48.8 168,37.8 110,34.6 110,0 98,0 98,33.9 40,30.7 
-								40,41.7 98,44.9 98,121.9 0,116.5 0,128.5 98,133.9 98,206.9 29,203.1 29,215.1 98,218.9 98,446 110,446 110,219.6 181,223.5 
-								181,211.5 110,207.6 110,134.6 			"/>
-						</g>
-						<g>
 							<g>
-								<polygon fill="#FFFFFF" points="61,63.9 58,63.7 58,42.7 61,42.9 				"/>
+								<polygon fill="#FFFFFF" points="210,140.1 210,128.1 110,122.6 110,45.6 168,48.8 168,37.8 110,34.6 110,0 98,0 98,33.9 40,30.7 
+									40,41.7 98,44.9 98,121.9 0,116.5 0,128.5 98,133.9 98,206.9 29,203.1 29,215.1 98,218.9 98,446 110,446 110,219.6 181,223.5 
+									181,211.5 110,207.6 110,134.6 			"/>
+							</g>
+							<g>
+								<g>
+									<polygon fill="#FFFFFF" points="61,63.9 58,63.7 58,42.7 61,42.9 				"/>
+								</g>
+							</g>
+							<g>
+								<g>
+									<polygon fill="#FFFFFF" points="67,51.2 52,50.3 52,47.3 67,48.2 				"/>
+								</g>
+							</g>
+							<g>
+								<g>
+									<polygon fill="#FFFFFF" points="67,57.2 52,56.3 52,52.3 67,53.2 				"/>
+								</g>
+							</g>
+							<g>
+								<g>
+									<polygon fill="#FFFFFF" points="67,63.2 52,62.3 52,57.3 67,58.2 				"/>
+								</g>
+							</g>
+							<g>
+								<g>
+									<polygon fill="#FFFFFF" points="152,68.9 148,68.7 148,47.7 152,47.9 				"/>
+								</g>
+							</g>
+							<g>
+								<g>
+									<polygon fill="#FFFFFF" points="158,56.2 142,55.4 142,52.4 158,53.2 				"/>
+								</g>
+							</g>
+							<g>
+								<g>
+									<polygon fill="#FFFFFF" points="158,62.2 142,61.4 142,57.4 158,58.2 				"/>
+								</g>
+							</g>
+							<g>
+								<g>
+									<polygon fill="#FFFFFF" points="158,68.2 142,67.4 142,62.4 158,63.2 				"/>
+								</g>
+							</g>
+							<g>
+								<g>
+									<polygon fill="#FFFFFF" points="52,237.3 49,237.2 49,216.2 52,216.3 				"/>
+								</g>
+							</g>
+							<g>
+								<g>
+									<polygon fill="#FFFFFF" points="58,223.7 43,222.8 43,218.8 58,219.7 				"/>
+								</g>
+							</g>
+							<g>
+								<g>
+									<polygon fill="#FFFFFF" points="58,228.7 43,227.8 43,224.8 58,225.7 				"/>
+								</g>
+							</g>
+							<g>
+								<g>
+									<polygon fill="#FFFFFF" points="58,234.7 43,233.8 43,230.8 58,231.7 				"/>
+								</g>
+							</g>
+							<g>
+								<g>
+									<polygon fill="#FFFFFF" points="162,243.5 158,243.2 158,222.2 162,222.5 				"/>
+								</g>
+							</g>
+							<g>
+								<g>
+									<polygon fill="#FFFFFF" points="168,229.8 152,228.9 152,224.9 168,225.8 				"/>
+								</g>
+							</g>
+							<g>
+								<g>
+									<polygon fill="#FFFFFF" points="168,234.8 152,233.9 152,230.9 168,231.8 				"/>
+								</g>
+							</g>
+							<g>
+								<g>
+									<polygon fill="#FFFFFF" points="168,240.8 152,239.9 152,236.9 168,237.8 				"/>
+								</g>
+							</g>
+							<g>
+								<g>
+									<polygon fill="#FFFFFF" points="18,150.5 13,150.2 13,129.2 18,129.5 				"/>
+								</g>
+							</g>
+							<g>
+								<g>
+									<polygon fill="#FFFFFF" points="24,136.8 8,135.9 8,132.9 24,133.8 				"/>
+								</g>
+							</g>
+							<g>
+								<g>
+									<polygon fill="#FFFFFF" points="24,142.8 8,141.9 8,138.9 24,139.8 				"/>
+								</g>
+							</g>
+							<g>
+								<g>
+									<polygon fill="#FFFFFF" points="24,147.8 8,146.9 8,144.9 24,145.8 				"/>
+								</g>
+							</g>
+							<g>
+								<g>
+									<polygon fill="#FFFFFF" points="195,160.3 191,160.1 191,139.1 195,139.3 				"/>
+								</g>
+							</g>
+							<g>
+								<g>
+									<polygon fill="#FFFFFF" points="200,146.6 185,145.7 185,142.7 200,143.6 				"/>
+								</g>
+							</g>
+							<g>
+								<g>
+									<polygon fill="#FFFFFF" points="200,152.6 185,151.7 185,148.7 200,149.6 				"/>
+								</g>
+							</g>
+							<g>
+								<g>
+									<polygon fill="#FFFFFF" points="200,157.6 185,156.7 185,154.7 200,155.6 				"/>
+								</g>
+							</g>
+							<g>
+								<polygon fill="#FFFFFF" points="100.3,246.1 71.8,213.7 77.4,208.8 106,241.1 			"/>
+							</g>
+							<g>
+								<polygon fill="#FFFFFF" points="100.3,161.4 71.8,129 77.4,124.1 106,156.5 			"/>
+							</g>
+							<g>
+								<polygon fill="#FFFFFF" points="100.3,72.9 71.8,40.5 77.4,35.6 106,67.9 			"/>
+							</g>
+							<g>
+								<polygon fill="#FFFFFF" points="108.2,246.5 102.6,240.9 131.1,211.7 136.8,217.3 			"/>
+							</g>
+							<g>
+								<polygon fill="#FFFFFF" points="108.2,161.8 102.6,156.3 131.1,127.1 136.8,132.6 			"/>
+							</g>
+							<g>
+								<polygon fill="#FFFFFF" points="108.2,73.3 102.6,67.8 131.1,38.5 136.8,44.1 			"/>
 							</g>
 						</g>
 						<g>
 							<g>
-								<polygon fill="#FFFFFF" points="67,51.2 52,50.3 52,47.3 67,48.2 				"/>
+								<polygon fill="#FFFFFF" points="451,246.5 451,238.5 382,234.7 382,181.7 422,183.9 422,175.9 382,173.7 382,150 374,150 
+									374,173.3 334,171 334,179 374,181.3 374,234.3 307,230.5 307,238.5 374,242.3 374,292.3 327,289.6 327,297.6 374,300.3 374,446 
+									382,446 382,300.7 431,303.4 431,295.4 382,292.7 382,242.7 			"/>
 							</g>
-						</g>
-						<g>
 							<g>
-								<polygon fill="#FFFFFF" points="67,57.2 52,56.3 52,52.3 67,53.2 				"/>
+								<g>
+									<polygon fill="#FFFFFF" points="349,193.9 347,193.8 347,179.8 349,179.9 				"/>
+								</g>
 							</g>
-						</g>
-						<g>
 							<g>
-								<polygon fill="#FFFFFF" points="67,63.2 52,62.3 52,57.3 67,58.2 				"/>
+								<g>
+									<polygon fill="#FFFFFF" points="353,185.1 343,184.5 343,182.5 353,183.1 				"/>
+								</g>
 							</g>
-						</g>
-						<g>
 							<g>
-								<polygon fill="#FFFFFF" points="152,68.9 148,68.7 148,47.7 152,47.9 				"/>
+								<g>
+									<polygon fill="#FFFFFF" points="353,189.1 343,188.5 343,186.5 353,187.1 				"/>
+								</g>
 							</g>
-						</g>
-						<g>
 							<g>
-								<polygon fill="#FFFFFF" points="158,56.2 142,55.4 142,52.4 158,53.2 				"/>
+								<g>
+									<polygon fill="#FFFFFF" points="353,193.1 343,192.5 343,189.5 353,190.1 				"/>
+								</g>
 							</g>
-						</g>
-						<g>
 							<g>
-								<polygon fill="#FFFFFF" points="158,62.2 142,61.4 142,57.4 158,58.2 				"/>
+								<g>
+									<polygon fill="#FFFFFF" points="411,197.3 408,197.2 408,183.2 411,183.3 				"/>
+								</g>
 							</g>
-						</g>
-						<g>
 							<g>
-								<polygon fill="#FFFFFF" points="158,68.2 142,67.4 142,62.4 158,63.2 				"/>
+								<g>
+									<polygon fill="#FFFFFF" points="415,188.5 404,187.9 404,185.9 415,186.5 				"/>
+								</g>
 							</g>
-						</g>
-						<g>
 							<g>
-								<polygon fill="#FFFFFF" points="52,237.3 49,237.2 49,216.2 52,216.3 				"/>
+								<g>
+									<polygon fill="#FFFFFF" points="415,192.5 404,191.9 404,189.9 415,190.5 				"/>
+								</g>
 							</g>
-						</g>
-						<g>
 							<g>
-								<polygon fill="#FFFFFF" points="58,223.7 43,222.8 43,218.8 58,219.7 				"/>
+								<g>
+									<polygon fill="#FFFFFF" points="415,196.5 404,195.9 404,192.9 415,193.5 				"/>
+								</g>
 							</g>
-						</g>
-						<g>
 							<g>
-								<polygon fill="#FFFFFF" points="58,228.7 43,227.8 43,224.8 58,225.7 				"/>
+								<g>
+									<polygon fill="#FFFFFF" points="343,313.5 340,313.4 340,298.4 343,298.5 				"/>
+								</g>
 							</g>
-						</g>
-						<g>
 							<g>
-								<polygon fill="#FFFFFF" points="58,234.7 43,233.8 43,230.8 58,231.7 				"/>
+								<g>
+									<polygon fill="#FFFFFF" points="347,303.8 336,303.1 336,300.1 347,300.8 				"/>
+								</g>
 							</g>
-						</g>
-						<g>
 							<g>
-								<polygon fill="#FFFFFF" points="162,243.5 158,243.2 158,222.2 162,222.5 				"/>
+								<g>
+									<polygon fill="#FFFFFF" points="347,306.8 336,306.1 336,304.1 347,304.8 				"/>
+								</g>
 							</g>
-						</g>
-						<g>
 							<g>
-								<polygon fill="#FFFFFF" points="168,229.8 152,228.9 152,224.9 168,225.8 				"/>
+								<g>
+									<polygon fill="#FFFFFF" points="347,310.8 336,310.1 336,308.1 347,308.8 				"/>
+								</g>
 							</g>
-						</g>
-						<g>
 							<g>
-								<polygon fill="#FFFFFF" points="168,234.8 152,233.9 152,230.9 168,231.8 				"/>
+								<g>
+									<polygon fill="#FFFFFF" points="418,317.7 415,317.5 415,302.5 418,302.7 				"/>
+								</g>
 							</g>
-						</g>
-						<g>
 							<g>
-								<polygon fill="#FFFFFF" points="168,240.8 152,239.9 152,236.9 168,237.8 				"/>
+								<g>
+									<polygon fill="#FFFFFF" points="422,307.9 411,307.3 411,304.3 422,304.9 				"/>
+								</g>
 							</g>
-						</g>
-						<g>
 							<g>
-								<polygon fill="#FFFFFF" points="18,150.5 13,150.2 13,129.2 18,129.5 				"/>
+								<g>
+									<polygon fill="#FFFFFF" points="422,310.9 411,310.3 411,308.3 422,308.9 				"/>
+								</g>
 							</g>
-						</g>
-						<g>
 							<g>
-								<polygon fill="#FFFFFF" points="24,136.8 8,135.9 8,132.9 24,133.8 				"/>
+								<g>
+									<polygon fill="#FFFFFF" points="422,314.9 411,314.3 411,312.3 422,312.9 				"/>
+								</g>
 							</g>
-						</g>
-						<g>
 							<g>
-								<polygon fill="#FFFFFF" points="24,142.8 8,141.9 8,138.9 24,139.8 				"/>
+								<g>
+									<polygon fill="#FFFFFF" points="319,253.2 316,253 316,239 319,239.2 				"/>
+								</g>
 							</g>
-						</g>
-						<g>
 							<g>
-								<polygon fill="#FFFFFF" points="24,147.8 8,146.9 8,144.9 24,145.8 				"/>
+								<g>
+									<polygon fill="#FFFFFF" points="323,244.4 312,243.8 312,241.8 323,242.4 				"/>
+								</g>
 							</g>
-						</g>
-						<g>
 							<g>
-								<polygon fill="#FFFFFF" points="195,160.3 191,160.1 191,139.1 195,139.3 				"/>
+								<g>
+									<polygon fill="#FFFFFF" points="323,248.4 312,247.8 312,245.8 323,246.4 				"/>
+								</g>
 							</g>
-						</g>
-						<g>
 							<g>
-								<polygon fill="#FFFFFF" points="200,146.6 185,145.7 185,142.7 200,143.6 				"/>
+								<g>
+									<polygon fill="#FFFFFF" points="323,251.4 312,250.8 312,249.8 323,250.4 				"/>
+								</g>
 							</g>
-						</g>
-						<g>
 							<g>
-								<polygon fill="#FFFFFF" points="200,152.6 185,151.7 185,148.7 200,149.6 				"/>
+								<g>
+									<polygon fill="#FFFFFF" points="441,260 438,259.8 438,245.8 441,246 				"/>
+								</g>
 							</g>
-						</g>
-						<g>
 							<g>
-								<polygon fill="#FFFFFF" points="200,157.6 185,156.7 185,154.7 200,155.6 				"/>
+								<g>
+									<polygon fill="#FFFFFF" points="444,251.2 434,250.6 434,248.6 444,249.2 				"/>
+								</g>
+							</g>
+							<g>
+								<g>
+									<polygon fill="#FFFFFF" points="444,255.2 434,254.6 434,252.6 444,253.2 				"/>
+								</g>
+							</g>
+							<g>
+								<g>
+									<polygon fill="#FFFFFF" points="444,258.2 434,257.6 434,256.6 444,257.2 				"/>
+								</g>
+							</g>
+							<g>
+								<polygon fill="#FFFFFF" points="375.7,319 356.1,296.8 360,293.4 379.6,315.6 			"/>
+							</g>
+							<g>
+								<polygon fill="#FFFFFF" points="375.7,260.9 356.1,238.7 360,235.3 379.6,257.5 			"/>
+							</g>
+							<g>
+								<polygon fill="#FFFFFF" points="375.7,200.1 356.1,177.9 360,174.5 379.6,196.7 			"/>
+							</g>
+							<g>
+								<polygon fill="#FFFFFF" points="381.1,319.3 377.3,315.5 396.9,295.5 400.7,299.3 			"/>
+							</g>
+							<g>
+								<polygon fill="#FFFFFF" points="381.1,261.2 377.3,257.4 396.9,237.3 400.7,241.1 			"/>
+							</g>
+							<g>
+								<polygon fill="#FFFFFF" points="381.1,200.4 377.3,196.6 396.9,176.6 400.7,180.4 			"/>
 							</g>
 						</g>
 						<g>
-							<polygon fill="#FFFFFF" points="100.3,246.1 71.8,213.7 77.4,208.8 106,241.1 			"/>
+							<path fill="#FFFFFF" d="M369,205c-14.4,0-29.9-2.8-46.3-8.3c-25.9-8.7-54.1-24.2-83.8-46.1c-50.7-37.3-88.8-80.9-89.2-81.3
+								l0.8-0.7c0.4,0.4,38.5,43.9,89.1,81.2c46.6,34.3,113.7,70.3,168.4,46.4l0.4,0.9C396.2,202.3,383,205,369,205z"/>
 						</g>
 						<g>
-							<polygon fill="#FFFFFF" points="100.3,161.4 71.8,129 77.4,124.1 106,156.5 			"/>
+							<path fill="#FFFFFF" d="M303.9,200.6c-18.8,0-38.5-3.2-58.9-9.5c-29.6-9.2-60.9-25-92.8-46.9c-54.4-37.4-92.5-80.4-92.9-80.8
+								l0.8-0.7c0.4,0.4,38.4,43.3,92.7,80.7c50.1,34.4,124.5,71,195.1,49.9l0.3,1C334.1,198.5,319.3,200.6,303.9,200.6z"/>
 						</g>
 						<g>
-							<polygon fill="#FFFFFF" points="100.3,72.9 71.8,40.5 77.4,35.6 106,67.9 			"/>
+							<path fill="#FFFFFF" d="M401.2,266.3c-13.6,0-28.2-2.1-43.6-6.3c-24.5-6.7-51.2-18.8-79.2-35.9c-47.7-29.1-84.3-63.9-83.8-63.4
+								l0.7-0.7c-0.5-0.5,36,34.3,83.6,63.3c43.9,26.8,107.3,54.7,159.8,35.8l0.3,0.9C427.5,264.2,414.8,266.3,401.2,266.3z"/>
 						</g>
 						<g>
-							<polygon fill="#FFFFFF" points="108.2,246.5 102.6,240.9 131.1,211.7 136.8,217.3 			"/>
+							<path fill="#FFFFFF" d="M276.9,258.2c-19.6,0-40.3-2.6-62.4-7.8c-30.6-7.2-63.6-19.5-97.8-36.4c-58.3-28.8-101-63.6-101.4-63.9
+								l0.6-0.8c0.4,0.3,43,35.1,101.2,63.8c53.7,26.5,132.2,54.9,200.8,39.8l0.2,1C305.2,256.8,291.4,258.2,276.9,258.2z"/>
 						</g>
 						<g>
-							<polygon fill="#FFFFFF" points="108.2,161.8 102.6,156.3 131.1,127.1 136.8,132.6 			"/>
+							<path fill="#FFFFFF" d="M368.9,324.5c-12.7,0-26-1.3-39.8-3.8c-25.9-4.8-53.7-14-82.7-27.4c-49.3-22.9-85.3-50.3-85.7-50.6
+								l0.6-0.8c0.4,0.3,36.3,27.7,85.5,50.5c45.4,21,111.6,42.3,169.6,24.3l0.3,1C401.9,322.2,385.9,324.5,368.9,324.5z"/>
 						</g>
 						<g>
-							<polygon fill="#FFFFFF" points="108.2,73.3 102.6,67.8 131.1,38.5 136.8,44.1 			"/>
+							<path fill="#FFFFFF" d="M283.2,322.3c-13,0.1-26.6-0.9-40.7-3.1c-29.4-4.4-61-13.7-93.9-27.6c-56.1-23.6-98.2-54.7-98.6-55
+								l0.6-0.8c0.4,0.3,42.5,31.3,98.5,54.9c51.6,21.7,126.9,43.1,192.3,21.5l0.3,0.9C323.7,319.1,304.2,322.1,283.2,322.3z"/>
 						</g>
 					</g>
 					<g>
-						<g>
-							<polygon fill="#FFFFFF" points="451,246.5 451,238.5 382,234.7 382,181.7 422,183.9 422,175.9 382,173.7 382,150 374,150 
-								374,173.3 334,171 334,179 374,181.3 374,234.3 307,230.5 307,238.5 374,242.3 374,292.3 327,289.6 327,297.6 374,300.3 374,446 
-								382,446 382,300.7 431,303.4 431,295.4 382,292.7 382,242.7 			"/>
-						</g>
-						<g>
-							<g>
-								<polygon fill="#FFFFFF" points="349,193.9 347,193.8 347,179.8 349,179.9 				"/>
-							</g>
-						</g>
-						<g>
-							<g>
-								<polygon fill="#FFFFFF" points="353,185.1 343,184.5 343,182.5 353,183.1 				"/>
-							</g>
-						</g>
-						<g>
-							<g>
-								<polygon fill="#FFFFFF" points="353,189.1 343,188.5 343,186.5 353,187.1 				"/>
-							</g>
-						</g>
-						<g>
-							<g>
-								<polygon fill="#FFFFFF" points="353,193.1 343,192.5 343,189.5 353,190.1 				"/>
-							</g>
-						</g>
-						<g>
-							<g>
-								<polygon fill="#FFFFFF" points="411,197.3 408,197.2 408,183.2 411,183.3 				"/>
-							</g>
-						</g>
-						<g>
-							<g>
-								<polygon fill="#FFFFFF" points="415,188.5 404,187.9 404,185.9 415,186.5 				"/>
-							</g>
-						</g>
-						<g>
-							<g>
-								<polygon fill="#FFFFFF" points="415,192.5 404,191.9 404,189.9 415,190.5 				"/>
-							</g>
-						</g>
-						<g>
-							<g>
-								<polygon fill="#FFFFFF" points="415,196.5 404,195.9 404,192.9 415,193.5 				"/>
-							</g>
-						</g>
-						<g>
-							<g>
-								<polygon fill="#FFFFFF" points="343,313.5 340,313.4 340,298.4 343,298.5 				"/>
-							</g>
-						</g>
-						<g>
-							<g>
-								<polygon fill="#FFFFFF" points="347,303.8 336,303.1 336,300.1 347,300.8 				"/>
-							</g>
-						</g>
-						<g>
-							<g>
-								<polygon fill="#FFFFFF" points="347,306.8 336,306.1 336,304.1 347,304.8 				"/>
-							</g>
-						</g>
-						<g>
-							<g>
-								<polygon fill="#FFFFFF" points="347,310.8 336,310.1 336,308.1 347,308.8 				"/>
-							</g>
-						</g>
-						<g>
-							<g>
-								<polygon fill="#FFFFFF" points="418,317.7 415,317.5 415,302.5 418,302.7 				"/>
-							</g>
-						</g>
-						<g>
-							<g>
-								<polygon fill="#FFFFFF" points="422,307.9 411,307.3 411,304.3 422,304.9 				"/>
-							</g>
-						</g>
-						<g>
-							<g>
-								<polygon fill="#FFFFFF" points="422,310.9 411,310.3 411,308.3 422,308.9 				"/>
-							</g>
-						</g>
-						<g>
-							<g>
-								<polygon fill="#FFFFFF" points="422,314.9 411,314.3 411,312.3 422,312.9 				"/>
-							</g>
-						</g>
-						<g>
-							<g>
-								<polygon fill="#FFFFFF" points="319,253.2 316,253 316,239 319,239.2 				"/>
-							</g>
-						</g>
-						<g>
-							<g>
-								<polygon fill="#FFFFFF" points="323,244.4 312,243.8 312,241.8 323,242.4 				"/>
-							</g>
-						</g>
-						<g>
-							<g>
-								<polygon fill="#FFFFFF" points="323,248.4 312,247.8 312,245.8 323,246.4 				"/>
-							</g>
-						</g>
-						<g>
-							<g>
-								<polygon fill="#FFFFFF" points="323,251.4 312,250.8 312,249.8 323,250.4 				"/>
-							</g>
-						</g>
-						<g>
-							<g>
-								<polygon fill="#FFFFFF" points="441,260 438,259.8 438,245.8 441,246 				"/>
-							</g>
-						</g>
-						<g>
-							<g>
-								<polygon fill="#FFFFFF" points="444,251.2 434,250.6 434,248.6 444,249.2 				"/>
-							</g>
-						</g>
-						<g>
-							<g>
-								<polygon fill="#FFFFFF" points="444,255.2 434,254.6 434,252.6 444,253.2 				"/>
-							</g>
-						</g>
-						<g>
-							<g>
-								<polygon fill="#FFFFFF" points="444,258.2 434,257.6 434,256.6 444,257.2 				"/>
-							</g>
-						</g>
-						<g>
-							<polygon fill="#FFFFFF" points="375.7,319 356.1,296.8 360,293.4 379.6,315.6 			"/>
-						</g>
-						<g>
-							<polygon fill="#FFFFFF" points="375.7,260.9 356.1,238.7 360,235.3 379.6,257.5 			"/>
-						</g>
-						<g>
-							<polygon fill="#FFFFFF" points="375.7,200.1 356.1,177.9 360,174.5 379.6,196.7 			"/>
-						</g>
-						<g>
-							<polygon fill="#FFFFFF" points="381.1,319.3 377.3,315.5 396.9,295.5 400.7,299.3 			"/>
-						</g>
-						<g>
-							<polygon fill="#FFFFFF" points="381.1,261.2 377.3,257.4 396.9,237.3 400.7,241.1 			"/>
-						</g>
-						<g>
-							<polygon fill="#FFFFFF" points="381.1,200.4 377.3,196.6 396.9,176.6 400.7,180.4 			"/>
-						</g>
+						<polygon id="lightning1" fill="#eac670" points="316.8,164.0 312.8,164.0 312.8,134.0 302,168.8 307.9,168.8 307.7,200.7 "/>
+						<polygon id="lightning2" fill="#eac670" points="300.8,196.0 298.8,196.0 298.8,166.0 286,200.8 291.9,200.8 291.7,232.7 "/>
+						<!-- -16, +32 -->
 					</g>
-					<g>
-						<path fill="#FFFFFF" d="M369,205c-14.4,0-29.9-2.8-46.3-8.3c-25.9-8.7-54.1-24.2-83.8-46.1c-50.7-37.3-88.8-80.9-89.2-81.3
-							l0.8-0.7c0.4,0.4,38.5,43.9,89.1,81.2c46.6,34.3,113.7,70.3,168.4,46.4l0.4,0.9C396.2,202.3,383,205,369,205z"/>
-					</g>
-					<g>
-						<path fill="#FFFFFF" d="M303.9,200.6c-18.8,0-38.5-3.2-58.9-9.5c-29.6-9.2-60.9-25-92.8-46.9c-54.4-37.4-92.5-80.4-92.9-80.8
-							l0.8-0.7c0.4,0.4,38.4,43.3,92.7,80.7c50.1,34.4,124.5,71,195.1,49.9l0.3,1C334.1,198.5,319.3,200.6,303.9,200.6z"/>
-					</g>
-					<g>
-						<path fill="#FFFFFF" d="M401.2,266.3c-13.6,0-28.2-2.1-43.6-6.3c-24.5-6.7-51.2-18.8-79.2-35.9c-47.7-29.1-84.3-63.9-83.8-63.4
-							l0.7-0.7c-0.5-0.5,36,34.3,83.6,63.3c43.9,26.8,107.3,54.7,159.8,35.8l0.3,0.9C427.5,264.2,414.8,266.3,401.2,266.3z"/>
-					</g>
-					<g>
-						<path fill="#FFFFFF" d="M276.9,258.2c-19.6,0-40.3-2.6-62.4-7.8c-30.6-7.2-63.6-19.5-97.8-36.4c-58.3-28.8-101-63.6-101.4-63.9
-							l0.6-0.8c0.4,0.3,43,35.1,101.2,63.8c53.7,26.5,132.2,54.9,200.8,39.8l0.2,1C305.2,256.8,291.4,258.2,276.9,258.2z"/>
-					</g>
-					<g>
-						<path fill="#FFFFFF" d="M368.9,324.5c-12.7,0-26-1.3-39.8-3.8c-25.9-4.8-53.7-14-82.7-27.4c-49.3-22.9-85.3-50.3-85.7-50.6
-							l0.6-0.8c0.4,0.3,36.3,27.7,85.5,50.5c45.4,21,111.6,42.3,169.6,24.3l0.3,1C401.9,322.2,385.9,324.5,368.9,324.5z"/>
-					</g>
-					<g>
-						<path fill="#FFFFFF" d="M283.2,322.3c-13,0.1-26.6-0.9-40.7-3.1c-29.4-4.4-61-13.7-93.9-27.6c-56.1-23.6-98.2-54.7-98.6-55
-							l0.6-0.8c0.4,0.3,42.5,31.3,98.5,54.9c51.6,21.7,126.9,43.1,192.3,21.5l0.3,0.9C323.7,319.1,304.2,322.1,283.2,322.3z"/>
-					</g>
-				</g>
-				<g id="damage-drone">
-					<path fill="#FFFFFF" d="M266.9,58.4c2.7,9.5,15.8,14.7,28.7,11.3c5.5-1.5,7-5.2,12.3-3.9c5.7,1.6,4.4,15.5,27,17.4
-						c14.8,1.2,26.9-8,27.4-19.5c0.7-13.9-9.6-15.3-9.2-18c0.2-3.7,14.3-2.7,14.2-15.5c0-8.3-12.6-14.3-25.6-13.4
-						c-8.5,0.6-13.1,4.4-14.8,3.5c-2.5-0.4-3.2-9.1-21.3-8.3c-11.2,0.4-20.2,7-19.6,13.5c0.3,3.7,3.6,4.9,3.2,7.3
-						c-0.4,1.8-0.8,1.5-3.8,2.3C272.6,38.4,264.3,48.9,266.9,58.4z M307.5,33.2c-9.5,0.8-17.6-3-18.1-8.4c-0.5-5.4,6.9-10.4,16.4-11.2
-						c9.5-0.8,17.6,3,18.1,8.4C324.4,27.4,317,32.4,307.5,33.2z M344.1,40.7c-10.1-0.8-17.8-6.4-17.3-12.5c0.5-6.1,9.1-10.4,19.2-9.5
-						c10.1,0.8,17.8,6.4,17.3,12.5C362.8,37.2,354.2,41.5,344.1,40.7z M313,59.4c0.5-9.5,11.4-16.7,24.2-16c12.8,0.7,22.6,9.2,22,18.8
-						c-0.5,9.5-10.8,16.8-23.7,16.1C322.8,77.6,312.5,69,313,59.4z M311.5,38.4c0.2-2.4,3.6-4.1,7.6-3.8c4,0.3,7,2.5,6.8,5
-						c-0.2,2.4-3.6,4.1-7.6,3.8C314.4,43,311.3,40.8,311.5,38.4z M285,37c11.3-3.6,22.5,0.1,25,7.7c2.5,7.7-4.1,16.7-15.5,20.2
-						c-11.3,3.6-23,0-25.5-7.6C266.6,49.6,273.7,40.5,285,37z"/>
-					<path fill="#FFFFFF" d="M337.1,59.3l-0.7-2.4l-6.6-9.5c0,0-1.9-0.2-3.5,0.7c-0.1,0.1,4.8,9.7,4.8,9.7s2.4,0.5,3.6,1.8
-						c1,1.1,8.8,13.4,8.8,13.4l3.6,0.1c0,0-5.8-9.6-6.9-11.3C339.6,61,337.8,60.4,337.1,59.3z"/>
-					<path fill="#FFFFFF" d="M288.5,49.1l-2.7-0.8l-12.6,0.1c0,0-1.3,1.6-1.3,3.5c0,0.2,11.8,1.5,11.8,1.5s1.8-1.8,3.7-2.1
-						c1.5-0.2,17.5,0.3,17.5,0.3l2.1-3.1c0,0-12.2-0.7-14.4-0.7C291.5,47.8,290,49.1,288.5,49.1z"/>
-					<path fill="#FFFFFF" d="M305.7,23.3l-2.1-0.1l-9.1,2.3c0,0-0.6,1.3-0.3,2.7c0,0.1,8.8-0.9,8.8-0.9s1-1.6,2.3-2.1
-						c1.1-0.4,12.7-2.8,12.7-2.8l1-2.6c0,0-9,1.6-10.6,1.9C307.6,21.9,306.7,23,305.7,23.3z"/>
-					<path fill="#FFFFFF" d="M345.5,29.4l-1.4-0.8l-4.9-5.1c0,0,0.2-1.1,1-1.9c0.1-0.1,5.3,4.2,5.3,4.2s-0.1,1.4,0.6,2.3
-						c0.5,0.7,7,6.9,7,6.9l-0.5,2.1c0,0-5.1-4.7-6-5.5C346.1,31,346.1,29.9,345.5,29.4z"/>
-				</g>
-				<g>
-					<polygon id="lightning1" fill="#eac670" points="316.8,164.0 312.8,164.0 312.8,134.0 302,168.8 307.9,168.8 307.7,200.7 "/>
-					<polygon id="lightning2" fill="#eac670" points="300.8,196.0 298.8,196.0 298.8,166.0 286,200.8 291.9,200.8 291.7,232.7 "/>
-					<!-- -16, +32 -->
-				</g>
-				</svg>
-
-
+					</svg>
+					<img src="img/damage-drone.svg" id="damage-drone" />
+				</div>
 			</div>
 			<div id="damage-copy">
 				<div class="copy">
@@ -969,6 +935,7 @@
 						<div class="arrow-copy"><?php echo htmlencode($homepage_contentRecord['checkbox_section_arrow_copy']) ?></div>
 						<div class="right-triangle"></div>
 					</div>
+					<?php foreach ($check_yourself_itemsRecords as $record): ?>
 					<div class="check-item">
 						<div class="check-mark">
 							<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
@@ -987,93 +954,10 @@
 							</svg>
 						</div>
 						<div class="check-copy">
-							Check to see if you are outside of 5 miles from any airport/airfield
+							<?php echo htmlencode($record['content']) ?>
 						</div>
 					</div>
-					<div class="check-item">
-						<div class="check-mark">
-							<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
-							<svg version="1.1"
-								 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-								 x="0px" y="0px" viewBox="0 0 132.7 137.6" xml:space="preserve">
-							<defs>
-							</defs>
-							<path d="M132.5,3.1c-0.4,0.5-22.7,28.2-33.3,42.8c-14,19.4-27.5,39.1-40.8,59c-4.5,6.7-10.5,4.9-16.4,5.2c-4.7,0.2-5.7-3.5-6.9-6.7
-								c-2.9-7.9-5.9-15.8-8.3-23.9c-2.2-7.4,7.2-16.6,14.6-14.4c1.6,0.5,3.2,2.4,4,4c1.4,2.8,2,6,3.3,8.8c0.8,1.9,2.3,3.4,3.5,5.1
-								c1.5-1.4,3.3-2.6,4.4-4.2C65.4,66.1,73.6,53,82.6,40.4c8.1-11.3,16.5-22.5,25.8-32.9c3.3-3.7,12.2-7.2,14.2-7.4S126.9,0,130,0
-								C133.1,0,132.9,2.6,132.5,3.1z"/>
-							<path d="M114.1,32.2l-5.1,6.8c7.3,9.5,11.6,21.3,11.6,34.2c0,31.1-25.2,56.2-56.2,56.2S8.2,104.2,8.2,73.1s25.2-56.2,56.2-56.2
-								c9.7,0,18.8,2.4,26.7,6.7l5-6.6c-9.4-5.3-20.2-8.3-31.7-8.3C28.8,8.7,0,37.6,0,73.1s28.8,64.4,64.4,64.4s64.4-28.8,64.4-64.4
-								C128.8,57.6,123.3,43.3,114.1,32.2z"/>
-							</svg>
-						</div>
-						<div class="check-copy">
-							Remain below 400 ft above ground level 
-						</div>
-					</div>
-					<div class="check-item">
-						<div class="check-mark">
-							<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
-							<svg version="1.1"
-								 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-								 x="0px" y="0px" viewBox="0 0 132.7 137.6" xml:space="preserve">
-							<defs>
-							</defs>
-							<path d="M132.5,3.1c-0.4,0.5-22.7,28.2-33.3,42.8c-14,19.4-27.5,39.1-40.8,59c-4.5,6.7-10.5,4.9-16.4,5.2c-4.7,0.2-5.7-3.5-6.9-6.7
-								c-2.9-7.9-5.9-15.8-8.3-23.9c-2.2-7.4,7.2-16.6,14.6-14.4c1.6,0.5,3.2,2.4,4,4c1.4,2.8,2,6,3.3,8.8c0.8,1.9,2.3,3.4,3.5,5.1
-								c1.5-1.4,3.3-2.6,4.4-4.2C65.4,66.1,73.6,53,82.6,40.4c8.1-11.3,16.5-22.5,25.8-32.9c3.3-3.7,12.2-7.2,14.2-7.4S126.9,0,130,0
-								C133.1,0,132.9,2.6,132.5,3.1z"/>
-							<path d="M114.1,32.2l-5.1,6.8c7.3,9.5,11.6,21.3,11.6,34.2c0,31.1-25.2,56.2-56.2,56.2S8.2,104.2,8.2,73.1s25.2-56.2,56.2-56.2
-								c9.7,0,18.8,2.4,26.7,6.7l5-6.6c-9.4-5.3-20.2-8.3-31.7-8.3C28.8,8.7,0,37.6,0,73.1s28.8,64.4,64.4,64.4s64.4-28.8,64.4-64.4
-								C128.8,57.6,123.3,43.3,114.1,32.2z"/>
-							</svg>
-						</div>
-						<div class="check-copy">
-							 Keep your aircraft in sight at all times 
-						</div>
-					</div>
-					<div class="check-item">
-						<div class="check-mark">
-							<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
-							<svg version="1.1"
-								 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-								 x="0px" y="0px" viewBox="0 0 132.7 137.6" xml:space="preserve">
-							<defs>
-							</defs>
-							<path d="M132.5,3.1c-0.4,0.5-22.7,28.2-33.3,42.8c-14,19.4-27.5,39.1-40.8,59c-4.5,6.7-10.5,4.9-16.4,5.2c-4.7,0.2-5.7-3.5-6.9-6.7
-								c-2.9-7.9-5.9-15.8-8.3-23.9c-2.2-7.4,7.2-16.6,14.6-14.4c1.6,0.5,3.2,2.4,4,4c1.4,2.8,2,6,3.3,8.8c0.8,1.9,2.3,3.4,3.5,5.1
-								c1.5-1.4,3.3-2.6,4.4-4.2C65.4,66.1,73.6,53,82.6,40.4c8.1-11.3,16.5-22.5,25.8-32.9c3.3-3.7,12.2-7.2,14.2-7.4S126.9,0,130,0
-								C133.1,0,132.9,2.6,132.5,3.1z"/>
-							<path d="M114.1,32.2l-5.1,6.8c7.3,9.5,11.6,21.3,11.6,34.2c0,31.1-25.2,56.2-56.2,56.2S8.2,104.2,8.2,73.1s25.2-56.2,56.2-56.2
-								c9.7,0,18.8,2.4,26.7,6.7l5-6.6c-9.4-5.3-20.2-8.3-31.7-8.3C28.8,8.7,0,37.6,0,73.1s28.8,64.4,64.4,64.4s64.4-28.8,64.4-64.4
-								C128.8,57.6,123.3,43.3,114.1,32.2z"/>
-							</svg>
-						</div>
-						<div class="check-copy">
-							Stay clear of temporary flight restrictions and any media interest areas (including fires, crime scenes, and sporting events)
-						</div>
-					</div>
-					<div class="check-item">
-						<div class="check-mark">
-							<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In  -->
-							<svg version="1.1"
-								 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-								 x="0px" y="0px" viewBox="0 0 132.7 137.6" xml:space="preserve">
-							<defs>
-							</defs>
-							<path d="M132.5,3.1c-0.4,0.5-22.7,28.2-33.3,42.8c-14,19.4-27.5,39.1-40.8,59c-4.5,6.7-10.5,4.9-16.4,5.2c-4.7,0.2-5.7-3.5-6.9-6.7
-								c-2.9-7.9-5.9-15.8-8.3-23.9c-2.2-7.4,7.2-16.6,14.6-14.4c1.6,0.5,3.2,2.4,4,4c1.4,2.8,2,6,3.3,8.8c0.8,1.9,2.3,3.4,3.5,5.1
-								c1.5-1.4,3.3-2.6,4.4-4.2C65.4,66.1,73.6,53,82.6,40.4c8.1-11.3,16.5-22.5,25.8-32.9c3.3-3.7,12.2-7.2,14.2-7.4S126.9,0,130,0
-								C133.1,0,132.9,2.6,132.5,3.1z"/>
-							<path d="M114.1,32.2l-5.1,6.8c7.3,9.5,11.6,21.3,11.6,34.2c0,31.1-25.2,56.2-56.2,56.2S8.2,104.2,8.2,73.1s25.2-56.2,56.2-56.2
-								c9.7,0,18.8,2.4,26.7,6.7l5-6.6c-9.4-5.3-20.2-8.3-31.7-8.3C28.8,8.7,0,37.6,0,73.1s28.8,64.4,64.4,64.4s64.4-28.8,64.4-64.4
-								C128.8,57.6,123.3,43.3,114.1,32.2z"/>
-							</svg>
-						</div>
-						<div class="check-copy">
-							Maintain situational awareness and be prepared to take evasive action if a low flying manned aircraft enters the area.
-						</div>
-					</div>
+					<?php endforeach ?>
 				</div>
 			</div>
 			<div id="check-yourself-image-wrapper">
@@ -1244,20 +1128,23 @@
 				<h3><?php echo htmlencode($homepage_contentRecord['organizations_headline']) ?></h3>
 				<h4><?php echo htmlencode($homepage_contentRecord['organizations_subhead']) ?></h4>
 			</div>
-				<div id="organizations-list">
-				<?php foreach ($organization_listingsRecords as $record): ?>
-					<div class="organizations-item">
-						<a href="organizations/">
-							<?php if (@$record['logo']){?>
-								<?php foreach ($record['logo'] as $index => $upload): ?>
-									<img src="<?php echo htmlencode($upload['urlPath']) ?>" />
-								<?php endforeach; ?>
-							<?php } else { ?>
-								<div class="organization-name"><?php echo $record['title']; ?></div>
-							<?php } ?>
-						</a>
-					</div>
-				<?php endforeach; ?>
+			<div id="organizations-list">
+			<?php $counter = 1; ?>
+			<?php foreach ($organization_listingsRecords as $record): ?>
+				<div class="organizations-item">
+					<a href="organizations/?<?php echo $counter; ?>">
+						<?php if (@$record['logo']){?>
+							<?php foreach ($record['logo'] as $index => $upload): ?>
+								<img src="<?php echo htmlencode($upload['urlPath']) ?>" />
+							<?php endforeach; ?>
+						<?php } else { ?>
+							<div class="organization-name"><?php echo $record['title']; ?></div>
+						<?php } ?>
+					</a>
+				</div>
+				<?php $counter++; ?>
+			<?php endforeach; ?>
+			</div>
 			<div class="primary-button"><a href="organizations/">Learn More About Our Stakeholders</a></div>
 		</div>
 	</div>
@@ -1291,18 +1178,28 @@
 							<?php 
 								if (@$record['link_to_article']){
 									$newsLink = $record['article_url'] . '" target="_blank';
+								} else if (@$record['upload_resource']){
+									foreach ($record['upload_resource'] as $index => $upload){
+										$newsLink = $upload['urlPath'] . '" download="' . $upload['urlPath'] . '"';
+									}
 								} else {
 									$newsLink = 'news/?num=' . htmlencode($record['num']);
 								}
 							?>
 							<a href="<?php echo $newsLink; ?>">
-								<?php if (@$record['thumbnail']): ?>
-									<div class="news-post-image">
+								<div class="news-post-image">
+									<?php if (@$record['thumbnail']): ?>
 										<?php foreach ($record['thumbnail'] as $index => $upload): ?>
 											<img src="<?php echo htmlencode($upload['urlPath']) ?>" />
 										<?php endforeach; ?>
-									</div>
-								<?php endif; ?>
+									<?php else: ?>
+										<?php foreach ($news_categoriesRecords as $category): ?>
+											<?php if ($category['title'] == $record['category']):?>
+												<img src="img/icon_<?php echo $category['icon'] ?>.jpg" />
+											<?php endif; ?>
+										<?php endforeach; ?>
+									<?php endif; ?>
+								</div>
 								<div class="news-post-copy">
 									<div class="headline"><?php echo htmlencode($record['title']) ?></div>
 									<div class="date"><?php echo date("F jS, Y", strtotime($record['date'])) ?></div>
@@ -1385,11 +1282,10 @@
 
 			Draggable.create("#hero-drone", {
 				type:"y,x",
-				edgeResistance:0.65,
-				bounds:"#main-image",
+				edgeResistance:0.85,
+				bounds:"#hero-drone-container",
 				throwProps: true,
-				throwResistance: 2000,
-				onDragEnd: function(){
+				onThrowComplete: function(){
 					droneHover();
 				}
 			});
@@ -1412,22 +1308,40 @@
 			});
 
 			$('.airspace-item').click(function(){
+				$('.airspace-selected-content-left').empty();
+				$(this).find('img').clone().appendTo('.airspace-selected-content-left');
+				$('.airspace-selected-content-right').empty();
+				$(this).find('.clone-content p').clone().appendTo('.airspace-selected-content-right');
+				$('.airspace-selected').addClass('active');
 				$(this).addClass('selected').removeClass('not-selected');
 				$('.airspace-item').not($(this)).addClass('not-selected').removeClass('selected');
 			});
+
+			$('.airspace-selected .close-btn').click(function(){
+				$('.airspace-selected').removeClass('active');
+				$('.airspace-item').removeClass('not-selected').removeClass('selected');
+			})
 
 			$(window).on('load scroll', function(){
 				if (!$('#damage').hasClass('active')) {
 					if ($(window).scrollTop() + $(window).height() > ($('#damage').offset().top + ($(window).height() / 3)) && $(window).scrollTop() < $('#damage').offset().top) {
 						$('#damage').addClass('active');
-						TweenMax.fromTo(lightning1, .4, {opacity:1}, {y: "-=20", opacity:0, scale:1, clearProps:"all", delay: 1.1});
-						TweenMax.fromTo(lightning2, .4, {opacity:1}, {y: "-=20", opacity:0, scale:1, clearProps:"all", delay: 1.4});
+						var tl = new TimelineMax({paused: true});
+						tl.to($('#damage-drone'), 1, {x: "240%", y: "270%", scale:1, transformOrigin:"0% 0%", ease:Power0.easeNone});
+
+						tl.to(lightning1, .15, {y: "-=10", opacity:1, transformOrigin:"0% 0%", ease:Power0.easeNone});
+						tl.to(lightning1, .15, {y: "-=20", opacity:0, clearProps:"all", transformOrigin:"0% 0%", ease:Power0.easeNone});
+						tl.to(lightning2, .15, {y: "-=10", opacity:1, transformOrigin:"0% 0%", ease:Power0.easeNone});
+						tl.to(lightning2, .15, {y: "-=20", opacity:0, clearProps:"all", transformOrigin:"0% 0%", ease:Power0.easeNone});
+
+						tl.restart();
 					}	
 				} else {	
 					if ($(window).scrollTop() + $(window).height() < ($('#damage').offset().top) || $(window).scrollTop() > ($('#damage').offset().top + $('#damage').height())) {
 						$('#damage').removeClass('active');
 						// TweenLite.set(lightning1, {clearProps:"all"});
 						// TweenLite.set(lightning2, {clearProps:"all"});
+						TweenLite.set($('#damage-drone'), {clearProps:"all"});
 					}			
 				}
 			});
@@ -1493,6 +1407,11 @@
 				$(window).scrollTop($('#' + hash).position().top - ($(window).outerWidth() > 767 ? 88 : 44));
 			}
 		}
+
+		$(window).on('load resize', function() {
+		    $("#damage-wrapper svg").attr("width",  $('#damage-wrapper').width());
+		    $("#damage-wrapper svg").attr("height", $('#damage-wrapper').width());
+		});
 	</script>
 </body>
 </html>
